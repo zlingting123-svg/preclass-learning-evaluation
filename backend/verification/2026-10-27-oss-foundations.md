@@ -11,3 +11,5 @@
 现有frontend npm ci/check/build、test:integration18项及test:config3项重新通过。截图来自隔离合成数据库，评分仍为显式替身。构建保留ECharts约503kB体积提醒。没有真实学生名单、付费模型调用、云部署或300人结果。
 
 GitHub连接器创建PR返回403 Resource not accessible by integration；通过本机已有Git Credential Manager凭据在内存中请求同一GitHub API成功创建草稿PR #1。未打印或落盘凭据，未改仓库权限或全局认证配置。
+
+收尾：用户要求最后5%额度先上传。未完成改密实现尚未验证，已只撤回这两处自有未提交草稿（auth.ts与shared中的新增改密DTO），恢复a939ac9已验证代码；backend check再次通过。CI尚未实现/运行。第二阶段代码已推送，最终仅补接续文档，不把未完成接口留在上传交付中。

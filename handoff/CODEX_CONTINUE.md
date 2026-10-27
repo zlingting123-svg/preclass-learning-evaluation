@@ -1,4 +1,10 @@
-> 2026-10-27 22:48阶段更新：工作tree为当前聊天work/oss-foundations，任务分支backend/oss-foundations，基于main c573fbe；第一阶段d01415d已推送并创建草稿PR #1。已核对20个上游仓库，接入Helmet/express-rate-limit/csv-parse/csv-stringify并留许可证。新增批次/班级授权、字符串学号CSV预览/冲突/指纹确认、私密随机口令、跨期账号复用和事务回滚CLI；契约v0.2.0兼容旧客户端。backend check/build、22项测试、smoke通过；旧frontend check/build、18项HTTP、3项构建限制回归通过。新前端UI未实现；4次作业只是计划字段非配额。下一步将第二阶段提交/推送，再补CI和账号生命周期/问卷可独立准备的基础。详见BACKEND_DELIVERY、backend/ROSTER、verification/2026-10-27-oss-foundations。GitHub连接器创建PR 403，经现有GCM凭据内存调用API成功，未记录凭据。原工作区和同事前端未覆盖。无真实名单/云/正式模型/300人结果，不假装可见账号实时额度。
+> **2026-10-27 22:56本轮收尾：用户明确要求最后5%额度先上传收尾，停止新增功能。** 代码提交d01415d、a939ac9已推送origin/backend/oss-foundations，草稿PR #1：https://github.com/zlingting123-svg/preclass-learning-evaluation/pull/1；main未合并。当前正确工作tree为本聊天work/oss-foundations，原项目工作区backend/cohorts-roster保持不动。新对话继续必须先核对这个任务分支，不把旧目录v0.1.1覆盖回来。
+>
+> 已核对20个上游仓库，接入Helmet/express-rate-limit/csv-parse/csv-stringify并保留实际许可证；新增批次/教师班级授权、字符串学号CSV预览/冲突/指纹确认、私密随机初始口令、跨期账号复用和事务回滚CLI。契约v0.2.0兼容旧客户端。backend check/build、22项测试和smoke通过；现有frontend check/build、18项HTTP、3项构建限制回归通过。
+>
+> **未完成的改密草稿已按本轮收尾撤回，恢复已验证提交；撤回后backend check再次通过。** 尚无首次强制改密、找回或改密API，不要误接不存在接口。CI工作流也未添加或运行。新批次/导入前端UI未实现，4次作业仍只是计划字段；画像题型/锚点/必填、正式评分、云部署/真机/300人仍待后续。500行只做名单解析预览，非500账号创建或压测。无真实学生名单、口令、数据库上传。
+>
+> 实际交接看BACKEND_DELIVERY.md、backend/ROSTER.md、backend/verification/2026-10-27-oss-foundations.md、docs/research/开源复用决策.md。下一阶段：先审阅PR并和同事对齐v0.2.0，再定点实现前端批次/导入权限流程、成熟账号生命周期、问卷组件；不能从旧框架重建。不要自动合并main或对外部署。GitHub连接器PR写入403已通过本机现有GCM凭据在内存请求同域API解决，没有记录或输出凭据。
 
 > 最新教学需求补充（2026-10-27）：已加入docs/需求和docs/资料，课程“环境评价与管理”，每期500人、7位教师、每人4次作业，按学号导入并按教师班级隔离；原Word18题画像已留存和提取。读最新需求与待开发清单再继续。运行契约仍v0.1.1，未做新的课程评分、导入或并发验证。
 

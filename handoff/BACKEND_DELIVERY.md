@@ -2,6 +2,8 @@
 
 2026-10-27；分支backend/oss-foundations，草稿PR：[PR #1](https://github.com/zlingting123-svg/preclass-learning-evaluation/pull/1)。main未自动合并。同事不要同时修改该分支，前端在独立frontend任务分支适配。
 
+本轮已收尾上传：开源复用与批次/名单代码分别为d01415d、a939ac9，最终接续文档另提交。未完成的改密草稿已撤回；没有改密/找回/强制首改API或CI工作流，不能按计划文字当作已实现。下一次先核对远程任务分支与当前契约，再继续新功能。
+
 ## 当前新增
 
 开源模块核对20个仓库；已直接接入Helmet、express-rate-limit、csv-parse、csv-stringify，保留LICENSE。契约v0.2.0兼容旧客户端，新增CohortInfo、ClassInfo.cohortId?、GET /cohorts及/:id、GET /classes?cohortId；教师建班兼容可选cohortId并验证授权。

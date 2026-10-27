@@ -1,5 +1,16 @@
 # GitHub同步交接
 
+## 最新同步：backend/oss-foundations（2026-10-27收尾）
+
+- 任务分支：https://github.com/zlingting123-svg/preclass-learning-evaluation/tree/backend/oss-foundations
+- 草稿PR：https://github.com/zlingting123-svg/preclass-learning-evaluation/pull/1，保持待审阅，main未合并。
+- 代码提交：d01415d（开源复用）及a939ac9（受控批次/学号导入）；其后接续文档提交以远程分支最新HEAD为准。
+- 本机用独立worktree工作，不覆盖原backend/cohorts-roster；同事前端业务源码未改。契约v0.2.0兼容旧客户端，新UI待适配。
+- 验证：后台22项、smoke、前端18项HTTP和3项构建限制通过；许可证文本及模块调研已入库。未完成改密草稿已撤回，无未验证代码作为已完成交付。
+- 未上传真实学生名单、口令、数据库或私密输出；云部署、正式评分、真机和300人仍未验证。CI尚未添加。
+
+新对话从此任务分支读取CODEX_CONTINUE和BACKEND_DELIVERY；不要把下方历史main状态误认为已合并本轮功能。
+
 日期：2026-10-27；协作方式：本机负责人和同事分别使用Codex，通过GitHub分支与PR交接。
 
 ## 仓库
