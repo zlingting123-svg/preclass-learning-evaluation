@@ -2,6 +2,8 @@
 
 这是能实际登录、保存画像草稿并提交文字作业的本地 Moodle 样板。全部师生、学号、班级和答卷均为模拟数据。
 
+代码审阅入口：[草稿PR #2](https://github.com/zlingting123-svg/preclass-learning-evaluation/pull/2)，目标为尚未合并的依赖分支backend/oss-foundations（PR #1）。
+
 ## 直接打开
 
 在已准备好的这台 Mac 上双击 **打开样板.command**，或在仓库根目录运行：

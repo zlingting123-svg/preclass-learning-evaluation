@@ -1,5 +1,7 @@
 > **最新接续：2026-10-27 Moodle最小样板**。用户要求按Moodle及仓库最新内容制作样板，并已邀请GitHub账号sufencyshao；邀请已接受，实查push=true、admin=false。
 >
+> 已上传实现提交`fd2d6d0`，草稿PR #2：https://github.com/zlingting123-svg/preclass-learning-evaluation/pull/2，目标分支`backend/oss-foundations`（依赖PR #1），未合并main。Git首次推送缺少凭据助手，后用已登录gh的临时credential helper完成，未修改全局Git配置或输出凭据。
+>
 > 当前任务分支`prototype/moodle-minimal`，从最新`origin/backend/oss-foundations@4e15d02`（契约0.2.0、草稿PR #1尚未合并）创建。原frontend/backend/shared业务源码保持不变；本轮新增`moodle-sample/`及文档入口。原React/Node历史验证不是本轮重跑结果。
 >
 > 已安装实际Moodle **5.3+ (Build: 20261021)**、官方简体中文包；新增local_preclass_sample插件。仅本机macOS arm64，便携PHP8.4.1、PostgreSQL18.4，127.0.0.1:8873/55439。两教师、两班、四模拟学生，跨期同账号，两班各一份第1次原生文字作业；其余三次仅计划。18题保留原文、7题开放草稿、11题题型待确认，不猜必填/量表锚点、不生成画像分或作业数字成绩。学之思仅作交互参考，未复制或双系统对接。
