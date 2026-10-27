@@ -5,7 +5,7 @@ import type { AuthSession, Role, User } from '../../shared/contracts.js';
 import type { Store } from './store.js';
 import { ensure } from './errors.js';
 
-interface Account { user: User; username: string; passwordHash: string }
+export interface Account { user: User; username: string; passwordHash: string }
 interface Session { userId: string; expiresAt: string }
 const digest = (token: string) => createHash('sha256').update(token).digest('hex');
 export interface AuthProvider {
@@ -18,16 +18,21 @@ export class LocalAuth implements AuthProvider {
   private dummyHash = bcrypt.hashSync(randomBytes(24).toString('hex'), 12);
   constructor(private store: Store, private now: () => number = Date.now) {}
   async createUser(username: string, password: string, displayName: string, role: Role): Promise<User> {
+    const account = await this.prepareUser(username, password, displayName, role);
+    return this.store.transaction(() => this.persistPrepared(account));
+  }
+  /** Hash outside the SQLite transaction, including controlled roster imports. */
+  async prepareUser(username: string, password: string, displayName: string, role: Role): Promise<Account> {
     z.object({ username: z.string().regex(/^[a-zA-Z0-9_.@-]{3,100}$/), password: z.string().min(12).refine(v => Buffer.byteLength(v) <= 72),
       displayName: z.string().trim().min(1).max(100), role: z.enum(['teacher', 'student', 'admin']) }).parse({ username, password, displayName, role });
     const passwordHash = await bcrypt.hash(password, 12);
-    return this.store.transaction(() => {
-      ensure(!this.store.get('account', username), 409, 'USERNAME_EXISTS', '账号已存在');
-      const user: User = { id: randomUUID(), displayName, role };
-      this.store.put<Account>('account', username, { username, passwordHash, user });
-      this.store.put('user', user.id, user);
-      return user;
-    });
+    return { username, passwordHash, user: { id: randomUUID(), displayName, role } };
+  }
+  /** Caller must wrap this and related enrollment writes in store.transaction. */
+  persistPrepared(account: Account): User {
+    ensure(!this.store.get('account', account.username) && !this.store.get('user', account.user.id), 409, 'USERNAME_EXISTS', '账号已存在');
+    this.store.put('account', account.username, account); this.store.put('user', account.user.id, account.user);
+    return account.user;
   }
   async login(input: unknown): Promise<AuthSession> {
     const { username, password } = z.object({ username: z.string().min(1).max(100), password: z.string().min(1).max(200) }).strict().parse(input);

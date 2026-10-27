@@ -1,4 +1,4 @@
-> 2026-10-27 22:34开源复用阶段：用户要求逐板块查开源并直接复用适配部分、持续推进和GitHub同步。已从最新main c573fbe建立独立worktree（当前聊天work/oss-foundations）、分支backend/oss-foundations，保护原工作区backend/cohorts-roster和同事前端。已核对20个上游仓库，决策见docs/research/开源复用决策.md；接入Helmet/express-rate-limit/csv-parse/csv-stringify，保留实际许可证。backend check/build及12项测试通过。下一步先提交并推分支，再做批次/学号导入预览与确认；此时批次/导入仍未实现，契约仍v0.1.1。没有真实学生资料或云/300人结果，不能宣称额度实时可见。
+> 2026-10-27 22:48阶段更新：工作tree为当前聊天work/oss-foundations，任务分支backend/oss-foundations，基于main c573fbe；第一阶段d01415d已推送并创建草稿PR #1。已核对20个上游仓库，接入Helmet/express-rate-limit/csv-parse/csv-stringify并留许可证。新增批次/班级授权、字符串学号CSV预览/冲突/指纹确认、私密随机口令、跨期账号复用和事务回滚CLI；契约v0.2.0兼容旧客户端。backend check/build、22项测试、smoke通过；旧frontend check/build、18项HTTP、3项构建限制回归通过。新前端UI未实现；4次作业只是计划字段非配额。下一步将第二阶段提交/推送，再补CI和账号生命周期/问卷可独立准备的基础。详见BACKEND_DELIVERY、backend/ROSTER、verification/2026-10-27-oss-foundations。GitHub连接器创建PR 403，经现有GCM凭据内存调用API成功，未记录凭据。原工作区和同事前端未覆盖。无真实名单/云/正式模型/300人结果，不假装可见账号实时额度。
 
 > 最新教学需求补充（2026-10-27）：已加入docs/需求和docs/资料，课程“环境评价与管理”，每期500人、7位教师、每人4次作业，按学号导入并按教师班级隔离；原Word18题画像已留存和提取。读最新需求与待开发清单再继续。运行契约仍v0.1.1，未做新的课程评分、导入或并发验证。
 

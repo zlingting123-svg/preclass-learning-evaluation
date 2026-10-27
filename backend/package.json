@@ -14,6 +14,10 @@
     "test": "tsx --test test/*.test.ts",
     "smoke": "node test/startup-smoke.mjs",
     "user:create": "tsx src/manage.ts user",
+    "cohort:create": "tsx src/roster-cli.ts cohort",
+    "class:create": "tsx src/roster-cli.ts class",
+    "roster:preview": "tsx src/roster-cli.ts preview",
+    "roster:commit": "tsx src/roster-cli.ts commit",
     "backup": "tsx src/manage.ts backup",
     "worker": "tsx src/worker-main.ts"
   },

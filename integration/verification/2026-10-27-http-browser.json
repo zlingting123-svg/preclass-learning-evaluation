@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-27 19:06:39",
+  "date": "2026-10-27 22:45:31",
   "scope": "local HTTP frontend + SQLite backend; synthetic accounts/material; scorer is a test double, no cloud/model/load-test claims",
   "passed": 18,
   "failed": 0,
@@ -79,5 +79,5 @@
   ],
   "pageErrors": [],
   "unexpectedHttp": [],
-  "screenshots": "C:\\Users\\96496\\Documents\\Codex\\2026-10-27\\wo-2\\outputs\\课前问答项目\\backend\\work\\synthetic-browser-W9W3dc\\screenshots"
+  "screenshots": "C:\\Users\\96496\\Documents\\Codex\\2026-10-27\\01-codex-md-handoff-codex-continue\\work\\oss-foundations\\backend\\work\\synthetic-browser-e9bbef\\screenshots"
 }

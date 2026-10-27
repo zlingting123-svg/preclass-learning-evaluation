@@ -38,7 +38,7 @@ try {
   }
   assert.ok(ready, '构建后的服务未就绪: ' + serverErrors);
   const health = await (await fetch(base + '/health')).json();
-  assert.equal(health.data.productionReady, false); assert.equal(health.data.contractVersion, '0.1.1');
+  assert.equal(health.data.productionReady, false); assert.equal(health.data.contractVersion, '0.2.0');
   const login = await (await fetch(base + '/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username: env.USERNAME, password }) })).json();
   assert.equal(login.ok, true);

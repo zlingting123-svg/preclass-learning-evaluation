@@ -41,10 +41,12 @@ export function createApp(service: Service, auth: AuthProvider) {
   };
   app.get('/api/v1/auth/me', (_req, res) => ok(res, user(res)));
   app.post('/api/v1/auth/logout', (_req, res) => { auth.logout(res.locals.token); ok(res, { success: true }); });
-  app.get('/api/v1/classes', (req, res) => list(req, res, service.classes(user(res))));
+  app.get('/api/v1/classes', (req, res) => list(req, res, service.classes(user(res), id.optional().parse(req.query.cohortId))));
+  app.get('/api/v1/cohorts', (req, res) => list(req, res, service.cohorts(user(res))));
+  app.get('/api/v1/cohorts/:id', (req, res) => ok(res, service.cohort(user(res), param(req))));
   app.post('/api/v1/teacher/classes', (req, res) => {
-    const body = z.object({ name: z.string().trim().min(1).max(200) }).strict().parse(req.body);
-    ok(res, service.createClass(user(res), body.name));
+    const body = z.object({ name: z.string().trim().min(1).max(200), cohortId: id.optional() }).strict().parse(req.body);
+    ok(res, service.createClass(user(res), body.name, body.cohortId));
   });
   app.post('/api/v1/classes/join', (req, res) => {
     const body = z.object({ joinCode: z.string().trim().min(1).max(100).transform(v => v.toUpperCase()) }).strict().parse(req.body);
