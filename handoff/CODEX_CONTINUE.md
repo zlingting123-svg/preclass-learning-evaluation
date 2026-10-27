@@ -1,3 +1,19 @@
+> **最新接续：2026-10-27 Moodle最小样板**。用户要求按Moodle及仓库最新内容制作样板，并已邀请GitHub账号sufencyshao；邀请已接受，实查push=true、admin=false。
+>
+> 当前任务分支`prototype/moodle-minimal`，从最新`origin/backend/oss-foundations@4e15d02`（契约0.2.0、草稿PR #1尚未合并）创建。原frontend/backend/shared业务源码保持不变；本轮新增`moodle-sample/`及文档入口。原React/Node历史验证不是本轮重跑结果。
+>
+> 已安装实际Moodle **5.3+ (Build: 20261021)**、官方简体中文包；新增local_preclass_sample插件。仅本机macOS arm64，便携PHP8.4.1、PostgreSQL18.4，127.0.0.1:8873/55439。两教师、两班、四模拟学生，跨期同账号，两班各一份第1次原生文字作业；其余三次仅计划。18题保留原文、7题开放草稿、11题题型待确认，不猜必填/量表锚点、不生成画像分或作业数字成绩。学之思仅作交互参考，未复制或双系统对接。
+>
+> 验证：题型11/11、真实Moodle HTTP21/21，独立数据库确认submitted>=1、数字成绩0、画像草稿>=2、001001单账号跨期选课2。浏览器375与1280宽度已查看且无横向溢出，非真机。启动/停止/重启保留数据。证据`moodle-sample/verification/2026-10-27-local.md`和同目录JSON/截图。未执行云部署、并发、真实评分、真实学生导入或生产备份验收。
+>
+> 启动：仓库根运行`python3 moodle-sample/scripts/sample.py start`，或双击`moodle-sample/打开样板.command`；访问http://127.0.0.1:8873/local/preclass_sample/index.php。模拟账号随机口令仅在本机`moodle-sample/work/private/演示账号.txt`；不要上传work、口令、日志、数据库。停止`python3 moodle-sample/scripts/sample.py stop`，验证`python3 moodle-sample/scripts/sample.py verify`。启动器目前仅测试macOS arm64，需要Python3.12+和Node；未用Docker、未改系统配置。
+>
+> 继续先读`moodle-sample/README.md`、`MAPPING.md`、`NOTICE.md`及`source.lock.json`，核对实际分支和远程。PHP是旧补丁、Postgres分发包装有beta标记、PHP开发服务器仅实验；插件缺少privacy provider和课程备份恢复API，不可填真实学生数据。下一步先确认Moodle主系统和每班一课程，再补11题设置、生产账号/名单导入/隐私备份及正式评价规则。不要自动合并依赖PR、main或对外部署。
+>
+> 新对话启动语：请读取AGENTS.md、handoff/CODEX_CONTINUE.md顶部与moodle-sample/README.md，核对prototype/moodle-minimal及依赖backend/oss-foundations@4e15d02。保留原React/Node和已有模拟数据库，从实际Moodle样板继续；先核对11/21/数据库证据及最新PR状态，不重建框架，不把样板当上线验收。
+
+---
+
 > **2026-10-27 22:56本轮收尾：用户明确要求最后5%额度先上传收尾，停止新增功能。** 代码提交d01415d、a939ac9已推送origin/backend/oss-foundations，草稿PR #1：https://github.com/zlingting123-svg/preclass-learning-evaluation/pull/1；main未合并。当前正确工作tree为本聊天work/oss-foundations，原项目工作区backend/cohorts-roster保持不动。新对话继续必须先核对这个任务分支，不把旧目录v0.1.1覆盖回来。
 >
 > 已核对20个上游仓库，接入Helmet/express-rate-limit/csv-parse/csv-stringify并保留实际许可证；新增批次/教师班级授权、字符串学号CSV预览/冲突/指纹确认、私密随机初始口令、跨期账号复用和事务回滚CLI。契约v0.2.0兼容旧客户端。backend check/build、22项测试和smoke通过；现有frontend check/build、18项HTTP、3项构建限制回归通过。
