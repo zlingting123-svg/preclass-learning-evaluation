@@ -1,0 +1,11 @@
+{
+  "mode": "explicit dev mock, not real HTTP or production",
+  "result": "pass",
+  "checks": [
+    "持续演示横幅",
+    "模拟教师登录及加入码",
+    "学生响应不展示加入码",
+    "模拟加入码可用",
+    "无未处理JS错误"
+  ]
+}
