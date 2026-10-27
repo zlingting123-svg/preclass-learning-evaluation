@@ -6,6 +6,7 @@ import type {
 } from '../../shared/contracts.js';
 import type { Store } from './store.js';
 import { ensure } from './errors.js';
+import { safeCsv } from './csv.js';
 
 interface ClassRecord { id: string; name: string; teacherId: string; joinCode: string }
 interface Member { id: string; classId: string; studentId: string }
@@ -236,18 +237,13 @@ export class Service {
   }
   export(user: User, id: string): string {
     this.assignment(user, id, true);
-    const cell = (v: unknown) => {
-      let value = String(v ?? '');
-      if (/^[\s\u0000-\u001f]*[=+@-]/u.test(value)) value = "'" + value;
-      return '"' + value.replaceAll('"', '""') + '"';
-    };
     const rows: unknown[][] = [['submissionId', 'studentName', 'state', 'scoringStatus', 'submittedAt', 'answers', 'feedback']];
     for (const sub of this.store.all<Submission>('submission').filter(s => s.assignmentId === id)) {
       const report = this.store.get<ScoreReport>('report', sub.id);
       rows.push([sub.id, sub.studentName, sub.state, sub.scoringStatus, sub.submittedAt,
         JSON.stringify(sub.answers), (report?.latestReview?.scores ?? report?.systemScores)?.feedback ?? '']);
     }
-    return '\uFEFF' + rows.map(row => row.map(cell).join(',')).join('\r\n');
+    return safeCsv(rows);
   }
 }
 

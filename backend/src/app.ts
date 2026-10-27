@@ -1,4 +1,5 @@
-import express, { type ErrorRequestHandler, type Request, type Response, type NextFunction } from 'express';
+import express, { type ErrorRequestHandler, type Request, type Response } from 'express';
+import helmet from 'helmet';
 import { randomUUID } from 'node:crypto';
 import { z, ZodError } from 'zod';
 import { CONTRACT_VERSION, type User } from '../../shared/contracts.js';
@@ -6,10 +7,12 @@ import type { AuthProvider } from './auth.js';
 import { AppError, ensure } from './errors.js';
 import { Service, page } from './service.js';
 import { answersBody, assignmentBody, id, reviewBody, versionBody } from './validation.js';
+import { loginLimiters } from './security.js';
 
 export function createApp(service: Service, auth: AuthProvider) {
   const app = express();
   app.disable('x-powered-by');
+  app.use(helmet({ strictTransportSecurity: false, contentSecurityPolicy: { directives: { upgradeInsecureRequests: null } } }));
   app.use((_req, res, next) => {
     res.locals.requestId = randomUUID(); res.setHeader('X-Request-Id', res.locals.requestId);
     res.setHeader('Cache-Control', 'no-store'); res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -24,15 +27,7 @@ export function createApp(service: Service, auth: AuthProvider) {
   app.use(express.json({ limit: '2mb', strict: true }));
   const ok = (res: Response, data: unknown) => res.json({ ok: true, data, requestId: res.locals.requestId });
   app.get('/api/v1/health', (_req, res) => ok(res, { contractVersion: CONTRACT_VERSION, storage: 'local-sqlite', auth: 'local-bcrypt', productionReady: false }));
-  const attempts = new Map<string, { count: number; until: number }>();
-  const limitLogin = (req: Request, _res: Response, next: NextFunction) => {
-    const now = service.now();
-    for (const [ip, bucket] of attempts) if (bucket.until <= now) attempts.delete(ip);
-    const key = req.ip ?? 'local'; const entry = attempts.get(key) ?? { count: 0, until: now + 300000 };
-    ensure(entry.count < 10, 429, 'RATE_LIMITED', '登录尝试过多，请稍后重试');
-    entry.count++; attempts.set(key, entry); next();
-  };
-  app.post('/api/v1/auth/login', limitLogin, async (req, res) => ok(res, await auth.login(req.body)));
+  app.post('/api/v1/auth/login', ...loginLimiters(), async (req, res) => ok(res, await auth.login(req.body)));
   app.use('/api/v1', (req, res, next) => {
     const header = req.get('authorization');
     ensure(header && header.startsWith('Bearer ') && header.length <= 200, 401, 'UNAUTHENTICATED', '请登录');
