@@ -13,3 +13,7 @@
 成功必须标准信封 {ok:true,data,requestId}；失败 {ok:false,error:{code,message},requestId}。SurveyQuestion定义在shared/questionnaires.ts：id/title/type(text,single,multiple)/required/options。结果先展示编辑，教师保存时再由后端严格校验，禁止AI直接发布。不要让客户端指定他班统计；insights应由后台再核对surveyId属于classId，读取聚合数据后调用模型，避免发送姓名、学号或个人答卷。chat当前页面内存保存，尚无历史消息库。
 
 图表当前由业务端基于真实统计渲染，AI只提供文字建议。若未来扩展图表配置，采用受限结构白名单，不能把模型返回的任意JS、HTML、ECharts函数直接执行。禁止自动拿原固定画像推断能力分数。
+
+## 2026-10-28 接入补充
+
+本机接入分支integration/ai-course-assistant已新增学生课程问答、POST SSE、个人用量、教师匿名方向和管理员元数据接口，详见[AI接入记录](2026-10-28-AI接入.md)。已有JSON chat契约兼容，generate/insights继续保留未接入错误；此补充不表示真实付费服务已启用。主系统复用现有认证和班级权限，不再要求前端换用独立模块demo令牌。

@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-28",
+  "base": "design/commercial-preview@61751cc94586f15ffe82e2bd380f3cd739a12ae2",
+  "backendTests": 43,
+  "independentModuleTests": 18,
+  "provider": "mock only",
+  "paidCalls": 0,
+  "browser": "CUA, local HTTP, synthetic accounts only",
+  "urls": [
+    "http://127.0.0.1:5174/",
+    "http://127.0.0.1:5174/design-preview.html"
+  ],
+  "checks": [
+    "existing preview layout and student login",
+    "class selection and published material citation",
+    "SSE answer and settled token display",
+    "out of course refusal does not increase model calls",
+    "stop aborts request; unknown usage remains visible",
+    "main business route receives same gateway response",
+    "teacher sees coarse class topics without individual questions",
+    "375px document width equals viewport width"
+  ],
+  "limits": [
+    "not real DeepSeek",
+    "no full-site 300/500 load test",
+    "no cloud or multi-instance HA",
+    "not physical phone testing",
+    "question generation and survey insights remain AI_NOT_CONNECTED",
+    "keyword retrieval is not semantic RAG"
+  ],
+  "consoleNotes": "During development, 3 createRoot HMR warnings were observed (13:54 and 14:00 UTC). Added preview root dispose and reloaded before final checks; no later warning appeared in the captured log. Historical entries remain in browser log; not reported as an empty log.",
+  "temporaryViewport": "Browser viewport and tab CDP emulation reset after checks."
+}

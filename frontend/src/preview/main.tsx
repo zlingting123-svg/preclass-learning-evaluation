@@ -1,3 +1,5 @@
+import { askCourse } from "../services/courseAi";
+import { AiStatusPanel } from "../components/ai/AiStatus";
 import { createRoot } from "react-dom/client";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -335,7 +337,7 @@ function Workspace({
           <button onClick={() => navigate("/assistant")}>
             开始课程对话 <Icon name="arrow" />
           </button>
-          <small>AI 服务待接入</small>
+          <small>服务状态见对话页</small>
         </div>
         <div className="pv-profile">
           <span className="pv-avatar">{user.displayName[0]}</span>
@@ -786,7 +788,7 @@ function Dashboard({
             <Link to="/assistant" className="pv-primary pv-wide">
               开始对话 <Icon name="arrow" />
             </Link>
-            <small>AI 服务待接入 · 可预览对话界面</small>
+            <small>课程AI已接线 · 服务模式以对话页状态为准</small>
           </div>
           <div className="pv-workflow-note">
             <span className="pv-nav-label">COURSE WORKFLOW</span>
@@ -811,6 +813,7 @@ interface Message {
   role: "user" | "assistant";
   text: string;
   failed?: boolean;
+  sources?: Array<{id:string; title:string; version:string}>;
 }
 interface Thread {
   id: string;
@@ -850,9 +853,6 @@ function Chat({ classId, className }: { classId: string; className: string }) {
     const threadId = current.id,
       id = retryId ?? crypto.randomUUID(),
       message: Message = { id, role: "user", text: text.trim() };
-    const previous = retryId
-      ? current.messages.filter((m) => m.id !== retryId)
-      : current.messages;
     update(threadId, (m) =>
       retryId
         ? m.map((x) => (x.id === id ? { ...x, failed: false } : x))
@@ -862,19 +862,19 @@ function Chat({ classId, className }: { classId: string; className: string }) {
     const abort = new AbortController();
     controller.current = abort;
     try {
-      const r = await request<{ reply: string }>("POST", "/core/ai/chat", {
-        body: {
-          classId,
-          messages: [...previous.filter((m) => !m.failed), message].map(
-            ({ role, text }) => ({ role, text }),
-          ),
-        },
-        signal: abort.signal,
+      const answerId = crypto.randomUUID();
+      await askCourse(classId, message.text, id, abort.signal, ({event, data}) => {
+        if (abort.signal.aborted) return;
+        if (event === 'delta' || event === 'refusal' || event === 'insufficient_evidence') {
+          update(threadId, messages => {
+            const exists = messages.some(m => m.id === answerId);
+            const text = data.text ?? data.message ?? '';
+            return exists ? messages.map(m => m.id === answerId ? {...m, text: m.text + text} : m)
+              : [...messages, {id: answerId, role: 'assistant', text}];
+          });
+        }
+        if (event === 'sources') update(threadId, messages => [...messages, {id: answerId, role: 'assistant', text: '' , sources: data.sources}]);
       });
-      update(threadId, (m) => [
-        ...m,
-        { id: crypto.randomUUID(), role: "assistant", text: r.reply },
-      ]);
     } catch (e) {
       update(threadId, (m) =>
         m.map((x) => (x.id === id ? { ...x, failed: true } : x)),
@@ -906,6 +906,7 @@ function Chat({ classId, className }: { classId: string; className: string }) {
       setError("复制失败，请选择文字手动复制。");
     }
   }
+  if (getCurrentUser()?.role !== 'student') return <section className="core"><h1>课程 AI 使用统计</h1><AiStatusPanel classId={classId} /></section>;
   return (
     <main className="pv-chat">
       <aside
@@ -946,7 +947,7 @@ function Chat({ classId, className }: { classId: string; className: string }) {
           <div>
             <Icon name="spark" />
             <strong>AI 问答助手</strong>
-            <span className="pv-connection-state">待接入</span>
+            <span className="pv-connection-state">课程资料问答</span>
           </div>
           <button
             className="pv-icon-button pv-history-toggle"
@@ -995,6 +996,7 @@ function Chat({ classId, className }: { classId: string; className: string }) {
                 </span>
                 <div className="pv-message-body">
                   <p>{m.text}</p>
+                  {m.sources?.length ? <small>参考资料：{m.sources.map(s => `${s.title}（v${s.version}）`).join("、")}</small> : null}
                   <div className="pv-message-actions">
                     <button onClick={() => copy(m)}>
                       {copied === m.id ? "已复制" : "复制"}
@@ -1027,6 +1029,7 @@ function Chat({ classId, className }: { classId: string; className: string }) {
           </div>
         )}
         <div className="pv-composer-wrap">
+          <AiStatusPanel classId={classId} revision={busy ? 1 : 0} />
           {error && (
             <p className="pv-chat-error" role="alert">
               {error}
@@ -1085,11 +1088,13 @@ function Chat({ classId, className }: { classId: string; className: string }) {
             </div>
           </form>
           <p className="pv-chat-disclaimer">
-            AI 服务尚未接入，当前不会生成回答。接入后，请核对重要课程信息。
+            请以服务状态为准，模拟回答会明确标记。每个问题独立检索，聊天正文不保存，请核对课程资料。
           </p>
         </div>
       </section>
     </main>
   );
 }
-createRoot(document.getElementById("root")!).render(<Preview />);
+const previewRoot = createRoot(document.getElementById("root")!);
+previewRoot.render(<Preview />);
+if (import.meta.hot) import.meta.hot.dispose(() => previewRoot.unmount());

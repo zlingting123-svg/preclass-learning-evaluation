@@ -4,6 +4,7 @@
 
 | 日期 | 更新 | 状态 |
 |---|---|---|
+| 2026-10-28 | [AI接入现有主页面及商业预览](2026-10-28-AI模块接入.md) | 本地集成已验证，真实调用关闭 |
 | 2026-10-28 | [商业工作台与 AI 对话界面独立预览](2026-10-28-商业界面与AI对话预览.md) | 已上传独立分支，待选择外观；未替换主页面 |
 
 本次任务分支：`design/commercial-preview`。对应[草稿 PR #5](https://github.com/zlingting123-svg/preclass-learning-evaluation/pull/5)，目标分支为 `feature/core-questionnaires`，未合并 `main`。

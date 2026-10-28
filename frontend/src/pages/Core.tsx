@@ -1,3 +1,4 @@
+import { CourseAssistant } from "../components/ai/CourseAssistant";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import type { ClassInfo, Page } from "@shared/contracts";
@@ -173,6 +174,7 @@ export function CoreHome() {
                   学生名单与导入
                 </Link>
                 <Link to={`/core/classes/${selected}/new`}>布置问卷</Link>
+                <Link to={`/core/classes/${selected}/assistant`}>AI 使用统计</Link>
               </>
             ) : (
               <Link to={`/core/classes/${selected}/assistant`}>
@@ -1148,63 +1150,5 @@ export function ResponseDetail() {
 }
 export function Assistant() {
   const { classId = "" } = useParams();
-  const [input, setInput] = useState(""),
-    [messages, setMessages] = useState<Array<{ role: string; text: string }>>(
-      [],
-    ),
-    [error, setError] = useState(""),
-    [busy, setBusy] = useState(false);
-  async function send(e: React.FormEvent) {
-    e.preventDefault();
-    if (!input.trim() || busy) return;
-    setBusy(true);
-    setError("");
-    const text = input;
-    setInput("");
-    setMessages((m) => [...m, { role: "user", text }]);
-    try {
-      const r = await request<{ reply: string }>("POST", "/core/ai/chat", {
-        body: { classId, messages: [...messages, { role: "user", text }] },
-      });
-      setMessages((m) => [...m, { role: "assistant", text: r.reply }]);
-    } catch (e) {
-      setError(message(e));
-      setInput(text);
-    } finally {
-      setBusy(false);
-    }
-  }
-  return (
-    <section className="core">
-      <Link to="/">返回班级</Link>
-      <h1>AI 问答助手</h1>
-      <p>
-        课程问题交流。AI
-        服务由另一位同学接入，当前不会返回模拟回答；消息仅保留在当前页面。
-      </p>
-      <div aria-live="polite">
-        {messages.map((m, i) => (
-          <article className="card" key={i}>
-            <strong>{m.role === "user" ? "我" : "AI"}</strong>
-            <p className="core-pre">{m.text}</p>
-          </article>
-        ))}
-      </div>
-      <Alert error={error} />
-      <form onSubmit={send}>
-        <label>
-          课程问题
-          <textarea
-            maxLength={5000}
-            required
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-          />
-        </label>
-        <button className="primary" disabled={busy || !input.trim()}>
-          {busy ? "发送中…" : "发送"}
-        </button>
-      </form>
-    </section>
-  );
+  return <CourseAssistant classId={classId} />;
 }

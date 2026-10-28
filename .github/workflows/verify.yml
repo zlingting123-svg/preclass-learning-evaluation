@@ -28,6 +28,11 @@ jobs:
         with:
           node-version: 24.15.0
           package-manager-cache: false
+      - name: Install and build independent AI module
+        working-directory: ai-module
+        run: |
+          npm ci
+          npm run build
       - name: Install backend from lockfile
         run: npm ci
       - name: Remove historical browser evidence before this run

@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-28",
+  "kind": "real local HTTP + fake model; NOT DeepSeek capacity",
+  "offered": 300,
+  "completed": 300,
+  "actualPeakInFlightProvider": 300,
+  "configuredGenerationSlots": 350,
+  "queueSlots": 600,
+  "elapsedMs": 9402,
+  "clientConnections": 512,
+  "tcpHandshakesAtOnce": 1,
+  "tcpHandshakePacingMs": 10,
+  "autoRetries": 0
+}

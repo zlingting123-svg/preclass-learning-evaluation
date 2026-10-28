@@ -1,3 +1,13 @@
+> **2026-10-28 AI接入已本机验证。** 分支integration/ai-course-assistant基于同事design/commercial-preview@61751cc；位置为当前preclass-ai-integration（独立克隆，不覆盖旧工作区）。已读取更新日志和AI接口交接，保留主问卷路由、商业预览及三主题，接入现有学生聊天、教师AI使用统计入口。backend/src/ai.ts复用LocalAuth/Service.classAccess，已发布同班资料进入词项基线；ai-module来自独立fc125e8，仅元数据账本、幂等、取消、350/600模拟容量保留。真实模型关闭，generate/insights仍未接入。
+>
+> 验证：backend check/build、43/43测试及smoke；frontend check/build与3项生产限制；复制AI包18/18测试。CUA实际登录现有学生并从主页面及商业预览发送，来源/token更新；无关问题拒答且调用不增长；网页停止显示未知用量；教师看到本班粗主题4次，无个体问题。375px无横向溢出，桌面/手机/教师截图及JSON见integration/verification/2026-10-28-ai-*。开发热更新曾触发预览重复createRoot警告，已添加dispose卸载，最终日志仅留3条旧HMR记录、未见后续新增，详见验证记录。未运行整站300/500、真实DeepSeek、云、多副本或真机。
+>
+> 运行：SAMPLE_BACKEND_PORT=3002 SAMPLE_FRONTEND_PORT=5174 python3 integration/sample.py start，或integration/打开AI接入版.command；主页面5174，商业预览/design-preview.html，后台3002。停止用相同环境变量sample.py stop。当前模拟数据由原库在线备份到backend/work/platform-sample，原数据库不动；账号私密留在work。AI账本在其ai子目录，主库备份命令不涵盖AI账本。默认后台AI_MODE缺省disabled，快捷样板仅mock，拒绝真实模式。
+>
+> 下一步：核对本分支与本轮docs/integration/2026-10-28-AI接入.md，再接真实资料管理/白名单、语义阈值标定、PG/Redis共享适配及经用户确认的预算、真实Key和余额预警；不要把独立模块旧300mock/500连接当成当前整站验收，不合并main或上线。当前界面只提供学生问答/教师方向，管理员为受控API元数据，未做管理页面。
+
+> 2026-10-28 AI集成进行中：基于远程design/commercial-preview@61751cc（精确tree/commit校验的浅克隆），独立integration/ai-course-assistant分支。用户授权将AI模块接入现有主页面及商业预览，保留三主题和问卷业务。已复制独立模块到ai-module，正在适配现有LocalAuth/班级/已发布课程资料。真实调用关闭，未验收；原工作区、账号、数据库保留。下一步完成聊天SSE/取消/用量/教师主题/回归验证后再写通过。
+
 > **2026-10-28 更新日志归档。** 用户要求上传GitHub并将本轮总结放入更新日志文件夹。仓库新增“更新日志/README.md”索引、“更新日志/2026-10-28-商业界面与AI对话预览.md”，及日期子目录内的本项目三种配色、桌面/手机对话截图与真实HTTP/UI模拟两类验证记录。无口令、令牌、真实学生数据或数据库。继续使用design/commercial-preview和草稿PR #5，未合并main、未替换主界面、未部署；后续先看本轮日志再等用户确定外观。
 > **2026-10-28 外观试版，待用户选择。** 用户认可基本框架，要求商业化视觉、参考截图和主流AI对话布局。新任务分支design/commercial-preview基于feature/core-questionnaires@2f493d6；新增frontend/design-preview.html、frontend/src/preview/和预览验证文档，原App/Core/后台/共享契约未改变。入口http://127.0.0.1:5173/design-preview.html，现有模拟账号登录，内存路由复用原业务。三种可切外观：紫蓝商业/深绿专业/石墨科技。对话有窄导航、会话列表、欢迎/建议问题、底部输入、失败重试/复制/停止。AI真实接口仍503，不制造回答。
 >
