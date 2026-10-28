@@ -1,3 +1,7 @@
+> **最新接续：2026-10-28 前端第二轮细化。** 用户同意继续学习平台设计。plugin/index.php、profile.php、reports.php、ui.js、styles.css增加可填写题筛选、未填题定位、矩阵分项进度、教师已有答案筛选，压缩课程与手机首屏。实际verify：11/11、25/25与数据库断言通过；浏览器7/18题切换、未填题聚焦、答案筛选恢复和375无横向溢出通过，证据moodle-sample/verification/2026-10-28-focus.md。缓存须运行work/runtime/php work/moodle/admin/cli/purge_caches.php（相对moodle-sample）。保持原React/Node与共享契约不变，任务分支prototype/moodle-minimal/草稿PR2，未上线、未合并。启动及未测边界见下文。新对话先读本段和UI_DESIGN.md，从已有插件继续。
+
+---
+
 > **最新接续：2026-10-28 学习平台界面交互与布局。** 用户要求去掉面向使用者的Moodle名称，统一叫“学习平台”；核心技术与第三方许可在技术资料中保留。任务分支`prototype/moodle-minimal`，草稿PR #2仍依赖`backend/oss-foundations`。原React/Node、共享契约v0.2.0不变。
 >
 > `moodle-sample/plugin`完善任务中心真实作业/画像状态、课程搜索与批次筛选，画像7题填写进度/题目导航/未保存提醒/冲突提示，教师画像搜索、展开和手机布局。校验失败保留其他有效输入。登录页及学生/教师主要流程采用“学习平台”品牌：`scripts/branding.php`以站点设置与语言覆盖，不改核心，`plugin/branding.css`负责登录样式，`scripts/sample.py start`同步配置。仍只接受模拟数据，正式规则和11题题型未定。

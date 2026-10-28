@@ -14,7 +14,7 @@ foreach ($courses as $course) {
     foreach (get_fast_modinfo($course)->instances['assign'] ?? [] as $cm) { if ($cm->uservisible) { $published++; } }
 }
 local_preclass_sample_header('我的课前任务');
-echo '<div class="pcs-intro"><div><p class="pcs-eyebrow">环境评价与管理</p><h3>让每一次课前准备，都有迹可循。</h3><p>'.($teaching ? '从下方选择课程，查看学生的作业与画像草稿。' : '从下方选择课程，继续填写画像或完成文字作业。').'</p></div><div class="pcs-stats"><div><strong>'.count($courses).'</strong><span>我的课程</span></div><div><strong>'.$published.'</strong><span>已发布作业</span></div></div></div>';
+echo '<div class="pcs-intro"><div><p class="pcs-eyebrow">环境评价与管理</p><h3>课程概览</h3><p>'.($teaching ? '从下方选择课程，查看学生的作业与画像草稿。' : '从下方选择课程，继续填写画像或完成文字作业。').'</p></div><div class="pcs-stats"><div><strong>'.count($courses).'</strong><span>我的课程</span></div><div><strong>'.$published.'</strong><span>已发布作业</span></div></div></div>';
 echo '<div class="pcs-toolbar" data-course-tools hidden><label>查找课程<input type="search" data-course-search placeholder="输入课程或班级名称"></label><label>教学批次<select data-course-category><option value="">全部批次</option>';
 foreach ($categories as $id=>$name) { echo '<option value="'.(int)$id.'">'.s($name).'</option>'; }
 echo '</select></label><span class="pcs-muted" data-course-count role="status"></span></div>';
@@ -37,7 +37,7 @@ foreach ($courses as $course) {
             $action = $submitted ? '查看已提交答卷' : ($draft ? '继续文字作答' : '开始文字作答');
             $tone = $submitted ? ' pcs-badge-success' : ' pcs-badge-warm';
         }
-        echo '<div class="pcs-task"><div class="pcs-task-title"><span class="pcs-badge'.$tone.'">'.s($status).'</span><h4>'.s($cm->name).'</h4></div><p class="pcs-muted">文字作业 · 评价体系待配置</p>'.html_writer::link(new moodle_url('/mod/assign/view.php', ['id'=>$cm->id]), s($action).local_preclass_sample_icon('arrow'), ['class'=>'pcs-button']).'</div>';
+        echo '<div class="pcs-task"><div class="pcs-task-title"><span class="pcs-badge'.$tone.'">'.s($status).'</span><h4>'.s($cm->name).'</h4></div><p class="pcs-muted">文字作业 · 评价体系待配置</p>'.html_writer::link(new moodle_url('/mod/assign/view.php', ['id'=>$cm->id]), s($action).local_preclass_sample_icon('arrow'), ['class'=>'pcs-button'.(!$teacher && $submitted ? ' pcs-button-secondary' : '')]).'</div>';
     }
     if (!$visible) { echo '<div class="pcs-task pcs-task-empty"><h4>作业尚未发布</h4><p class="pcs-muted">'.($teacher ? '作业发布后将显示在这里。' : '当前可以先填写课前画像，作业发布后将显示在这里。').'</p></div>'; }
     echo '<div class="pcs-profile-entry">'.local_preclass_sample_icon('profile').'<div><strong>课前学生画像</strong>';

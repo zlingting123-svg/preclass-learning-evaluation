@@ -80,6 +80,7 @@ foreach($questions as $q) {
 echo '<form id="pcs-profile-form" method="post" data-unsaved="'.($error?'true':'false').'" action="'.s($PAGE->url->out(false)).'">';
 echo '<input type="hidden" name="sesskey" value="'.s(sesskey()).'">';
 echo '<input type="hidden" name="expectedversion" value="'.(int)($conflict ? $expected : ($record->version??0)).'">';
+echo '<div class="pcs-form-tools" data-profile-tools hidden><label class="pcs-toggle"><input type="checkbox" data-editable-only checked>只看可填写题（7题）</label><button type="button" class="pcs-button pcs-button-secondary" data-next-empty>前往未填题</button><span class="pcs-muted" data-question-view role="status"></span></div>';
 echo '<div class="pcs-form-layout"><aside class="pcs-form-sidebar"><div class="pcs-progress-panel"><strong>我的填写进度</strong><p data-progress-text>已填写 '.$filled.' / 7 题</p><progress data-progress value="'.$filled.'" max="7" aria-label="已填写题数"></progress><small>仅表示填写情况，不代表成绩。量表可分次补充。</small></div><details class="pcs-question-nav" open><summary>题目导航</summary><nav aria-label="画像题目导航">';
 foreach($questions as $q) {
     echo '<a href="#question-'.s($q['id']).'" data-nav-question="'.s($q['id']).'" class="'.($q['type']===null?'pcs-nav-pending':'').'" aria-label="第'.$q['number'].'题：'.s($q['prompt']).($q['type']===null?'，待确认':'').'">'.$q['number'].'</a>';
@@ -97,7 +98,7 @@ foreach ($questions as $q) {
     } else if ($q['type']==='text') {
         echo '<label for="'.s($qid).'">选填文本</label><textarea maxlength="4000" id="'.s($qid).'" name="answers['.s($qid).']" placeholder="在这里写下你的回答">'.s(is_string($value)?$value:'').'</textarea><small class="pcs-muted">最多4000字</small>';
     } else if ($q['type']==='matrix_scale') {
-        echo '<p class="pcs-muted">各项可选填，未填写的项目不会按0分处理。</p><div class="pcs-matrix">';
+        echo '<p class="pcs-muted">各项可选填，未填写的项目不会按0分处理。<span data-matrix-progress></span></p><div class="pcs-matrix">';
         foreach ($q['rows'] as $row) {
             $key=$qid.'-'.$row['id'];
             echo '<label for="'.s($key).'">'.s($row['label']).'<select id="'.s($key).'" name="answers['.s($qid).']['.s($row['id']).']"><option value="">未填写</option>';

@@ -13,17 +13,52 @@
             const state = form.querySelector('[data-save-state]');
             const savedLabel = state.textContent;
             const questions = [...form.querySelectorAll('[data-editable="true"]')];
+            const isFilled = question => [...question.querySelectorAll('textarea, select, input')].some(input =>
+                input.type === 'checkbox' ? input.checked : input.value.trim() !== '');
+            const viewTools = form.querySelector('[data-profile-tools]');
+            viewTools.hidden = false;
+            const editableOnly = viewTools.querySelector('[data-editable-only]');
+            const nextEmpty = viewTools.querySelector('[data-next-empty]');
+            const applyView = () => {
+                form.querySelectorAll('[data-editable="false"]').forEach(question => { question.hidden = editableOnly.checked; });
+                form.querySelectorAll('.pcs-nav-pending').forEach(link => { link.hidden = editableOnly.checked; });
+                form.querySelectorAll('.pcs-section').forEach(heading => {
+                    let item = heading.nextElementSibling;
+                    let visible = false;
+                    while (item && !item.classList.contains('pcs-section')) {
+                        if (item.matches('[data-editable]') && !item.hidden) visible = true;
+                        item = item.nextElementSibling;
+                    }
+                    heading.hidden = !visible;
+                });
+                viewTools.querySelector('[data-question-view]').textContent = editableOnly.checked ? '显示7题 · 11题待确认，可取消筛选查看' : '显示全部18题';
+            };
+            editableOnly.addEventListener('change', applyView);
+            nextEmpty.addEventListener('click', () => {
+                const question = questions.find(question => !isFilled(question));
+                if (question) {
+                    question.scrollIntoView({behavior: 'instant', block: 'start'});
+                    question.querySelector('textarea, select, input').focus({preventScroll: true});
+                }
+            });
+            applyView();
             const update = () => {
                 let count = 0;
                 questions.forEach(question => {
-                    const filled = [...question.querySelectorAll('textarea, select, input')].some(input =>
-                        input.type === 'checkbox' ? input.checked : input.value.trim() !== '');
+                    const filled = isFilled(question);
+                    const matrix = question.querySelector('[data-matrix-progress]');
+                    if (matrix) {
+                        const selects = [...question.querySelectorAll('select')];
+                        matrix.textContent = ` 已填写 ${selects.filter(select => select.value !== '').length} / ${selects.length} 项`;
+                    }
                     if (filled) count++;
                     const link = form.querySelector(`[data-nav-question="${question.dataset.question}"]`);
                     link.classList.toggle('pcs-nav-filled', filled);
                 });
                 form.querySelector('[data-progress]').value = count;
                 form.querySelector('[data-progress-text]').textContent = `已填写 ${count} / ${questions.length} 题`;
+                nextEmpty.disabled = count === questions.length;
+                nextEmpty.textContent = count === questions.length ? '7题均已有填写' : '前往未填题';
                 dirty = form.dataset.unsaved === 'true' || fingerprint() !== initial;
                 state.textContent = dirty ? '有修改尚未保存' : savedLabel;
                 state.classList.toggle('pcs-unsaved', dirty);
@@ -68,6 +103,16 @@
         if (reportTools) {
             reportTools.hidden = false;
             const rows = [...root.querySelectorAll('[data-report-row]')];
+            const reading = root.querySelector('[data-reading-options]');
+            reading.hidden = false;
+            const answeredOnly = reading.querySelector('[data-answered-only]');
+            answeredOnly.addEventListener('change', () => {
+                rows.forEach(row => {
+                    const answers = [...row.querySelectorAll('[data-answer-empty]')];
+                    answers.forEach(answer => { answer.hidden = answeredOnly.checked && answer.dataset.answerEmpty === 'true'; });
+                    row.querySelector('[data-no-answers]').hidden = !answeredOnly.checked || answers.some(answer => !answer.hidden);
+                });
+            });
             const search = reportTools.querySelector('[data-report-search]');
             const expand = reportTools.querySelector('[data-expand-reports]');
             const visibleDetails = () => rows.filter(row => !row.hidden).map(row => row.querySelector('details'));
