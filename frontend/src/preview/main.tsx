@@ -254,6 +254,7 @@ function PreviewLogin({ done }: { done: (u: User) => void }) {
           <a className="pv-original" href="/">
             返回当前版本
           </a>
+          <a href="/admin/login">服务管理员入口</a>
         </div>
       </main>
     </div>

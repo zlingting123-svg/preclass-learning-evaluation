@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-28",
+  "afterProcessRestart": true,
+  "mode": "mock",
+  "apiConfigVersion": 2,
+  "serverConfigVersion": 1,
+  "dailyRequests": 20,
+  "maintenance": false,
+  "sessionHours": 8,
+  "checks": [
+    "admin login",
+    "persisted API configuration restored",
+    "server settings restored",
+    "audit metadata retained",
+    "no credential or transcript in response"
+  ],
+  "paidCalls": 0
+}

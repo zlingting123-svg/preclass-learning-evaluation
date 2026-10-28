@@ -1,3 +1,15 @@
+> **2026-10-28 服务管理端已完成本机验证。** feature/service-admin接续本地b48b080；用户澄清管理端仅全站账户/忘记账号恢复与服务器/API设置，不搬入课程知识、问卷详情、班级统计/教学导出。新增backend/admin.ts、admin-settings.ts、admin-bootstrap.ts、shared/admin.ts、前端/admin登录/概览/账户/API/服务器/用量/审计。专用service_admin随机口令只在backend/work/platform-sample/服务管理员账号.txt；sample.py start幂等保留账号。管理员创建受控CLI，网页只创建师生；无永久删除。
+>
+> 认证新增account_control版本快照，每次认证检查停用/撤销；账户修改、改密、撤销立即使旧登录失效。真实角色从user主记录读，不能自停或网页提升管理员。API设置仅mock/环境变量名引用，闲置时应用，持久化在主库并在重启加载。服务器维护模式/后续会话时长可持久设置。管理DTO没有课程正文/问答/密码/令牌，AI对话仍不持久化。
+>
+> 实际结果：backend check/build、52项回归和smoke；frontend check/build与3项生产限制通过。CUA专用管理员登录、按姓名找回001001、账户编辑入口、API次数20→21保存/重读→恢复20、服务器维护关闭/会话8小时保存、操作日志已查看。实际stop/start保留账号、API版本2与服务器版本1；admin-runtime诊断通过。当前是真实HTTP+模拟模型，不是付费API/云/整站并发验收。375宽度账户/API页无整页横向溢出，控制台无warn/error。截图、管理文档、浏览器最终检查见docs/integration/2026-10-28-服务管理端.md及integration/verification/2026-10-28-admin-*。
+>
+> 运行仍SAMPLE_BACKEND_PORT=3002 SAMPLE_FRONTEND_PORT=5174 python3 integration/sample.py start；管理登录/admin/login，师生与预览路由保留。注意旧的“管理员无页面”记录已被本轮替代。后续核对新分支、用户范围与真实配置条件，不把UI配置保存当成真实余额预警通知/300并发或生产认证完成；不自动上传秘密/合并main/部署。
+
+> 管理端范围确认：用户要求只管理全站账户与服务器/API设置，不看课程知识、问卷内容、班级教学统计。已实现backend/admin.ts、admin-settings.ts、认证账户版本撤销、前端/admin各页面；管理员仅受控CLI创建，网页只创建师生账户。原课程导出未搬入管理端。测试与浏览器验证进行中，不宣称完成。
+
+> 2026-10-28 服务管理端进行中：用户明确管理端只负责全站人员账户找回/管理与服务器/API配置，课程知识、问卷详情及班级教学导出继续在师生端。新feature/service-admin基于本地b48b080。正在新增独立/admin登录、账户生命周期、维护/会话设置、模拟API配额与池设置、用量及操作日志。真实API关闭，尚未验收。
+
 > **2026-10-28 AI接入已本机验证。** 分支integration/ai-course-assistant基于同事design/commercial-preview@61751cc；位置为当前preclass-ai-integration（独立克隆，不覆盖旧工作区）。已读取更新日志和AI接口交接，保留主问卷路由、商业预览及三主题，接入现有学生聊天、教师AI使用统计入口。backend/src/ai.ts复用LocalAuth/Service.classAccess，已发布同班资料进入词项基线；ai-module来自独立fc125e8，仅元数据账本、幂等、取消、350/600模拟容量保留。真实模型关闭，generate/insights仍未接入。
 >
 > 验证：backend check/build、43/43测试及smoke；frontend check/build与3项生产限制；复制AI包18/18测试。CUA实际登录现有学生并从主页面及商业预览发送，来源/token更新；无关问题拒答且调用不增长；网页停止显示未知用量；教师看到本班粗主题4次，无个体问题。375px无横向溢出，桌面/手机/教师截图及JSON见integration/verification/2026-10-28-ai-*。开发热更新曾触发预览重复createRoot警告，已添加dispose卸载，最终日志仅留3条旧HMR记录、未见后续新增，详见验证记录。未运行整站300/500、真实DeepSeek、云、多副本或真机。

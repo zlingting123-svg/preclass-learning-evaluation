@@ -25,11 +25,11 @@ export function LoginPage() {
       const session = await api.login({ username, password })
       setSession(session)
       const home =
-        session.user.role === 'teacher' || session.user.role === 'admin'
+        session.user.role === 'admin' ? '/admin' : session.user.role === 'teacher'
           ? '/teacher/overview'
           : '/student/assignments'
       const from = (location.state as { from?: unknown } | null)?.from
-      const prefix = session.user.role === 'student' ? '/student/' : '/teacher/'
+      const prefix = session.user.role === 'admin' ? '/admin' : session.user.role === 'student' ? '/student/' : '/teacher/'
       navigate(typeof from === 'string' && from.startsWith(prefix) ? from : home, { replace: true })
     } catch (err) {
       setError(err instanceof ApiError ? err.message : '登录失败，请稍后重试')
@@ -73,6 +73,7 @@ export function LoginPage() {
             {submitting ? '登录中…' : '登录'}
           </button>
         </form>
+        <p style={{marginTop:24,fontSize:12}}><a href="/admin/login">服务管理员登录 →</a></p>
         {API_MODE === 'mock' && (
           <div className="card" style={{ marginTop: 16 }}>
             <h3>演示账号（仅演示模式）</h3>

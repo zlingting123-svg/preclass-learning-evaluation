@@ -4,9 +4,11 @@ import { z } from 'zod';
 import type { AuthSession, Role, User } from '../../shared/contracts.js';
 import type { Store } from './store.js';
 import { ensure } from './errors.js';
+import { serverSettings } from './admin-settings.js';
 
 export interface Account { user: User; username: string; passwordHash: string }
-interface Session { userId: string; expiresAt: string }
+export interface AccountControl { disabled:boolean; version:number }
+interface Session { userId: string; expiresAt: string; authVersion?:number }
 const digest = (token: string) => createHash('sha256').update(token).digest('hex');
 export interface AuthProvider {
   login(input: unknown): Promise<AuthSession>;
@@ -43,10 +45,14 @@ export class LocalAuth implements AuthProvider {
     const account = this.store.get<Account>('account', username);
     const valid = await bcrypt.compare(password, account?.passwordHash ?? this.dummyHash);
     ensure(valid && account && Buffer.byteLength(password) <= 72, 401, 'UNAUTHENTICATED', '账号或口令错误');
+    const current = this.store.get<Account>('account', username);
+    const user = current && this.store.get<User>('user', current.user.id);
+    const control = user && this.store.get<AccountControl>('account_control', user.id);
+    ensure(current?.passwordHash === account.passwordHash && user && !control?.disabled, 401, 'UNAUTHENTICATED', '账号或口令错误，或账号已停用');
     const accessToken = randomBytes(32).toString('base64url');
-    const expiresAt = new Date(this.now() + 8 * 60 * 60 * 1000).toISOString();
-    this.store.put<Session>('session', digest(accessToken), { userId: account.user.id, expiresAt });
-    return { user: account.user, accessToken, expiresAt };
+    const expiresAt = new Date(this.now() + serverSettings(this.store).sessionHours * 60 * 60 * 1000).toISOString();
+    this.store.put<Session>('session', digest(accessToken), { userId: user.id, expiresAt, authVersion:control?.version??0 });
+    return { user, accessToken, expiresAt };
   }
   authenticate(token: string): User {
     const session = this.store.get<Session>('session', digest(token));
@@ -56,6 +62,8 @@ export class LocalAuth implements AuthProvider {
     }
     const user = this.store.get<User>('user', session.userId);
     ensure(user, 401, 'UNAUTHENTICATED', '账号不可用');
+    const control=this.store.get<AccountControl>('account_control',user.id);
+    ensure(!control?.disabled && (session.authVersion??0)===(control?.version??0),401,'SESSION_REVOKED','登录已被管理员撤销，请重新登录');
     return user;
   }
   logout(token: string): void { this.store.remove('session', digest(token)); }

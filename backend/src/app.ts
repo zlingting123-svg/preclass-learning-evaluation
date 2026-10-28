@@ -1,3 +1,5 @@
+import { adminRoutes } from './admin.js';
+import { serverSettings } from './admin-settings.js';
 import { aiRoutes, type CourseAi } from './ai.js';
 import express, { type ErrorRequestHandler, type Request, type Response } from 'express';
 import helmet from 'helmet';
@@ -33,11 +35,21 @@ export function createApp(service: Service, auth: AuthProvider, ai?: CourseAi) {
   app.use(express.json({ limit: '2mb', strict: true }));
   const ok = (res: Response, data: unknown) => res.json({ ok: true, data, requestId: res.locals.requestId });
   app.get('/api/v1/health', (_req, res) => ok(res, { contractVersion: CONTRACT_VERSION, storage: 'local-sqlite', auth: 'local-bcrypt', productionReady: false }));
-  app.post('/api/v1/auth/login', ...loginLimiters(), async (req, res) => ok(res, await auth.login(req.body)));
+  app.post('/api/v1/admin/login', ...loginLimiters(), async (req,res)=>{
+    const session=await auth.login(req.body);
+    if(session.user.role!=='admin'){auth.logout(session.accessToken);ensure(false,403,'ADMIN_REQUIRED','请使用专用管理员账户');}
+    ok(res,session);
+  });
+  app.post('/api/v1/auth/login', ...loginLimiters(), async (req,res)=>{
+    const session=await auth.login(req.body);
+    if(serverSettings(service.store).maintenance&&session.user.role!=='admin'){auth.logout(session.accessToken);ensure(false,503,'MAINTENANCE','服务维护中，请稍后再登录');}
+    ok(res,session);
+  });
   app.use('/api/v1', (req, res, next) => {
     const header = req.get('authorization');
     ensure(header && header.startsWith('Bearer ') && header.length <= 200, 401, 'UNAUTHENTICATED', '请登录');
-    res.locals.token = header.slice(7); res.locals.user = auth.authenticate(res.locals.token); next();
+    res.locals.token = header.slice(7); res.locals.user = auth.authenticate(res.locals.token);
+    ensure(!serverSettings(service.store).maintenance||res.locals.user.role==='admin'||['/auth/logout','/auth/me'].includes(req.path),503,'MAINTENANCE','服务维护中，请稍后再试'); next();
   });
   const user = (res: Response): User => res.locals.user;
   const param = (req: Request) => id.parse(req.params.id);
@@ -46,6 +58,7 @@ export function createApp(service: Service, auth: AuthProvider, ai?: CourseAi) {
     const { limit, cursor } = pagination(req); return ok(res, page(items, limit, cursor));
   };
   app.get('/api/v1/auth/me', (_req, res) => ok(res, user(res)));
+  adminRoutes(app, service, auth, ai);
   aiRoutes(app, service, ai);
   questionnaireRoutes(app,service,ok);
   app.post('/api/v1/auth/logout', (_req, res) => { auth.logout(res.locals.token); ok(res, { success: true }); });

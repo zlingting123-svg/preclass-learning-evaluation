@@ -42,6 +42,7 @@ def start():
         if not (ROOT/name/'node_modules').exists():run([npm,'ci'],ROOT/name)
         run([npm,'run','build'],ROOT/name)
     run([npm,'run','sample:seed'],ROOT/'backend')
+    subprocess.run([npm,'run','admin:bootstrap'],cwd=ROOT/'backend',env={**os.environ,'DB_PATH':str(WORK/'sample.sqlite')},check=True)
     processes={}
     for name,args,cwd,extra in [
         ('backend',[node,str(ROOT/'backend/dist/backend/src/server.js')],ROOT/'backend',{'DB_PATH':str(WORK/'sample.sqlite'),'HOST':'127.0.0.1','PORT':str(API_PORT),'AI_MODE':'mock','DEV_FRONTEND_ORIGIN':f'http://127.0.0.1:{WEB_PORT}'}),

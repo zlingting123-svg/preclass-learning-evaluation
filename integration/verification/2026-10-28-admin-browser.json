@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-28",
+  "scope": "local service administration; synthetic accounts and mock AI",
+  "backendTests": 52,
+  "frontendCheckAndBuild": "pass",
+  "backendSmoke": "pass",
+  "productionConfigChecks": 3,
+  "browser": "CUA",
+  "viewportChecks": [
+    1280,
+    375
+  ],
+  "checks": [
+    "dedicated administrator login",
+    "search forgotten username by display name",
+    "account editor controls",
+    "API save and re-read, then restore original 20 mock requests",
+    "server settings save: maintenance false and session 8 hours",
+    "operation audit entries",
+    "375px accounts and API pages have document width 375",
+    "no console error or warning in tested admin tab",
+    "runtime configuration preserved after actual process restart"
+  ],
+  "teachingDataInAdmin": false,
+  "transcriptStored": false,
+  "paidCalls": 0,
+  "limits": [
+    "not production or cloud deployment",
+    "not real DeepSeek or balance notification validation",
+    "not physical phone or whole-site 300/500 load validation",
+    "password reset, disable and session revocation tested in isolated HTTP fixtures, not performed on existing sample users through browser"
+  ]
+}

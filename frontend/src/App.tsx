@@ -1,3 +1,5 @@
+import { AdminApp } from "./pages/admin/AdminApp";
+import { AdminLogin } from "./pages/admin/AdminLogin";
 import { useEffect } from "react";
 import {
   BrowserRouter,
@@ -6,6 +8,7 @@ import {
   Route,
   Routes,
   useNavigate,
+  useLocation,
 } from "react-router-dom";
 import { getCurrentUser, setUnauthorizedHandler } from "./services/api";
 import { Layout } from "./components/Layout";
@@ -21,10 +24,11 @@ import {
 } from "./pages/Core";
 function AuthBridge() {
   const navigate = useNavigate();
+  const location = useLocation();
   useEffect(() => {
-    setUnauthorizedHandler(() => navigate("/login", { replace: true }));
+    setUnauthorizedHandler(() => navigate(location.pathname.startsWith("/admin")?"/admin/login":"/login", { replace: true }));
     return () => setUnauthorizedHandler(null);
-  }, [navigate]);
+  }, [navigate,location.pathname]);
   return null;
 }
 function RequireRole({ teacher = false }: { teacher?: boolean }) {
@@ -39,6 +43,13 @@ export function App() {
       <AuthBridge />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminApp />} />
+        <Route path="/admin/accounts" element={<AdminApp tab="accounts" />} />
+        <Route path="/admin/api" element={<AdminApp tab="api" />} />
+        <Route path="/admin/server" element={<AdminApp tab="server" />} />
+        <Route path="/admin/usage" element={<AdminApp tab="usage" />} />
+        <Route path="/admin/audit" element={<AdminApp tab="audit" />} />
         <Route element={<RequireRole />}>
           <Route element={<Layout />}>
             <Route path="/" element={<CoreHome />} />

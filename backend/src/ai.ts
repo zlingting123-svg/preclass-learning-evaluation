@@ -4,18 +4,22 @@ import { dirname, resolve } from 'node:path';
 import { once } from 'node:events';
 import type { Express, Response } from 'express';
 import { z } from 'zod';
-import { Gateway, Ledger, KeywordKnowledge, MockProvider, ModuleError, readConfig, type Principal, type Emit, type Policy } from 'course-ai-module';
+import { Gateway, Ledger, KeywordKnowledge, MockProvider, ModuleError, readConfig, configSchema, type Principal, type Emit, type Policy } from 'course-ai-module';
 import type { AuthProvider } from './auth.js';
 import { Service } from './service.js';
 import type { User } from '../../shared/contracts.js';
 import type { CourseMaterial } from '../../shared/learning.js';
 import { AppError, ensure } from './errors.js';
+import type { ApiSettings } from '../../shared/admin.js';
+import type { ManagedApi } from './admin-settings.js';
 
 /** Host sessions and class membership remain authoritative. No demo token or identity bridge. */
 export function createCourseAi(core: Service, auth: AuthProvider, options: {
   ledgerPath: string; fingerprintKey: string; configPath: string; policy?: Partial<Policy>; delayMs?: number;
 }) {
-  const config = readConfig(options.configPath);
+  let config = readConfig(options.configPath);
+  const persisted=core.store.get<ApiSettings>("ai_admin_settings","current");
+  if(persisted) config=managedConfig(config,persisted);
   ensure(config.mode === 'mock', 503, 'AI_LIVE_DISABLED', '真实模型接入尚未启用');
   const store = new Ledger(options.ledgerPath), sessions = new WeakMap<Principal, string>();
   const policy = { ...config.policy, ...options.policy };
@@ -47,7 +51,26 @@ export function createCourseAi(core: Service, auth: AuthProvider, options: {
       return new KeywordKnowledge(sources, { [input.courseId]: rule }).retrieve(input);
     } },
   }, store, policy, config.deployments.map(d => ({ ...d, provider: new MockProvider('ok', options.delayMs ?? 800) })), options.fingerprintKey);
-  return { gateway, store, mode: 'mock' as const, close: () => store.close() };
+  return { gateway, store, mode: 'mock' as const, close: () => store.close(),
+    management() {
+      const version=core.store.get<ApiSettings>('ai_admin_settings','current')?.version??0;
+      const p=gateway.policy;
+      return {version,enabled:p.enabled,dailyRequests:p.dailyRequests,dailyUserBudgetMicros:p.dailyUserBudgetMicros,monthlyBudgetMicros:p.monthlyBudgetMicros,maxOutputTokens:p.maxOutputTokens,maxQueue:p.maxQueue,queueTimeoutMs:p.queueTimeoutMs,requestTimeoutMs:p.requestTimeoutMs,topicsMinCount:p.topicsMinCount,warningMicros:config.balance.warningMicros,stopMicros:config.balance.stopMicros,deployments:config.deployments.map(d=>({...d}))};
+    },
+    configure(value:ManagedApi,persist:()=>void) {
+      // Apply only while quiescent: no active/queued request loses its pool or reservation.
+      ensure(!store.rows().some(r=>r.state==='reserved'||r.state==='calling'),409,'AI_BUSY','尚有AI请求，请等待完成后保存配置');
+      const next=managedConfig(config,value);
+      const deployments=next.deployments.map(d=>({...d,provider:new MockProvider('ok',options.delayMs??800)}));
+      persist();
+      Object.assign(gateway.policy,next.policy);
+      gateway.deployments.splice(0,gateway.deployments.length,...deployments);
+      config=next;
+    },
+  };
+}
+function managedConfig(base:ReturnType<typeof readConfig>,value:ManagedApi) {
+  return configSchema.parse({...base,policy:{...base.policy,enabled:value.enabled,dailyRequests:value.dailyRequests,dailyUserBudgetMicros:value.dailyUserBudgetMicros,monthlyBudgetMicros:value.monthlyBudgetMicros,maxOutputTokens:value.maxOutputTokens,maxQueue:value.maxQueue,queueTimeoutMs:value.queueTimeoutMs,requestTimeoutMs:value.requestTimeoutMs,topicsMinCount:value.topicsMinCount},balance:{...base.balance,warningMicros:value.warningMicros,stopMicros:value.stopMicros},deployments:value.deployments});
 }
 export type CourseAi = ReturnType<typeof createCourseAi>;
 
