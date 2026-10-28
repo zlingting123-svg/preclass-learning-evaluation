@@ -1,3 +1,5 @@
+> **GitHub同步完成**：实现提交c60cc6a已推送origin/integration/learning-platform；草稿PR #3 https://github.com/zlingting123-svg/preclass-learning-evaluation/pull/3，目标backend/oss-foundations，包含原PR2样板成果并迁入React。PR1/PR2保留，main未合并。提交后46个文件范围与本机私密口令扫描通过，无work/node_modules/dist/数据库。远端CI需按PR当前head查验；下方24/27是本机证据，不能替代远端结果。
+
 > **最新接续：2026-10-28 React/Node学习平台集成已实现并本机验证。** 用户明确确认React/Node为集成目标，保留Moodle对照。任务分支integration/learning-platform合入原backend/oss-foundations@22be3d4与prototype/moodle-minimal@b7047a6，仅接续文档冲突已保留双方记录。新增shared/learning.ts/profile-schema.ts、后台learning.ts及权限路由、React画像/教师阅读/课程材料、深绿布局、显式sample-seed。契约0.3.0兼容旧作业/名单API，未将两个数据库合并。
 >
 > 实际验证：前后端build、后台27/27、smoke、生产配置3/3、显式mock、真实HTTP浏览器24/24通过；最终pageErrors/unexpectedHttp为空。CUA1280/375真实查看；001001保存3题、teacher_a读取相同3题；375画像/教师无溢出，控制台无warn/error。完整证据integration/verification/2026-10-28-learning-platform.md与当日HTTP JSON和screenshots/2026-10-28-platform。新增回归覆盖冲突保留/载入、未保存链接离开提醒、返回页面不被已保存内存缓存遮蔽别处更新、材料发布与HTML文本渲染。未做正式评分、真机/并发/云部署。
