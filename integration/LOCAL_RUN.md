@@ -1,3 +1,15 @@
+## 集成学习平台样板（0.3.0任务分支）
+
+macOS便捷启动：根目录 `python3 integration/sample.py start`，或双击integration/打开学习平台.command。停止：`python3 integration/sample.py stop`。在5173/3001端口空闲时启动；此前独立下载版本若已启动，请先停止对应本机服务。Moodle的8873端口可继续对照。
+
+首次按锁文件安装并构建两个模块，显式初始化到backend/work/platform-sample/sample.sqlite，包含两模拟教师/两学生、春秋批次与同账号跨期、各班导读和两份练习。不覆盖已有模拟数据库；账号和随机口令仅写本机测试账号.txt。不要分享work目录。
+
+手工启动（跨平台源码路径相同，环境变量语法依操作系统）：backend中npm ci、npm run build、npm run sample:seed；设置DB_PATH为work/platform-sample/sample.sqlite后npm start；frontend中npm ci、npm run dev；访问127.0.0.1:5173。Node 24.15+，Python便捷启动器仅在本机macOS验证；本轮不宣称Windows便捷启动验收。
+
+学生001001可填写画像、阅读材料、保存并提交文字作业；教师teacher_a查看A班画像及CSV和答卷。新增画像不计成绩；正式作业报告仍待配置评价体系。模拟账号属于本分支独立数据库，与旧下载和Moodle口令不同。刷新整页需要重登，已成功保存草稿仍在数据库。
+
+---
+
 # 本地集成版启动说明
 
 2026-10-28 当前集成工作区：`C:\Users\96496\Documents\Codex\2026-10-27\01-codex-md-handoff-codex-continue\work\oss-foundations`，分支backend/oss-foundations，契约v0.2.0。在自己的克隆目录使用相同相对命令；下方原项目绝对路径是历史信息。新增批次用后台受控CLI显式配置，见backend/ROSTER.md，没有默认真实班级/账号。前端教师/学生页面可筛选授权/选课批次；创建与加入后自动定位对应班级。验证更新见verification/2026-10-28-cohorts-ci.md。

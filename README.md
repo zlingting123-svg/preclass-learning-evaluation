@@ -1,8 +1,16 @@
+> **2026-10-28 集成任务分支：学习平台 v0.3.0。** 用户确认React/Node为主，移入Moodle样板验证过的布局、画像、课程导读与虚构例题。两个原分支的提交和Moodle目录完整保留，尚未合并main。新增后端权限/版本检查、React画像与教师阅读、材料发布；详情见[集成说明](docs/integration/2026-10-28-learning-platform.md)。本机模拟启动：`python3 integration/sample.py start`，入口http://127.0.0.1:5173；账号仅在`backend/work/platform-sample/测试账号.txt`。此环境不读取或迁移Moodle数据库。
+
 # 课前问答与学习评价系统
 
 公开仓库：https://github.com/zlingting123-svg/preclass-learning-evaluation
 
 两位开发者分别使用Codex，通过GitHub同步代码与接续记录。最多300人同时使用并集中提交，运行一年，经费约5000元，目标Windows/Android/MagicOS/iOS浏览器。
+
+## Moodle最小样板（2026-10-27任务分支）
+
+[Moodle样板启动说明](moodle-sample/README.md)：实际Moodle5.3+、中文界面、两班模拟权限、画像草稿和原生文字作业。当前基于尚未合并的`backend/oss-foundations@4e15d02` / 契约0.2.0新增独立目录，原React/Node业务源码未修改。先读[最新接续](handoff/CODEX_CONTINUE.md)顶部；下文v0.1.1与验证记录保留为原集成历史。
+
+本机运行`python3 moodle-sample/scripts/sample.py start`，师生随机口令只在本地work/private。此样板仅模拟数据，不是云端或正式评分系统。见[本轮验证](moodle-sample/verification/2026-10-27-local.md)。
 
 ## 当前进度
 

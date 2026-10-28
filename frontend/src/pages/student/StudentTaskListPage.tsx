@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import type { ClassInfo } from '@shared/contracts'
+import type { Assignment, ClassInfo } from '@shared/contracts'
 import { api } from '../../services/api'
 import { useAsync } from '../../lib/useAsync'
 import { deadlineText } from '../../lib/format'
 import { EmptyState, ErrorState, LoadingState } from '../../components/ui'
+import { ClassLearning } from '../../components/ClassLearning'
 import { loadPages } from '../../lib/loadPages'
 
 export function StudentTaskListPage() {
@@ -18,11 +19,13 @@ export function StudentTaskListPage() {
   const [classId, setClassId] = useState<string>('')
   const classItems = (classes.data?.items ?? []).filter(c =>
     !cohortId || (cohortId === 'legacy' ? !c.cohortId : c.cohortId === cohortId))
-  const selected = classItems.some(c => c.id === classId) ? classId : classItems[0]?.id ?? ''
+  const today = new Date().toISOString().slice(0, 10)
+  const currentClass = classItems.find(c => classes.data?.cohorts.some(cohort => cohort.id === c.cohortId && cohort.startsOn <= today && cohort.endsOn >= today))
+  const selected = classItems.some(c => c.id === classId) ? classId : currentClass?.id ?? classItems[0]?.id ?? ''
   const assignments = useAsync(
     async () => ({ classId: selected, items: selected
       ? (await loadPages(q => api.listAssignments({ ...q, classId: selected }))).items : [] }),
-    [selected],
+    [selected, classes.data],
   )
 
   const [joinCode, setJoinCode] = useState('')
@@ -53,7 +56,7 @@ export function StudentTaskListPage() {
   if (!classes.data?.items.length) {
     return (
       <div>
-        <h1>我的任务</h1>
+        <p className="eyebrow">每一次思考，都是学习的开始</p><h1>我的任务</h1><p className="page-lead">阅读课程材料，记录学习起点，完成自己的课前准备。</p>
         <EmptyState label="尚未加入任何班级" hint="可输入班级加入码加入班级。" />
         <JoinForm
           joinCode={joinCode}
@@ -68,10 +71,10 @@ export function StudentTaskListPage() {
 
   return (
     <div>
-      <h1>我的任务</h1>
-      <button type="button" onClick={() => { classes.reload(); assignments.reload() }}>刷新任务</button>
+      <p className="eyebrow">每一次思考，都是学习的开始</p><h1>我的任务</h1><p className="page-lead">阅读课程材料，记录学习起点，完成自己的课前准备。</p>
+      <button type="button" onClick={() => { classes.reload() }}>刷新任务</button>
 
-      <div className="card">
+      <div className="card course-filters">
         <div className="field">
           <label htmlFor="studentCohortFilter">教学批次</label>
           <select id="studentCohortFilter" value={cohortId} onChange={e => { setCohortId(e.target.value); setClassId('') }}>
@@ -100,6 +103,8 @@ export function StudentTaskListPage() {
         />
       </div>
 
+      {selected && <ClassLearning key={selected} classId={selected} />}
+      <h2>课前作业</h2>
       {!selected && <EmptyState label="当前筛选下暂无班级" />}
       {selected && (assignments.loading || assignments.data?.classId !== selected) && !assignments.error && <LoadingState label="加载作业…" />}
       {selected && assignments.error && <ErrorState error={assignments.error} onRetry={assignments.reload} />}
@@ -110,14 +115,15 @@ export function StudentTaskListPage() {
   )
 }
 
-function AssignmentList({ items }: { items: { id: string; title: string; deadlineAt: string | null }[] }) {
+function AssignmentList({ items }: { items: Assignment[] }) {
   if (items.length === 0) {
     return <EmptyState label="该班级暂无已发布作业" />
   }
   return (
-    <ul className="list">
+    <ul className="list task-list">
       {items.map((a) => (
         <li key={a.id}>
+          {a.mySubmissionState && <span className={'task-state '+a.mySubmissionState}>{a.mySubmissionState==='submitted'?'已提交':a.mySubmissionState==='draft'?'草稿待提交':'未开始'}</span>}
           <div className="row-between">
             <Link to={`/student/assignments/${a.id}`} style={{ fontWeight: 600 }}>
               {a.title}

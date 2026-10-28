@@ -1,6 +1,8 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { api, clearSession, getCurrentUser } from '../services/api'
+import { BrandMark } from './BrandMark'
 import { DemoBanner } from './DemoBanner'
+import { clearProfileBuffers } from '../pages/learning/StudentProfilePage'
 import { clearBuffers } from '../lib/draftBuffer'
 
 export function Layout() {
@@ -15,6 +17,7 @@ export function Layout() {
     }
     clearSession()
     clearBuffers()
+    clearProfileBuffers()
     navigate('/login', { replace: true })
   }
 
@@ -24,7 +27,7 @@ export function Layout() {
     <div className="app">
       <DemoBanner />
       <header className="topbar">
-        <span className="brand">课前问答与学习评价</span>
+        <span className="brand"><BrandMark /> 学习平台</span>
         <nav className="nav" aria-label="主导航">
           {isTeacher ? (
             <NavLink to="/teacher/overview" className={({ isActive }) => (isActive ? 'active' : '')}>

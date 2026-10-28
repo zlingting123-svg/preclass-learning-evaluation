@@ -339,7 +339,11 @@ try {
     // Remove only the synthetic legacy enrollment to exercise an empty filter.
     const member = store.all('member').find(m => m.classId === classInfo.id && m.studentId === student.id);
     store.remove('member', member.id);
-    await studentPage.getByRole('button', { name: '刷新任务', exact: true }).click(); await visible(filter);
+    // Wait for the refresh initiated above to finish before monitoring the empty filter.
+    // Otherwise its already-started spring-class request can be attributed to the later filter change.
+    const refreshed = studentPage.waitForResponse(r => new URL(r.url()).pathname === '/api/v1/assignments' && new URL(r.url()).searchParams.get('classId') === springClass.id);
+    await studentPage.getByRole('button', { name: '刷新任务', exact: true }).click();
+    await refreshed; await visible(studentPage.getByRole('link', { name: springAssignment.title, exact: true }));
     const assignmentRequests = [];
     const capture = request => { if (new URL(request.url()).pathname === '/api/v1/assignments') assignmentRequests.push(request.url()); };
     studentPage.on('request', capture);
@@ -364,6 +368,82 @@ try {
     await teacherPage.unroute('**/api/v1/cohorts*');
     await teacherPage.getByRole('button', { name: '重试', exact: true }).click();
     await visible(teacherPage.getByLabel('新班级所属批次', { exact: true }));
+  });
+  await check('画像7/18题筛选、矩阵与多选保存重载，教师按本班查看与导出', async () => {
+    await studentPage.setViewportSize({ width: 1280, height: 900 });
+    await navigate(studentPage, `/student/classes/${classInfo.id}/profile`);
+    await visible(studentPage.getByRole('heading', { name: '课前学生画像', exact: true }));
+    assert.equal(await studentPage.locator('.profile-question').count(), 7);
+    await studentPage.getByLabel('只看可填写题（7题）', { exact: true }).uncheck();
+    assert.equal(await studentPage.locator('.profile-question').count(), 18);
+    await studentPage.getByLabel('只看可填写题（7题）', { exact: true }).check();
+    await studentPage.locator('#profile-02').fill('模拟跨学科专业');
+    await studentPage.locator('#question-profile-07').getByLabel('碳达峰 / 碳中和', { exact: true }).selectOption('3');
+    await studentPage.getByLabel('对环保话题本身感兴趣', { exact: true }).check();
+    await studentPage.getByRole('button', { name: '保存画像草稿', exact: true }).click();
+    await visible(studentPage.getByText('已保存草稿', { exact: true }));
+    assert.equal(store.all('learning_profile').find(d=>d.studentId===student.id && d.classId===classInfo.id).answers['profile-02'], '模拟跨学科专业');
+    await studentPage.getByRole('button', { name: '前往未填题', exact: true }).click();
+    assert.equal(await studentPage.evaluate(()=>document.activeElement.closest('fieldset')?.id),'question-profile-08');
+    await navigate(studentPage, '/student/assignments');
+    await navigate(studentPage, `/student/classes/${classInfo.id}/profile`);
+    assert.equal(await studentPage.locator('#profile-02').inputValue(),'模拟跨学科专业');
+    await studentPage.setViewportSize({width:375,height:900});
+    assert.equal(await studentPage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+    await studentPage.screenshot({path:resolve(screenshots,'profile-react-375.png'),fullPage:true});
+    await navigate(teacherPage, `/teacher/classes/${classInfo.id}/profiles`);
+    await visible(teacherPage.getByRole('button', {name:'查看已保存内容',exact:true}));
+    await teacherPage.getByRole('button', {name:'查看已保存内容',exact:true}).click();
+    await visible(teacherPage.getByText('模拟跨学科专业', {exact:true}));
+    await teacherPage.getByLabel('只看已填写内容', {exact:true}).check();
+    assert.equal(await teacherPage.locator('.profile-answer').count(),3);
+    const downloadPromise=teacherPage.waitForEvent('download');
+    await teacherPage.getByRole('button', {name:'导出本班画像CSV',exact:true}).click();
+    const download=await downloadPromise;const csv=readFileSync(await download.path(),'utf8');
+    assert.ok(csv.includes('模拟跨学科专业'));assert.ok(!csv.includes(password));
+  });
+  await check('画像版本冲突保留本页输入，显式读取服务器版本后恢复保存', async () => {
+    await studentPage.locator('#profile-02').fill('本页未保存的模拟输入');
+    await studentPage.getByRole('link',{name:'← 我的任务',exact:true}).click();
+    await visible(studentPage.getByText('当前有未保存修改，离开前可以先保存。',{exact:true}));
+    assert.ok(studentPage.url().endsWith('/profile'));
+    await studentPage.getByRole('button',{name:'继续填写',exact:true}).click();
+    assert.equal(await studentPage.locator('#profile-02').inputValue(),'本页未保存的模拟输入');
+    const {LearningService}=await backendModule('learning');const learning=new LearningService(service);
+    const draft=learning.myProfile(student,classInfo.id);
+    learning.saveProfile(student,classInfo.id,{schemaVersion:draft.schemaVersion,answers:{...draft.answers,'profile-02':'另一设备模拟内容'},other:draft.other,expectedVersion:draft.version});
+    await studentPage.getByRole('button',{name:'保存画像草稿',exact:true}).click();
+    await visible(studentPage.getByText('另一处已保存了更新版本。当前输入已保留。',{exact:true}));
+    assert.equal(await studentPage.locator('#profile-02').inputValue(),'本页未保存的模拟输入');
+    await studentPage.getByRole('button',{name:'查看服务器草稿',exact:true}).click();
+    await visible(studentPage.getByRole('button',{name:'放弃本页输入并载入服务器版本',exact:true}));
+    await studentPage.getByRole('button',{name:'放弃本页输入并载入服务器版本',exact:true}).click();
+    assert.equal(await studentPage.locator('#profile-02').inputValue(),'另一设备模拟内容');
+    await studentPage.getByRole('button',{name:'保存画像草稿',exact:true}).click();
+    await visible(studentPage.getByText('已保存草稿',{exact:true}));
+    await navigate(studentPage, '/student/assignments');
+    const latest=learning.myProfile(student,classInfo.id);
+    learning.saveProfile(student,classInfo.id,{schemaVersion:latest.schemaVersion,answers:{...latest.answers,'profile-02':'离开后其他设备的新内容'},other:latest.other,expectedVersion:latest.version});
+    await navigate(studentPage, `/student/classes/${classInfo.id}/profile`);
+    await visible(studentPage.locator('#profile-02'));
+    assert.equal(await studentPage.locator('#profile-02').inputValue(),'离开后其他设备的新内容');
+  });
+  await check('教师创建并发布课程材料，学生阅读纯文本而不执行HTML', async () => {
+    await teacherPage.setViewportSize({width:1280,height:900});
+    await navigate(teacherPage, `/teacher/classes/${classInfo.id}`);
+    await teacherPage.getByText('新建课程材料',{exact:true}).click();
+    await teacherPage.getByLabel('材料标题',{exact:true}).fill('模拟课程导读');
+    await teacherPage.getByLabel('材料正文（纯文本）',{exact:true}).fill('模拟导读正文 <script>throw new Error("should-not-execute")</script>');
+    await teacherPage.getByRole('button',{name:'保存材料草稿',exact:true}).click();
+    await visible(teacherPage.getByRole('button',{name:'发布材料',exact:true}));
+    await teacherPage.getByRole('button',{name:'发布材料',exact:true}).click();
+    await visible(teacherPage.getByText('· 已发布',{exact:false}));
+    await navigate(studentPage,'/student/assignments');
+    await studentPage.getByLabel('班级',{exact:true}).selectOption(classInfo.id);
+    await studentPage.getByRole('link',{name:'模拟课程导读',exact:true}).click();
+    await visible(studentPage.getByRole('heading',{name:'模拟课程导读',exact:true}));
+    assert.ok((await studentPage.locator('.reading-text').innerText()).includes('<script>'));
+    assert.equal(await studentPage.locator('.reading-text script').count(),0);
   });
   await check('开发服务器拒绝读取后台数据库、源码与环境文件', async () => {
     for (const path of [dbPath, resolve(project, 'backend/src/store.ts'), resolve(frontend, '.env.production')]) {

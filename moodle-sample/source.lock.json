@@ -1,0 +1,37 @@
+{
+  "checkedOn": "2026-10-27",
+  "projectBase": "4e15d02",
+  "projectBranch": "backend/oss-foundations",
+  "contract": "0.2.0",
+  "files": [
+    {
+      "path": "moodle.tgz",
+      "url": "https://download.moodle.org/download.php/direct/stable503/moodle-latest-503.tgz",
+      "version": "Moodle 5.3+ Build 20261021, githash aa930e2",
+      "sha256": "effd1646b178afd92b87fc130a77ebf5d4574bda0cb3f1c79ffcd003f040a852",
+      "bytes": 98109665
+    },
+    {
+      "path": "postgres.tgz",
+      "url": "https://registry.npmjs.org/@embedded-postgres/darwin-arm64/-/darwin-arm64-18.4.0-beta.17.tgz",
+      "version": "PostgreSQL 18.4; npm wrapper 18.4.0-beta.17",
+      "sha256": "1f68ab0148346d99e045a54497f72fa22f487618c97ca70fa373441d1ab1a4d3",
+      "bytes": 55198393
+    },
+    {
+      "path": "runtime/php",
+      "url": "https://download.herdphp.com/herd-lite/macos/arm64/8.4/php",
+      "version": "PHP 8.4.1, local experiment only",
+      "sha256": "6dc0afca62e9e00d12595a9b28aca2d1ef71ae9dbf75501d0f7880a146dbb0ae",
+      "bytes": 84527296
+    },
+    {
+      "path": "zh_cn.zip",
+      "url": "https://download.moodle.org/download.php/direct/langpack/5.3/zh_cn.zip",
+      "version": "Moodle zh_cn language pack 5.3",
+      "sha256": "8ff927e3bc7cc355c6e2ae5cbf58ffb042b3c55c68b88613caf8eb2ca5fc0c0e",
+      "bytes": 2277087
+    }
+  ],
+  "postgresNpmIntegrity": "sha512-Kg1ZMNFzkVIJs3g4V2UYEc5X005km9rGinxFBH8R1sOU2Rblvz4pt2Uf93Pu8Rk273Ue9HIdrbMPpgUqwjUi0Q=="
+}

@@ -46,7 +46,7 @@ export function TeacherOverviewPage() {
 
   return (
     <div>
-      <h1>班级概览</h1>
+      <p className="eyebrow">教师工作台</p><h1>班级概览</h1><p className="page-lead">从学生的起点出发，安排每一次课前学习。</p>
       <div className="field">
         <label htmlFor="teacherCohortFilter">教学批次</label>
         <select id="teacherCohortFilter" value={cohortId} onChange={e => setCohortId(e.target.value)}>

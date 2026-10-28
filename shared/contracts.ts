@@ -1,5 +1,5 @@
-/** Shared contract v0.2.0 — additive cohorts and controlled roster tooling. */
-export const CONTRACT_VERSION = '0.2.0' as const;
+/** Shared contract v0.3.0 — additive learning profiles and course materials. */
+export const CONTRACT_VERSION = '0.3.0' as const;
 export type ID = string;
 /** UTC ISO 8601; display in Asia/Shanghai. */
 export type ISODateTime = string;
@@ -46,6 +46,8 @@ export interface RubricInfo {
 }
 export type AssignmentState = 'draft' | 'published' | 'closed';
 export interface Assignment {
+  /** Student list response only; derived from the authenticated student, never another user. */
+  mySubmissionState?: 'not_started' | 'draft' | 'submitted';
   id: ID;
   classId: ID;
   title: string;

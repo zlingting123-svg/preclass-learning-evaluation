@@ -5,6 +5,7 @@ import { useAsync } from '../../lib/useAsync'
 import { deadlineText } from '../../lib/format'
 import { AssignmentStateBadge, EmptyState, ErrorState, LoadingState } from '../../components/ui'
 import { JoinCode } from '../../components/JoinCode'
+import { ClassLearning } from '../../components/ClassLearning'
 import { loadPages } from '../../lib/loadPages'
 
 export function TeacherClassPage() {
@@ -42,6 +43,8 @@ export function TeacherClassPage() {
 
       <JoinCode code={classes.data?.items.find(c => c.id === classId)?.joinCode} />
 
+      <ClassLearning key={classId} classId={classId!} teacher />
+      <h2>本班作业</h2>
       {items.length === 0 ? (
         <EmptyState label="暂无作业" hint="点击“新建作业”创建草稿。" />
       ) : (
