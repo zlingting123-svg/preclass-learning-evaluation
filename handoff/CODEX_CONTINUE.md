@@ -4,7 +4,7 @@
 >
 > 下一步：先读取本轮验证记录和最新GitHub状态，再审查账号生命周期方案，补首次/主动改密、管理员受控重置及会话失效；不要恢复旧撤回草稿。名单网页操作者范围、问卷11道未定题型/必填/量表锚点、正式评分规则仍需用户提供；按教学条件逐步推进，不自动迁移Moodle或合并main。本机集成修改说明已写在本机维护文档，未代写同事FRONTEND交付单。
 >
-> CI最新补充：d24aa96首次远端HTTP阶段单次失败且原日志缺少断言；39503bb新增诊断后，远端运行40648068561已完整success，API步骤及日志核实后台22、HTTP21、配置3、mock通过，本机CI=true下21项也通过。首次异常未复现、原因未定，保留记录，不宣称根因已修复；没有删除断言或增加自动重试。Git push连接重置后用同域Git data API上传相同对象、逐层验证SHA并force:false推进原分支，未强推、改权限或记录凭据。后续文档收尾提交不改变39503bb已验证业务源码，实际HEAD及CI以远端为准。
+> CI最终修复补充：39503bb运行40648068561曾完整success，但6d28a1a运行40648409721又暴露分页时序问题（第2页标签短暂配旧页20条）。现已修改TeacherSubmissionsPage，让响应assignmentId/cursor匹配当前查询才展示；补受控延迟与MutationObserver验证整段切页不混用旧列表，本机check/build、配置3项、CI=true HTTP21通过。未删断言、未加自动重试，最终远端结果查当前Actions；最早d24aa96第8项附近的无诊断失败原因仍未定。Git传输失败时以同域Git data API逐层验证SHA、force:false推进，未强推或记录凭据。
 
 > **2026-10-27 22:56本轮收尾：用户明确要求最后5%额度先上传收尾，停止新增功能。** 代码提交d01415d、a939ac9已推送origin/backend/oss-foundations，草稿PR #1：https://github.com/zlingting123-svg/preclass-learning-evaluation/pull/1；main未合并。当前正确工作tree为本聊天work/oss-foundations，原项目工作区backend/cohorts-roster保持不动。新对话继续必须先核对这个任务分支，不把旧目录v0.1.1覆盖回来。
 >

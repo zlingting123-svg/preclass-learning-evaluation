@@ -255,9 +255,30 @@ try {
     await navigate(teacherPage, `/teacher/assignments/${a.id}/submissions`);
     await visible(teacherPage.getByRole('heading', { name: a.title, exact: true }));
     assert.equal(await teacherPage.locator('ul.list > li').count(), 20);
-    await teacherPage.getByRole('button', { name: '下一页', exact: true }).click();
+    await teacherPage.evaluate(() => {
+      window.__paginationMismatches = [];
+      window.__paginationObserver = new MutationObserver(() => {
+        if (document.body.textContent.includes('第 2 页') && document.querySelectorAll('ul.list > li').length !== 1) {
+          window.__paginationMismatches.push(document.querySelectorAll('ul.list > li').length);
+        }
+      });
+      window.__paginationObserver.observe(document.body, { childList: true, subtree: true, characterData: true });
+    });
+    let release, started;
+    const gate = new Promise(done => { release = done; });
+    const inFlight = new Promise(done => { started = done; });
+    await teacherPage.route(`**/api/v1/teacher/assignments/${a.id}/submissions?*`, async route => {
+      started(); await gate; await route.continue();
+    }, { times: 1 });
+    try {
+      await teacherPage.getByRole('button', { name: '下一页', exact: true }).click(); await inFlight;
+      await visible(teacherPage.getByText('加载提交列表…', { exact: true }));
+      assert.equal(await teacherPage.locator('ul.list > li').count(), 0);
+    } finally { release(); }
     await visible(teacherPage.getByText('第 2 页', { exact: true }));
     assert.equal(await teacherPage.locator('ul.list > li').count(), 1);
+    const mismatches = await teacherPage.evaluate(() => { window.__paginationObserver.disconnect(); return window.__paginationMismatches; });
+    assert.deepEqual(mismatches, [], '新页码不得短暂配上旧页答卷');
   });
   await check('后端不可用时明确失败，禁止回退模拟成功', async () => {
     await studentPage.route('**/api/v1/classes*', route => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ ok: false, error: { code: 'SERVICE_UNAVAILABLE', message: '模拟故障注入：接口不可用' }, requestId: 'synthetic-outage' }) }));
