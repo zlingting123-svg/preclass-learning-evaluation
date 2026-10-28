@@ -35,7 +35,7 @@ export function Layout() {
             </NavLink>
           ) : (
             <NavLink to="/student/assignments" className={({ isActive }) => (isActive ? 'active' : '')}>
-              我的任务
+              我的班级
             </NavLink>
           )}
         </nav>

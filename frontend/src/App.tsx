@@ -1,108 +1,74 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { useEffect } from "react";
 import {
   BrowserRouter,
   Navigate,
   Outlet,
   Route,
   Routes,
-  useLocation,
   useNavigate,
-} from 'react-router-dom'
-import { getCurrentUser, setUnauthorizedHandler } from './services/api'
-import { Layout } from './components/Layout'
-import { LoginPage } from './pages/LoginPage'
-import { API_MODE } from './config'
-const DemoStatesPage = lazy(() => import('./pages/DemoStatesPage').then(m => ({ default: m.DemoStatesPage })))
-import { StudentTaskListPage } from './pages/student/StudentTaskListPage'
-import { StudentAnswerPage } from './pages/student/StudentAnswerPage'
-import { StudentReportPage } from './pages/student/StudentReportPage'
-import { TeacherOverviewPage } from './pages/teacher/TeacherOverviewPage'
-import { TeacherClassPage } from './pages/teacher/TeacherClassPage'
-import { TeacherAssignmentEditPage } from './pages/teacher/TeacherAssignmentEditPage'
-import { TeacherSubmissionsPage } from './pages/teacher/TeacherSubmissionsPage'
-import { TeacherReviewPage } from './pages/teacher/TeacherReviewPage'
-
-import { StudentProfilePage } from './pages/learning/StudentProfilePage'
-import { TeacherProfilesPage } from './pages/learning/TeacherProfilesPage'
-import { CourseMaterialPage } from './pages/learning/CourseMaterialPage'
-
-type Role = 'student' | 'teacher' | 'admin'
-
-/** 401 会话失效时跳转登录（携带 expired 标记，登录页显示提示）。 */
+} from "react-router-dom";
+import { getCurrentUser, setUnauthorizedHandler } from "./services/api";
+import { Layout } from "./components/Layout";
+import { LoginPage } from "./pages/LoginPage";
+import {
+  CoreHome,
+  RosterPage,
+  SurveyEditor,
+  SurveyAnswer,
+  SurveyResults,
+  ResponseDetail,
+  Assistant,
+} from "./pages/Core";
 function AuthBridge() {
-  const navigate = useNavigate()
-  const location = useLocation()
+  const navigate = useNavigate();
   useEffect(() => {
-    setUnauthorizedHandler(() => navigate('/login', { state: { expired: true, from: location.pathname }, replace: true }))
-    return () => setUnauthorizedHandler(null)
-  }, [navigate, location.pathname])
-  return null
+    setUnauthorizedHandler(() => navigate("/login", { replace: true }));
+    return () => setUnauthorizedHandler(null);
+  }, [navigate]);
+  return null;
 }
-
-function RequireRole({ allow }: { allow: Role[] }) {
-  const user = getCurrentUser()
-  const location = useLocation()
-  if (!user) {
-    return <Navigate to="/login" state={{ from: location }} replace />
-  }
-  if (!allow.includes(user.role)) {
-    const home = user.role === 'teacher' || user.role === 'admin' ? '/teacher/overview' : '/student/assignments'
-    return <Navigate to={home} replace />
-  }
-  return <Outlet />
+function RequireRole({ teacher = false }: { teacher?: boolean }) {
+  const user = getCurrentUser();
+  if (!user) return <Navigate to="/login" replace />;
+  if (teacher && user.role !== "teacher") return <Navigate to="/" replace />;
+  return <Outlet />;
 }
-
-function HomeRedirect() {
-  const user = getCurrentUser()
-  if (!user) return <Navigate to="/login" replace />
-  return (
-    <Navigate
-      to={user.role === 'teacher' || user.role === 'admin' ? '/teacher/overview' : '/student/assignments'}
-      replace
-    />
-  )
-}
-
 export function App() {
   return (
     <BrowserRouter>
       <AuthBridge />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        {import.meta.env.DEV && API_MODE === 'mock' && <Route path="/demo/states" element={<Suspense fallback={null}><DemoStatesPage /></Suspense>} />}
-
-        <Route element={<RequireRole allow={['student', 'admin']} />}>
+        <Route element={<RequireRole />}>
           <Route element={<Layout />}>
-            <Route path="/student/classes/:classId/profile" element={<StudentProfilePage />} />
-            <Route path="/student/materials/:id" element={<CourseMaterialPage />} />
-            <Route path="/student/assignments" element={<StudentTaskListPage />} />
-            <Route path="/student/assignments/:id" element={<StudentAnswerPage />} />
-            <Route path="/student/report/:submissionId" element={<StudentReportPage />} />
+            <Route path="/" element={<CoreHome />} />
+            <Route path="/student/assignments" element={<CoreHome />} />
+            <Route path="/teacher/overview" element={<CoreHome />} />
+            <Route path="/core/surveys/:id/answer" element={<SurveyAnswer />} />
+            <Route
+              path="/core/classes/:classId/assistant"
+              element={<Assistant />}
+            />
+            <Route path="/core/responses/:id" element={<ResponseDetail />} />
+            <Route element={<RequireRole teacher />}>
+              <Route
+                path="/core/classes/:classId/roster"
+                element={<RosterPage />}
+              />
+              <Route
+                path="/core/classes/:classId/new"
+                element={<SurveyEditor />}
+              />
+              <Route path="/core/surveys/:id/edit" element={<SurveyEditor />} />
+              <Route
+                path="/core/surveys/:id/stats"
+                element={<SurveyResults />}
+              />
+            </Route>
           </Route>
         </Route>
-
-        <Route element={<RequireRole allow={['teacher', 'admin']} />}>
-          <Route element={<Layout />}>
-            <Route path="/teacher/classes/:classId/profiles" element={<TeacherProfilesPage />} />
-            <Route path="/teacher/materials/:id" element={<CourseMaterialPage />} />
-            <Route path="/teacher/overview" element={<TeacherOverviewPage />} />
-            <Route path="/teacher/classes/:classId" element={<TeacherClassPage />} />
-            <Route
-              path="/teacher/classes/:classId/assignments/new"
-              element={<TeacherAssignmentEditPage />}
-            />
-            <Route path="/teacher/assignments/:id/edit" element={<TeacherAssignmentEditPage />} />
-            <Route
-              path="/teacher/assignments/:id/submissions"
-              element={<TeacherSubmissionsPage />}
-            />
-            <Route path="/teacher/submissions/:id" element={<TeacherReviewPage />} />
-          </Route>
-        </Route>
-
-        <Route path="/" element={<HomeRedirect />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
-  )
+  );
 }

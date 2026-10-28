@@ -1,0 +1,38 @@
+{
+  "scope": "local HTTP with synthetic data; not production or load test",
+  "results": [
+    {
+      "name": "真实登录、创建班级、核心入口不展示旧评分/导读",
+      "result": "pass"
+    },
+    {
+      "name": "CSV上传、中文别名识别、前导零预览、确认导入",
+      "result": "pass"
+    },
+    {
+      "name": "教师在线编辑、时间限制、发布",
+      "result": "pass"
+    },
+    {
+      "name": "默认密码登录、问卷可见、单选提交真实持久化",
+      "result": "pass"
+    },
+    {
+      "name": "表一含未提交学生、表二人数及图表、只读答卷",
+      "result": "pass"
+    },
+    {
+      "name": "AI聊天预留交互明确返回未接入，未伪造AI回复",
+      "result": "pass"
+    },
+    {
+      "name": "服务端时长到期拒绝提交（不依赖前端时钟）",
+      "result": "pass"
+    },
+    {
+      "name": "320/375/414/768宽度无页面横向溢出",
+      "result": "pass"
+    }
+  ],
+  "pageErrors": []
+}

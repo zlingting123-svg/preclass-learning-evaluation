@@ -1,5 +1,5 @@
-/** Shared contract v0.3.0 — additive learning profiles and course materials. */
-export const CONTRACT_VERSION = '0.3.0' as const;
+/** Shared contract v0.4.0 — core questionnaires and teacher roster. */
+export const CONTRACT_VERSION = '0.4.0' as const;
 export type ID = string;
 /** UTC ISO 8601; display in Asia/Shanghai. */
 export type ISODateTime = string;
