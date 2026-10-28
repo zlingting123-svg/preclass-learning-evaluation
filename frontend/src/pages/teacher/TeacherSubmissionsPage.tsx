@@ -13,7 +13,8 @@ export function TeacherSubmissionsPage() {
   const [cursors, setCursors] = useState<(string | undefined)[]>([undefined])
   useEffect(() => setCursors([undefined]), [id])
   const cursor = cursors.at(-1)
-  const submissions = useAsync(() => api.listSubmissions(id as string, { cursor }), [id, cursor])
+  const submissions = useAsync(async () => ({ assignmentId: id, cursor,
+    ...await api.listSubmissions(id as string, { cursor }) }), [id, cursor])
 
   const [exporting, setExporting] = useState(false)
   const [exportError, setExportError] = useState<string | null>(null)
@@ -48,6 +49,11 @@ export function TeacherSubmissionsPage() {
   if (assignment.error) return <ErrorState error={assignment.error} />
   if (summary.error) return <ErrorState error={summary.error} onRetry={summary.reload} />
   if (submissions.error) return <ErrorState error={submissions.error} onRetry={submissions.reload} />
+  // A changed cursor renders before useAsync's effect sets loading. Never label
+  // the previous response as the new page during that render.
+  if (submissions.data?.assignmentId !== id || submissions.data?.cursor !== cursor) {
+    return <LoadingState label="加载提交列表…" />
+  }
 
   const a = assignment.data as Assignment
   const s = summary.data as AssignmentSummary

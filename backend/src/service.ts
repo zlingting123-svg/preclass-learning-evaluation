@@ -1,21 +1,23 @@
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import type {
-  Assignment, AssignmentInput, AssignmentSummary, Answer, ClassInfo, Page, ReportView,
+  Assignment, AssignmentInput, AssignmentSummary, Answer, ClassInfo, CohortInfo, Page, ReportView,
   ReviewRequest, RubricInfo, SaveDraftRequest, ScoreReport, ScoringStatus, Submission,
   SubmissionDetail, SubmissionOverview, User,
 } from '../../shared/contracts.js';
 import type { Store } from './store.js';
 import { ensure } from './errors.js';
+import { safeCsv } from './csv.js';
+import { publicCohort, requireCohort, type CohortRecord } from './cohorts.js';
 
-interface ClassRecord { id: string; name: string; teacherId: string; joinCode: string }
-interface Member { id: string; classId: string; studentId: string }
+export interface ClassRecord { id: string; name: string; teacherId: string; joinCode: string; cohortId?: string | null }
+export interface Member { id: string; classId: string; studentId: string }
 interface Replay { fingerprint: string; submission: Submission }
 export interface Job {
   id: string; submissionId: string; rubricId: string; rubricVersion: string;
   state: 'queued' | 'processing' | 'completed' | 'failed';
   attempts: number; nextAt: number; leaseUntil: number; leaseToken: string | null;
 }
-const keyFor = (...values: string[]) => createHash('sha256').update(JSON.stringify(values)).digest('hex');
+export const keyFor = (...values: string[]) => createHash('sha256').update(JSON.stringify(values)).digest('hex');
 const sameAnswers = (a: Answer[]) => [...a].sort((x, y) => x.questionId.localeCompare(y.questionId));
 const statuses: ScoringStatus[] = ['not_requested', 'awaiting_rubric', 'queued', 'processing', 'scored', 'needs_review', 'failed'];
 
@@ -27,28 +29,43 @@ export class Service {
     const c = this.store.get<ClassRecord>('class', id);
     ensure(c, 404, 'NOT_FOUND', '班级不存在或不可访问'); return c;
   }
+  private ownsClass(user: User, c: ClassRecord): boolean {
+    return user.role === 'teacher' && c.teacherId === user.id &&
+      (!c.cohortId || !!this.store.get<CohortRecord>('cohort', c.cohortId)?.teacherIds.includes(user.id));
+  }
   classAccess(user: User, classId: string): ClassRecord {
     const c = this.classRecord(classId);
-    ensure((user.role === 'teacher' && c.teacherId === user.id) ||
+    ensure(this.ownsClass(user, c) ||
       (user.role === 'student' && this.store.get('member', keyFor(classId, user.id))), 403, 'FORBIDDEN', '无班级权限');
     return c;
   }
   private info(user: User, c: ClassRecord): ClassInfo {
     return { id: c.id, name: c.name, teacherId: c.teacherId,
       memberCount: this.store.all<Member>('member').filter(m => m.classId === c.id).length,
+      ...(c.cohortId ? { cohortId: c.cohortId } : {}),
       ...(user.role === 'teacher' && user.id === c.teacherId ? { joinCode: c.joinCode } : {}) };
   }
-  classes(user: User): ClassInfo[] {
-    return this.store.all<ClassRecord>('class').filter(c => user.role === 'teacher' ? c.teacherId === user.id :
-      user.role === 'student' && !!this.store.get('member', keyFor(c.id, user.id))).map(c => this.info(user, c));
+  classes(user: User, cohortId?: string): ClassInfo[] {
+    return this.store.all<ClassRecord>('class').filter(c => user.role === 'teacher' ? this.ownsClass(user, c) :
+      user.role === 'student' && !!this.store.get('member', keyFor(c.id, user.id))).filter(c => !cohortId || c.cohortId === cohortId).map(c => this.info(user, c));
   }
-  createClass(user: User, name: string): ClassInfo {
+  cohorts(user: User): CohortInfo[] {
+    if (user.role === 'teacher') return this.store.all<CohortRecord>('cohort').filter(c => c.teacherIds.includes(user.id)).map(publicCohort);
+    const ids = new Set(this.classes(user).map(c => c.cohortId).filter(Boolean));
+    return [...ids].map(id => publicCohort(requireCohort(this.store, id!)));
+  }
+  cohort(user: User, id: string): CohortInfo {
+    const cohort = this.cohorts(user).find(c => c.id === id);
+    ensure(cohort, 404, 'NOT_FOUND', '教学批次不存在或不可访问'); return cohort;
+  }
+  createClass(user: User, name: string, cohortId?: string): ClassInfo {
     this.role(user, 'teacher');
     return this.store.transaction(() => {
+      if (cohortId) ensure(requireCohort(this.store, cohortId).teacherIds.includes(user.id), 403, 'COHORT_FORBIDDEN', '教师未获此批次授权');
       let joinCode: string;
       do { joinCode = randomBytes(8).toString('hex').toUpperCase(); }
       while (this.store.all<ClassRecord>('class').some(c => c.joinCode === joinCode));
-      const c: ClassRecord = { id: randomUUID(), name, teacherId: user.id, joinCode };
+      const c: ClassRecord = { id: randomUUID(), name, teacherId: user.id, joinCode, ...(cohortId ? { cohortId } : {}) };
       this.store.put('class', c.id, c); return this.info(user, c);
     });
   }
@@ -236,18 +253,13 @@ export class Service {
   }
   export(user: User, id: string): string {
     this.assignment(user, id, true);
-    const cell = (v: unknown) => {
-      let value = String(v ?? '');
-      if (/^[\s\u0000-\u001f]*[=+@-]/u.test(value)) value = "'" + value;
-      return '"' + value.replaceAll('"', '""') + '"';
-    };
     const rows: unknown[][] = [['submissionId', 'studentName', 'state', 'scoringStatus', 'submittedAt', 'answers', 'feedback']];
     for (const sub of this.store.all<Submission>('submission').filter(s => s.assignmentId === id)) {
       const report = this.store.get<ScoreReport>('report', sub.id);
       rows.push([sub.id, sub.studentName, sub.state, sub.scoringStatus, sub.submittedAt,
         JSON.stringify(sub.answers), (report?.latestReview?.scores ?? report?.systemScores)?.feedback ?? '']);
     }
-    return '\uFEFF' + rows.map(row => row.map(cell).join(',')).join('\r\n');
+    return safeCsv(rows);
   }
 }
 

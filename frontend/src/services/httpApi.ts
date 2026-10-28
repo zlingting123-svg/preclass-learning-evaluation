@@ -4,6 +4,7 @@ import type {
   AssignmentSummary,
   AuthSession,
   ClassInfo,
+  CohortInfo,
   ID,
   LoginRequest,
   Page,
@@ -47,13 +48,16 @@ export const httpApi: FrontendApi = {
     return apiRequest('POST', '/auth/logout')
   },
 
-  async listClasses(params?: PageQuery): Promise<Page<ClassInfo>> {
-    return apiRequest('GET', `/classes${qs(pageQuery(params))}`)
+  async listCohorts(params?: PageQuery): Promise<Page<CohortInfo>> {
+    return apiRequest('GET', `/cohorts${qs(pageQuery(params))}`)
+  },
+  async listClasses(params?: PageQuery & { cohortId?: ID }): Promise<Page<ClassInfo>> {
+    return apiRequest('GET', `/classes${qs({ ...pageQuery(params), cohortId: params?.cohortId })}`)
   },
   async joinClass(input: { joinCode: string }): Promise<ClassInfo> {
     return apiRequest('POST', '/classes/join', { body: input })
   },
-  async createClass(input: { name: string }): Promise<ClassInfo> {
+  async createClass(input: { name: string; cohortId?: ID }): Promise<ClassInfo> {
     return apiRequest('POST', '/teacher/classes', { body: input })
   },
 

@@ -1,5 +1,22 @@
 # GitHub同步交接
 
+## 2026-10-28 接续
+
+用户确认继续React/Node，Moodle PR #2（1422d90）作参考且未合并。原任务分支已上传d24aa96（批次前端集成及Windows CI）、39503bb（失败诊断）；PR #1标题/说明已更新，仍open/draft、未合并main。39503bb远端Actions运行40648068561完整通过后台22/HTTP21/配置3/mock。此前一次HTTP异常未复现，原因未定，历史结果保留在integration/verification/2026-10-28-cohorts-ci.md。
+
+GitHub连接器可读、改PR返回403，使用本机GCM已有授权在内存更新相同仓库；后续Git传输连接重置，采用Git data API上传完全相同对象并验证blob/tree/commit SHA，远端父提交未变才force:false推进原任务分支。未改全局认证、仓库权限或同事分支，未记录凭据。最终文档提交及当前状态仍以实际HEAD与PR head核对。
+
+## 最新同步：backend/oss-foundations（2026-10-27收尾）
+
+- 任务分支：https://github.com/zlingting123-svg/preclass-learning-evaluation/tree/backend/oss-foundations
+- 草稿PR：https://github.com/zlingting123-svg/preclass-learning-evaluation/pull/1，保持待审阅，main未合并。
+- 代码提交：d01415d（开源复用）及a939ac9（受控批次/学号导入）；其后接续文档提交以远程分支最新HEAD为准。
+- 本机用独立worktree工作，不覆盖原backend/cohorts-roster；同事前端业务源码未改。契约v0.2.0兼容旧客户端，新UI待适配。
+- 验证：后台22项、smoke、前端18项HTTP和3项构建限制通过；许可证文本及模块调研已入库。未完成改密草稿已撤回，无未验证代码作为已完成交付。
+- 未上传真实学生名单、口令、数据库或私密输出；云部署、正式评分、真机和300人仍未验证。CI尚未添加。
+
+新对话从此任务分支读取CODEX_CONTINUE和BACKEND_DELIVERY；不要把下方历史main状态误认为已合并本轮功能。
+
 日期：2026-10-27；协作方式：本机负责人和同事分别使用Codex，通过GitHub分支与PR交接。
 
 ## 仓库

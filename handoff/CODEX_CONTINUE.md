@@ -1,4 +1,20 @@
-> 最新教学需求补充（2026-10-27）：已加入docs/需求和docs/资料，课程“环境评价与管理”，每期500人、7位教师、每人4次作业，按学号导入并按教师班级隔离；原Word18题画像已留存和提取。读最新需求与待开发清单再继续。这是需求更新，不是功能实现；运行契约仍v0.1.1，未做新的课程评分、导入或并发验证。
+> **2026-10-28 接续进行中：用户已确认继续 React/Node，Moodle 只作参考样板。** 已通过 GitHub 实时核对 PR #1（head 4e15d02）与同事草稿 PR #2（head 1422d90，base backend/oss-foundations）。PR #2 新增独立 Moodle/PHP 目录，没有改 frontend/backend/shared；没有 Node API 适配或双库同步，便携启动器只验证 macOS arm64。本机没有安装或运行它，也没有合并任何 PR。
+>
+> 本轮已完成：v0.2.0 前端 API、教师批次筛选/按授权批次建班、学生按批次选班与任务隔离、保留旧无批次班级；创建/加入后自动定位对应班级，空筛选不查全部作业。Windows GitHub Actions 检查已加入，使用固定官方Action提交、只读权限与runner现有浏览器，没有秘密或部署步骤。后台 check/build/22 tests/smoke、前端 check/build/21 HTTP/3 config/mock 冒烟本机通过；已查看教师320px、学生375px批次截图。远端CI状态待推送后核对。差异与完整证据见integration/verification/2026-10-28-cohorts-ci.md与2026-10-28-http-browser.json。正式评分/云/真机/300人/名单Web管理权限仍未解决。当前工作区沿用下方 oss-foundations；同事分支只在独立只读审查 worktree 中查看。
+>
+> 下一步：先读取本轮验证记录和最新GitHub状态，再审查账号生命周期方案，补首次/主动改密、管理员受控重置及会话失效；不要恢复旧撤回草稿。名单网页操作者范围、问卷11道未定题型/必填/量表锚点、正式评分规则仍需用户提供；按教学条件逐步推进，不自动迁移Moodle或合并main。本机集成修改说明已写在本机维护文档，未代写同事FRONTEND交付单。
+>
+> CI最终修复补充：39503bb运行40648068561曾完整success，但6d28a1a运行40648409721又暴露分页时序问题（第2页标签短暂配旧页20条）。现已修改TeacherSubmissionsPage，让响应assignmentId/cursor匹配当前查询才展示；补受控延迟与MutationObserver验证整段切页不混用旧列表，本机check/build、配置3项、CI=true HTTP21通过。未删断言、未加自动重试，最终远端结果查当前Actions；最早d24aa96第8项附近的无诊断失败原因仍未定。Git传输失败时以同域Git data API逐层验证SHA、force:false推进，未强推或记录凭据。
+
+> **2026-10-27 22:56本轮收尾：用户明确要求最后5%额度先上传收尾，停止新增功能。** 代码提交d01415d、a939ac9已推送origin/backend/oss-foundations，草稿PR #1：https://github.com/zlingting123-svg/preclass-learning-evaluation/pull/1；main未合并。当前正确工作tree为本聊天work/oss-foundations，原项目工作区backend/cohorts-roster保持不动。新对话继续必须先核对这个任务分支，不把旧目录v0.1.1覆盖回来。
+>
+> 已核对20个上游仓库，接入Helmet/express-rate-limit/csv-parse/csv-stringify并保留实际许可证；新增批次/教师班级授权、字符串学号CSV预览/冲突/指纹确认、私密随机初始口令、跨期账号复用和事务回滚CLI。契约v0.2.0兼容旧客户端。backend check/build、22项测试和smoke通过；现有frontend check/build、18项HTTP、3项构建限制回归通过。
+>
+> **未完成的改密草稿已按本轮收尾撤回，恢复已验证提交；撤回后backend check再次通过。** 尚无首次强制改密、找回或改密API，不要误接不存在接口。CI工作流也未添加或运行。新批次/导入前端UI未实现，4次作业仍只是计划字段；画像题型/锚点/必填、正式评分、云部署/真机/300人仍待后续。500行只做名单解析预览，非500账号创建或压测。无真实学生名单、口令、数据库上传。
+>
+> 实际交接看BACKEND_DELIVERY.md、backend/ROSTER.md、backend/verification/2026-10-27-oss-foundations.md、docs/research/开源复用决策.md。下一阶段：先审阅PR并和同事对齐v0.2.0，再定点实现前端批次/导入权限流程、成熟账号生命周期、问卷组件；不能从旧框架重建。不要自动合并main或对外部署。GitHub连接器PR写入403已通过本机现有GCM凭据在内存请求同域API解决，没有记录或输出凭据。
+
+> 最新教学需求补充（2026-10-27）：已加入docs/需求和docs/资料，课程“环境评价与管理”，每期500人、7位教师、每人4次作业，按学号导入并按教师班级隔离；原Word18题画像已留存和提取。读最新需求与待开发清单再继续。运行契约仍v0.1.1，未做新的课程评分、导入或并发验证。
 
 > 当前协作方式更新（2026-10-27）：由本机Codex和同事Codex通过GitHub任务分支/PR协作，DSH不再承担新任务。同事当前入口为02_Codex同事任务书.md、FRONTEND_CONTINUE.md和FRONTEND_DELIVERY.md。以下保留真实的上一轮集成记录；其中“未使用Git/本机绝对路径”是历史信息，当前分支和同步状态以git status、git log及远程实际状态为准。
 

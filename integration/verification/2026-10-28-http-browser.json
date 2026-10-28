@@ -1,0 +1,95 @@
+{
+  "date": "2026-10-28 15:13:39",
+  "scope": "local HTTP frontend + SQLite backend; synthetic accounts/material; scorer is a test double, no cloud/model/load-test claims",
+  "passed": 21,
+  "failed": 0,
+  "results": [
+    {
+      "name": "HTTP登录及真实后端诊断；无演示账号或横幅",
+      "result": "pass"
+    },
+    {
+      "name": "教师页面建班、显示及复制加入码；学生页面加入",
+      "result": "pass"
+    },
+    {
+      "name": "教师页面创建草稿并发布；独立学生会话读取题目",
+      "result": "pass"
+    },
+    {
+      "name": "真实草稿持久保存，离开再进入仍可读",
+      "result": "pass"
+    },
+    {
+      "name": "提交成功只在数据库确认后显示待配置评价体系；无假分数",
+      "result": "pass"
+    },
+    {
+      "name": "教师查询答卷原文、完成情况和真实CSV下载",
+      "result": "pass"
+    },
+    {
+      "name": "跨教师/跨学生越权拒绝；403不回退mock",
+      "result": "pass"
+    },
+    {
+      "name": "成功响应丢失后重试原幂等请求，仅一份答卷",
+      "result": "pass"
+    },
+    {
+      "name": "草稿在途继续输入后提交，最终内容完整保存",
+      "result": "pass"
+    },
+    {
+      "name": "版本冲突保留本页输入；显式加载服务器草稿后可继续",
+      "result": "pass"
+    },
+    {
+      "name": "会话过期后重新登录返回答题页，保留同用户未提交输入",
+      "result": "pass"
+    },
+    {
+      "name": "绑定测试规则、真实持久任务与评分替身；浏览器复核保留原分及历史",
+      "result": "pass"
+    },
+    {
+      "name": "超过20条答卷的真实分页可到达下一页",
+      "result": "pass"
+    },
+    {
+      "name": "后端不可用时明确失败，禁止回退模拟成功",
+      "result": "pass"
+    },
+    {
+      "name": "教师仅见授权批次；按批次建班、筛选并兼容历史班级，伪造批次写入被拒绝",
+      "result": "pass"
+    },
+    {
+      "name": "学生跨期筛选仅展示对应班级任务；空筛选不查询全部作业或残留其他批次",
+      "result": "pass"
+    },
+    {
+      "name": "批次接口失败明确报错，重试恢复授权列表；不假报空批次成功",
+      "result": "pass"
+    },
+    {
+      "name": "开发服务器拒绝读取后台数据库、源码与环境文件",
+      "result": "pass"
+    },
+    {
+      "name": "320/375/414/768/1280布局无横向溢出（Chrome模拟宽度）",
+      "result": "pass"
+    },
+    {
+      "name": "导出401同样注销前端会话，跳转登录；旧令牌不可再用",
+      "result": "pass"
+    },
+    {
+      "name": "页面无未处理JS错误及非预期HTTP错误",
+      "result": "pass"
+    }
+  ],
+  "pageErrors": [],
+  "unexpectedHttp": [],
+  "screenshots": "C:\\Users\\96496\\Documents\\Codex\\2026-10-27\\01-codex-md-handoff-codex-continue\\work\\oss-foundations\\backend\\work\\synthetic-browser-8C6VAU\\screenshots"
+}

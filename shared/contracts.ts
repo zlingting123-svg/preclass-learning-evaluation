@@ -1,5 +1,5 @@
-/** Shared contract v0.1.1 — see API_CONTRACT.md for implementation boundaries. */
-export const CONTRACT_VERSION = '0.1.1' as const;
+/** Shared contract v0.2.0 — additive cohorts and controlled roster tooling. */
+export const CONTRACT_VERSION = '0.2.0' as const;
 export type ID = string;
 /** UTC ISO 8601; display in Asia/Shanghai. */
 export type ISODateTime = string;
@@ -16,6 +16,23 @@ export interface ClassInfo {
   id: ID; name: string; teacherId: ID; memberCount: number;
   /** Present only for the owning teacher, omitted from student responses. */
   joinCode?: string;
+  /** Legacy classes omit this field; new controlled cohorts use an opaque ID. */
+  cohortId?: ID | null;
+}
+export interface CohortInfo {
+  id: ID;
+  name: string;
+  courseName: string;
+  startsOn: string;
+  endsOn: string;
+  plannedStudentCount: number | null;
+  plannedTeacherCount: number | null;
+  assignmentsPerStudent: number | null;
+  teacherCount: number;
+  createdAt: ISODateTime;
+}
+export interface RosterImportCounts {
+  newAccounts: number; existingAccounts: number; alreadyEnrolled: number; invalid: number; conflicts: number;
 }
 export interface Question { id: ID; prompt: string; maxLength: number }
 export interface RubricDimension { id: ID; name: string; description: string; maxScore: number }
