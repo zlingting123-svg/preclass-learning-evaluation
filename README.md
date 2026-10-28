@@ -1,3 +1,5 @@
+> **2026-10-28 集成任务分支：学习平台 v0.3.0。** 用户确认React/Node为主，移入Moodle样板验证过的布局、画像、课程导读与虚构例题。两个原分支的提交和Moodle目录完整保留，尚未合并main。新增后端权限/版本检查、React画像与教师阅读、材料发布；详情见[集成说明](docs/integration/2026-10-28-learning-platform.md)。本机模拟启动：`python3 integration/sample.py start`，入口http://127.0.0.1:5173；账号仅在`backend/work/platform-sample/测试账号.txt`。此环境不读取或迁移Moodle数据库。
+
 # 课前问答与学习评价系统
 
 公开仓库：https://github.com/zlingting123-svg/preclass-learning-evaluation

@@ -1,3 +1,15 @@
+> **最新接续：2026-10-28 React/Node学习平台集成已实现并本机验证。** 用户明确确认React/Node为集成目标，保留Moodle对照。任务分支integration/learning-platform合入原backend/oss-foundations@22be3d4与prototype/moodle-minimal@b7047a6，仅接续文档冲突已保留双方记录。新增shared/learning.ts/profile-schema.ts、后台learning.ts及权限路由、React画像/教师阅读/课程材料、深绿布局、显式sample-seed。契约0.3.0兼容旧作业/名单API，未将两个数据库合并。
+>
+> 实际验证：前后端build、后台27/27、smoke、生产配置3/3、显式mock、真实HTTP浏览器24/24通过；最终pageErrors/unexpectedHttp为空。CUA1280/375真实查看；001001保存3题、teacher_a读取相同3题；375画像/教师无溢出，控制台无warn/error。完整证据integration/verification/2026-10-28-learning-platform.md与当日HTTP JSON和screenshots/2026-10-28-platform。新增回归覆盖冲突保留/载入、未保存链接离开提醒、返回页面不被已保存内存缓存遮蔽别处更新、材料发布与HTML文本渲染。未做正式评分、真机/并发/云部署。
+>
+> 启动：根目录python3 integration/sample.py start（或integration/打开学习平台.command）；停止同脚本stop。127.0.0.1:5173/3001；已实际stop/start保留数据。账号仅在backend/work/platform-sample/测试账号.txt（学生001001/教师teacher_a等，随机私密口令）。原独立下载预览进程已停止以释放同端口，文件和数据库保留；Moodle8873仍可对照。无生产账号，不能共享work。
+>
+> 下一步：先核对本分支/远程PR与集成证据；不要用旧下载源码或0.2.0覆盖。继续完善经过授权的React主系统，Moodle仅参考。教师画像摘要分页、详情按需读、搜索只当前页；CSV全班。课程材料新建/发布，发布后只读；尚无材料草稿编辑页面（API支持更新）。画像仅部分草稿不评分，11题待确认。原账号生命周期/正式规则/云运维事项仍按下文，不自动合并main或上线。
+>
+> 新对话：请读AGENTS.md、handoff/CODEX_CONTINUE.md顶部、docs/integration/2026-10-28-learning-platform.md与集成验证，核对integration/learning-platform及PR。保留三份本机数据库（React主样板、旧下载、Moodle），从已验证24项HTTP与27项后台继续，不重建框架、不宣称生产验收。
+
+---
+
 > **2026-10-28 集成进行中。** 用户已确认以React/Node为主，将本轮布局、画像、导读和测试练习移植，Moodle样板保留对照。任务分支integration/learning-platform基于prototype/moodle-minimal合入backend/oss-foundations@22be3d4；仅接续文档冲突，双方记录均保留如下。当前尚未完成迁移和验证，不将旧验证当成新集成验收。下一步：新增受权限保护的画像/课程材料接口、React页面与课程导读例题的显式模拟发布，复用原作业和名单权限。前后端各自npm工程，运行数据库仍不进仓库。
 
 ## React/Node此前接续记录

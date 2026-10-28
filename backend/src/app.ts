@@ -7,6 +7,8 @@ import type { AuthProvider } from './auth.js';
 import { AppError, ensure } from './errors.js';
 import { Service, page } from './service.js';
 import { answersBody, assignmentBody, id, reviewBody, versionBody } from './validation.js';
+import { LearningService, profileBody, materialBody } from './learning.js';
+import { PROFILE_QUESTIONS, PROFILE_SCHEMA_VERSION } from '../../shared/profile-schema.js';
 import { loginLimiters } from './security.js';
 
 export function createApp(service: Service, auth: AuthProvider) {
@@ -52,6 +54,22 @@ export function createApp(service: Service, auth: AuthProvider) {
     const body = z.object({ joinCode: z.string().trim().min(1).max(100).transform(v => v.toUpperCase()) }).strict().parse(req.body);
     ok(res, service.join(user(res), body.joinCode));
   });
+  const learning = new LearningService(service);
+  app.get('/api/v1/profile-schema', (_req,res)=>ok(res,{version:PROFILE_SCHEMA_VERSION,questions:PROFILE_QUESTIONS}));
+  app.get('/api/v1/classes/:id/my-profile',(req,res)=>ok(res,learning.myProfile(user(res),param(req))));
+  app.put('/api/v1/classes/:id/my-profile',(req,res)=>ok(res,learning.saveProfile(user(res),param(req),profileBody.parse(req.body))));
+  app.get('/api/v1/teacher/classes/:id/profiles',(req,res)=>list(req,res,learning.profiles(user(res),param(req))));
+  app.get('/api/v1/teacher/classes/:id/profiles/export',(req,res)=>{
+    const csv=learning.exportProfiles(user(res),param(req));res.type('text/csv; charset=utf-8').setHeader('Content-Disposition','attachment; filename="profiles.csv"');res.send(csv);
+  });
+  app.get('/api/v1/teacher/classes/:id/profiles/:studentId',(req,res)=>ok(res,learning.profile(user(res),param(req),id.parse(req.params.studentId))));
+  app.get('/api/v1/classes/:id/materials',(req,res)=>list(req,res,learning.materials(user(res),param(req))));
+  app.get('/api/v1/materials/:id',(req,res)=>ok(res,learning.material(user(res),param(req))));
+  app.post('/api/v1/teacher/classes/:id/materials',(req,res)=>ok(res,learning.saveMaterial(user(res),param(req),materialBody.parse(req.body))));
+  app.put('/api/v1/teacher/materials/:id',(req,res)=>{
+    const m=learning.material(user(res),param(req));ok(res,learning.saveMaterial(user(res),m.classId,materialBody.parse(req.body),m.id));
+  });
+  app.post('/api/v1/teacher/materials/:id/publish',(req,res)=>ok(res,learning.publishMaterial(user(res),param(req),versionBody.parse(req.body).expectedVersion)));
   app.get('/api/v1/assignments', (req, res) => {
     const classId = id.optional().parse(req.query.classId);
     list(req, res, service.assignments(user(res), classId));

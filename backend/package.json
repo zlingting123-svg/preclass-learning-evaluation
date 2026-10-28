@@ -19,7 +19,8 @@
     "roster:preview": "tsx src/roster-cli.ts preview",
     "roster:commit": "tsx src/roster-cli.ts commit",
     "backup": "tsx src/manage.ts backup",
-    "worker": "tsx src/worker-main.ts"
+    "worker": "tsx src/worker-main.ts",
+    "sample:seed": "node dist/backend/src/sample-seed.js"
   },
   "dependencies": {
     "bcryptjs": "3.0.3",

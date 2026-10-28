@@ -22,6 +22,10 @@ import { TeacherAssignmentEditPage } from './pages/teacher/TeacherAssignmentEdit
 import { TeacherSubmissionsPage } from './pages/teacher/TeacherSubmissionsPage'
 import { TeacherReviewPage } from './pages/teacher/TeacherReviewPage'
 
+import { StudentProfilePage } from './pages/learning/StudentProfilePage'
+import { TeacherProfilesPage } from './pages/learning/TeacherProfilesPage'
+import { CourseMaterialPage } from './pages/learning/CourseMaterialPage'
+
 type Role = 'student' | 'teacher' | 'admin'
 
 /** 401 会话失效时跳转登录（携带 expired 标记，登录页显示提示）。 */
@@ -69,6 +73,8 @@ export function App() {
 
         <Route element={<RequireRole allow={['student', 'admin']} />}>
           <Route element={<Layout />}>
+            <Route path="/student/classes/:classId/profile" element={<StudentProfilePage />} />
+            <Route path="/student/materials/:id" element={<CourseMaterialPage />} />
             <Route path="/student/assignments" element={<StudentTaskListPage />} />
             <Route path="/student/assignments/:id" element={<StudentAnswerPage />} />
             <Route path="/student/report/:submissionId" element={<StudentReportPage />} />
@@ -77,6 +83,8 @@ export function App() {
 
         <Route element={<RequireRole allow={['teacher', 'admin']} />}>
           <Route element={<Layout />}>
+            <Route path="/teacher/classes/:classId/profiles" element={<TeacherProfilesPage />} />
+            <Route path="/teacher/materials/:id" element={<CourseMaterialPage />} />
             <Route path="/teacher/overview" element={<TeacherOverviewPage />} />
             <Route path="/teacher/classes/:classId" element={<TeacherClassPage />} />
             <Route

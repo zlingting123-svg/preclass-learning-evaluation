@@ -1,3 +1,26 @@
+## 0.3.0 增量（2026-10-28 集成分支）
+
+兼容0.2.0作业、名单与认证API。新增类型见learning.ts；固定原问卷见profile-schema.ts（source-draft-1，18题原文，7题允许部分草稿，11题不采集；无必填与评分）。所有新增接口位于原Bearer认证之后，复用班级成员/教师及批次授权判断。
+
+| 方法路径（/api/v1下） | 行为 |
+|---|---|
+| GET /profile-schema | 已认证用户读取原问卷，不包含答案 |
+| GET/PUT /classes/:id/my-profile | 学生自己的班级画像，未保存返回null；PUT完整替换answers/other，含schemaVersion与expectedVersion，版本冲突409且不写入 |
+| GET /teacher/classes/:id/profiles | 本班画像摘要分页，不含答案全文；含字符串studentNumber或null |
+| GET /teacher/classes/:id/profiles/:studentId | 本班单份完整草稿 |
+| GET /teacher/classes/:id/profiles/export | 本班全部已保存画像CSV，复用safeCsv；学号导入表格时指定文本 |
+| GET /classes/:id/materials | 班级材料分页，学生仅见已发布，教师可见自己班的草稿 |
+| GET /materials/:id | 单篇纯文本材料，按所属班级权限判断 |
+| POST /teacher/classes/:id/materials | 新建材料草稿（title/content/expectedVersion=0） |
+| PUT /teacher/materials/:id | 修改草稿，版本校验；发布后拒绝原地改写 |
+| POST /teacher/materials/:id/publish | expectedVersion校验并发布 |
+
+原学生GET /assignments列表增量返回可选mySubmissionState（not_started/draft/submitted），仅由当前认证学生的持久答卷推导，不向其他角色泄露个人状态。旧客户端可忽略。画像独立于作业，不加入评分任务。课程正文纯文本，React不解释HTML。
+
+新增功能在HTTP模式使用；旧mock仍单独明确标识演示，画像/课程材料不伪造持久化成功。首次强制改密、受控重置、正式评分、云部署、并发与真机仍未完成。
+
+---
+
 # 共享数据与接口约定
 
 契约版本：`0.2.0`（任务分支，兼容0.1.1旧客户端）；状态：新增受控批次/名单基础，前端新界面待同事适配；正式规则、云端和300人验收未完成；更新时间：2026-10-27。

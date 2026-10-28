@@ -89,8 +89,11 @@ export class Service {
   assignments(user: User, classId?: string): Assignment[] {
     if (classId) this.classAccess(user, classId);
     const allowed = new Set(this.classes(user).map(c => c.id));
+    const mine = user.role === 'student' ? new Map(this.store.all<Submission>('submission').filter(s => s.studentId === user.id).map(s => [s.assignmentId, s.state])) : null;
     return this.store.all<Assignment>('assignment').filter(a => allowed.has(a.classId) &&
-      (!classId || a.classId === classId) && (user.role !== 'student' || a.state !== 'draft'));
+      (!classId || a.classId === classId) && (user.role !== 'student' || a.state !== 'draft')).map(a => user.role !== 'student' ? a : {
+        ...a, mySubmissionState: mine?.get(a.id) ?? 'not_started',
+      });
   }
   rubrics(user: User): RubricInfo[] { this.role(user, 'teacher'); return this.store.all<RubricInfo>('rubric'); }
   rubric(id: string): RubricInfo {

@@ -1,7 +1,7 @@
 {
-  "date": "2026-10-28 15:13:39",
+  "date": "2026-10-28 15:52:43",
   "scope": "local HTTP frontend + SQLite backend; synthetic accounts/material; scorer is a test double, no cloud/model/load-test claims",
-  "passed": 21,
+  "passed": 24,
   "failed": 0,
   "results": [
     {
@@ -73,6 +73,18 @@
       "result": "pass"
     },
     {
+      "name": "画像7/18题筛选、矩阵与多选保存重载，教师按本班查看与导出",
+      "result": "pass"
+    },
+    {
+      "name": "画像版本冲突保留本页输入，显式读取服务器版本后恢复保存",
+      "result": "pass"
+    },
+    {
+      "name": "教师创建并发布课程材料，学生阅读纯文本而不执行HTML",
+      "result": "pass"
+    },
+    {
       "name": "开发服务器拒绝读取后台数据库、源码与环境文件",
       "result": "pass"
     },
@@ -91,5 +103,5 @@
   ],
   "pageErrors": [],
   "unexpectedHttp": [],
-  "screenshots": "C:\\Users\\96496\\Documents\\Codex\\2026-10-27\\01-codex-md-handoff-codex-continue\\work\\oss-foundations\\backend\\work\\synthetic-browser-8C6VAU\\screenshots"
+  "screenshots": "/Users/summerwindy/Documents/ChatGPT/课堂系统/preclass-learning-evaluation/backend/work/synthetic-browser-dFIJBv/screenshots"
 }

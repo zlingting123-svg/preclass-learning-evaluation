@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { API_MODE } from '../config'
+import { BrandMark } from '../components/BrandMark'
 import { DemoBanner } from '../components/DemoBanner'
 import { ErrorState } from '../components/ui'
 import { api, setSession } from '../services/api'
@@ -38,10 +39,11 @@ export function LoginPage() {
   }
 
   return (
-    <div className="app">
+    <div className="app login-page">
       <DemoBanner />
+      <aside className="login-story"><span className="brand"><BrandMark /> 学习平台</span><p className="eyebrow">环境评价与管理</p><h2>从课前的一次思考开始</h2><p>记录兴趣与学习基础，带着问题进入课堂。</p><ol><li>阅读课程导读</li><li>记录学习起点</li><li>完成自己的课前任务</li></ol></aside>
       <main className="app-main" style={{ maxWidth: 420 }}>
-        <h1>登录</h1>
+        <p className="eyebrow">学习平台</p><h1>登录</h1><p className="page-lead">欢迎回来，继续你的学习。</p>
         {expired && <div className="notice-box">会话已过期，请重新登录。</div>}
         {error && <ErrorState error={error} />}
         <form onSubmit={handleSubmit}>
