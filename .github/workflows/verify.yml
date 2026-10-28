@@ -30,6 +30,8 @@ jobs:
           package-manager-cache: false
       - name: Install backend from lockfile
         run: npm ci
+      - name: Remove historical browser evidence before this run
+        run: Remove-Item -LiteralPath '../integration/verification/2026-10-28-core-browser.json' -ErrorAction SilentlyContinue
       - name: Check backend
         run: npm run check
       - name: Build backend and shared contract
@@ -68,4 +70,4 @@ jobs:
         run: |
           $date = [TimeZoneInfo]::ConvertTimeBySystemTimeZoneId([DateTime]::UtcNow, 'China Standard Time').ToString('yyyy-MM-dd')
           $evidencePath = Join-Path (Get-Location) "2026-10-28-core-browser.json"
-          if (Test-Path -LiteralPath $evidencePath) { Get-Content -LiteralPath $evidencePath }
+          if (Test-Path -LiteralPath $evidencePath) { Get-Content -LiteralPath $evidencePath } else { Write-Output 'No browser evidence generated in this run; earlier steps may have failed.' }

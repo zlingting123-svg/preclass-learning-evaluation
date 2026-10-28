@@ -1,3 +1,5 @@
+> **已核实远端验证：** a138f3ba01ed89e15701363fdecf72c26d4a70c9 的GitHub Actions运行40691567935最终success，包含后台35项、smoke、前端构建、生产限制和新HTTP浏览器8项。首次40691167645的smoke无日志失败原因仍未确定；补充安全阶段日志后本机和此轮CI通过，不声称已证明消除了首次根因。本次收尾另加“先清除历史browser JSON”的CI证据保护，避免后端失败时回显旧成功。后续若重现smoke失败，按阶段日志查证，不删断言或加盲目重试。
+> **本轮GitHub：** 草稿PR #4 https://github.com/zlingting123-svg/preclass-learning-evaluation/pull/4 ，feature/core-questionnaires → integration/learning-platform，未合并main。功能提交b2b52d0、CI安全诊断提交a138f3b均已通过GitHub API核实上传（Git传输不通时，Git Data API验证tree/commit SHA后force:false更新）。首轮40691167645后台35项通过，smoke步骤失败且无诊断，不能报远端成功；当前进一步核查新提交，最终状态以Actions实际结果为准。不要将被跳过的浏览器步骤或仓库历史JSON当成本轮远端通过。
 > **2026-10-28 最新：核心问卷 v0.4.0。** 用户提供《更新要求.md》并要求按 GitHub 最新项目修改。本轮基于 origin/integration/learning-platform@3d48082 新建 feature/core-questionnaires，正确本机目录为本聊天 work/core-questionnaires；不要回到旧 oss-foundations 或覆盖同事工作区。实现问卷编辑/发布、教师网页名单预览/确认、doc/docx/xls/xlsx/csv识别、服务端截止与时长、全班完成情况/只读答卷/逐题统计及AI助手。旧评分/复核/画像/课程导读等不再进入当前路由，历史代码与数据保留供追溯。
 >
 > 新导入学生按新需求默认12345，旧账号不重置；原CLI随机口令策略未改。AI由另一位同学实现，本轮chat/generate/insights均明确503未接入，不伪造结果。共享契约0.4.0；需求差异见docs/需求/2026-10-28-核心问卷改版.md，接口交接见docs/integration/AI接口交接.md。

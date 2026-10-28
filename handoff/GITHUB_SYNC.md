@@ -1,3 +1,5 @@
+> **已核实远端验证：** a138f3ba01ed89e15701363fdecf72c26d4a70c9 的GitHub Actions运行40691567935最终success，包含后台35项、smoke、前端构建、生产限制和新HTTP浏览器8项。首次40691167645的smoke无日志失败原因仍未确定；补充安全阶段日志后本机和此轮CI通过，不声称已证明消除了首次根因。本次收尾另加“先清除历史browser JSON”的CI证据保护，避免后端失败时回显旧成功。后续若重现smoke失败，按阶段日志查证，不删断言或加盲目重试。
+> **本轮GitHub：** 草稿PR #4 https://github.com/zlingting123-svg/preclass-learning-evaluation/pull/4 ，feature/core-questionnaires → integration/learning-platform，未合并main。功能提交b2b52d0、CI安全诊断提交a138f3b均已通过GitHub API核实上传（Git传输不通时，Git Data API验证tree/commit SHA后force:false更新）。首轮40691167645后台35项通过，smoke步骤失败且无诊断，不能报远端成功；当前进一步核查新提交，最终状态以Actions实际结果为准。不要将被跳过的浏览器步骤或仓库历史JSON当成本轮远端通过。
 # GitHub同步交接
 
 ## 2026-10-28 接续
