@@ -4,6 +4,12 @@
 
 两位开发者分别使用Codex，通过GitHub同步代码与接续记录。最多300人同时使用并集中提交，运行一年，经费约5000元，目标Windows/Android/MagicOS/iOS浏览器。
 
+## Moodle最小样板（2026-10-27任务分支）
+
+[Moodle样板启动说明](moodle-sample/README.md)：实际Moodle5.3+、中文界面、两班模拟权限、画像草稿和原生文字作业。当前基于尚未合并的`backend/oss-foundations@4e15d02` / 契约0.2.0新增独立目录，原React/Node业务源码未修改。先读[最新接续](handoff/CODEX_CONTINUE.md)顶部；下文v0.1.1与验证记录保留为原集成历史。
+
+本机运行`python3 moodle-sample/scripts/sample.py start`，师生随机口令只在本地work/private。此样板仅模拟数据，不是云端或正式评分系统。见[本轮验证](moodle-sample/verification/2026-10-27-local.md)。
+
 ## 当前进度
 
 已经有React/TypeScript前端、Node/TypeScript后台、SQLite本地存储和本地HTTP集成版，契约v0.1.1。仓库中上一轮证据记录了后台10项业务测试、18项HTTP浏览器联调、3项生产配置检查及显式mock冒烟。**这些是已有验证记录，不代表本轮重新执行，也不是正式云部署、真实评分、300人或真机通过。**
