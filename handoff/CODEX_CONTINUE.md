@@ -1,3 +1,15 @@
+> **最新接续：2026-10-28 学习平台界面交互与布局。** 用户要求去掉面向使用者的Moodle名称，统一叫“学习平台”；核心技术与第三方许可在技术资料中保留。任务分支`prototype/moodle-minimal`，草稿PR #2仍依赖`backend/oss-foundations`。原React/Node、共享契约v0.2.0不变。
+>
+> `moodle-sample/plugin`完善任务中心真实作业/画像状态、课程搜索与批次筛选，画像7题填写进度/题目导航/未保存提醒/冲突提示，教师画像搜索、展开和手机布局。校验失败保留其他有效输入。登录页及学生/教师主要流程采用“学习平台”品牌：`scripts/branding.php`以站点设置与语言覆盖，不改核心，`plugin/branding.css`负责登录样式，`scripts/sample.py start`同步配置。仍只接受模拟数据，正式规则和11题题型未定。
+>
+> 本轮 `sample.py verify` 实际题型11/11、HTTP25/25及数据库断言通过；真实浏览器验证学生进度/保存、课程筛选、教师搜索与展开，1280/375视口检查；375画像、报告、任务及原生作业无横向溢出。教师打开原生作业后会出现另一条新建记录，旧数据库断言按assignment索引覆盖已提交记录导致误报，现用唯一id索引并重跑通过，未改写/删除数据。详情和截图`moodle-sample/verification/2026-10-28-ui.md`。
+>
+> 原生作业/登录等主要页面已检查可见文案无Moodle字样，未审计所有后台页面及其他语言。未测试真实手机、所有浏览器离开提醒、300/500人并发或生产环境；无正式评分、真实数据、云部署。教师搜索仅筛选本页加载的数据。继续前核对实际分支、PR远程和文件；不要自动合并main或上线。
+>
+> 启动、停止及随机模拟账号见`moodle-sample/README.md`；不得上传work数据库、日志、密码。新对话：请先读本文件顶部、AGENTS.md、moodle-sample/UI_DESIGN.md和2026-10-28-ui验证，核对任务分支和PR，保持原系统并接续样板，不将模拟、浏览器视口或历史结果写成正式验收。
+
+---
+
 > **最新接续：2026-10-27 Moodle最小样板**。用户要求按Moodle及仓库最新内容制作样板，并已邀请GitHub账号sufencyshao；邀请已接受，实查push=true、admin=false。
 >
 > 已上传实现提交`fd2d6d0`，草稿PR #2：https://github.com/zlingting123-svg/preclass-learning-evaluation/pull/2，目标分支`backend/oss-foundations`（依赖PR #1），未合并main。Git首次推送缺少凭据助手，后用已登录gh的临时credential helper完成，未修改全局Git配置或输出凭据。

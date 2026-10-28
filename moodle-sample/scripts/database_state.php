@@ -1,7 +1,7 @@
 <?php
 define('CLI_SCRIPT',true);
 require dirname(__DIR__).'/work/moodle/config.php';
-$rows=array_values($DB->get_records_sql('SELECT assignment,userid,status,latest FROM {assign_submission}'));
+$rows=array_values($DB->get_records_sql('SELECT id,assignment,userid,status,latest FROM {assign_submission}'));
 $submitted=array_filter($rows,fn($r)=>$r->status==='submitted');
 $student=$DB->get_record('user',['username'=>'001001']);
 $state=['moodle'=>$CFG->release,'submittedAnswers'=>count($submitted),'numericGrades'=>$DB->count_records('assign_grades'),

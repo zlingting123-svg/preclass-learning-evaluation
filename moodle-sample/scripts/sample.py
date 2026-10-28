@@ -100,8 +100,9 @@ require_once(__DIR__.'/lib/setup.php');
         with (WORK/'install.log').open('w') as log: php(ROOT/'scripts/install_database.php',stdout=log,stderr=subprocess.STDOUT)
     with (WORK/'upgrade.log').open('w') as log: php(MOODLE/'admin/cli/upgrade.php','--non-interactive',stdout=log,stderr=subprocess.STDOUT)
     with (WORK/'seed.log').open('w') as log: php(ROOT/'scripts/seed.php',stdout=log,stderr=subprocess.STDOUT)
+    with (WORK/'branding.log').open('w') as log: php(ROOT/'scripts/branding.php',stdout=log,stderr=subprocess.STDOUT)
     accounts=json.loads((PRIVATE/'demo-accounts.json').read_text())
-    lines=['Moodle本机模拟账号','仅供本地样板；请勿提交或上传此文件。','']
+    lines=['学习平台本机模拟账号','仅供本地样板；请勿提交或上传此文件。','']
     for account in accounts.values():
         lines.extend([account['displayName'], '用户名：'+account['username'], '口令：'+account['password'], ''])
     human=PRIVATE/'演示账号.txt';human.write_text('\n'.join(lines));human.chmod(0o600)
@@ -115,7 +116,7 @@ def start_web():
     if web_alive():
         # Refuse to assume that an unrelated service on this port is our sample.
         with urllib.request.urlopen(f'http://127.0.0.1:{WEBPORT}/login/index.php',timeout=5) as response:
-            if '课前学习样板' not in response.read().decode(): raise RuntimeError('Port 8873 belongs to another service')
+            if '学习平台' not in response.read().decode(): raise RuntimeError('Port 8873 belongs to another service')
         return
     with (WORK/'http.log').open('a') as log:
         child=subprocess.Popen([str(PHP),'-d','max_input_vars=5000','-d','memory_limit=512M','-d','display_errors=0','-S',f'127.0.0.1:{WEBPORT}','-t',str(MOODLE/'public')],stdout=log,stderr=log,start_new_session=True)

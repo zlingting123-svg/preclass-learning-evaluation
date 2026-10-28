@@ -1,10 +1,18 @@
 {
   "scope": "actual localhost Moodle HTTP, synthetic accounts; not cloud, load or physical-device acceptance",
-  "passed": 21,
+  "passed": 25,
   "failed": 0,
   "checks": [
     {
+      "name": "login page uses Learning Platform instead of vendor welcome and global metrics",
+      "result": "pass"
+    },
+    {
       "name": "real logins and teacher task lists are scoped to own class",
+      "result": "pass"
+    },
+    {
+      "name": "task centre uses Learning Platform branding and real submitted state",
       "result": "pass"
     },
     {
@@ -29,6 +37,10 @@
     },
     {
       "name": "unknown choice rejected with 400",
+      "result": "pass"
+    },
+    {
+      "name": "valid text survives rejected payload and failed save is explicit",
       "result": "pass"
     },
     {
@@ -77,6 +89,10 @@
     },
     {
       "name": "final submitted answer is readable (database state checked separately)",
+      "result": "pass"
+    },
+    {
+      "name": "task centre reflects actual submitted answer",
       "result": "pass"
     },
     {

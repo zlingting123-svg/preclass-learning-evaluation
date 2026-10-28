@@ -35,15 +35,14 @@ if (optional_param('download',0,PARAM_BOOL)) {
     }
     fclose($out); exit;
 }
-local_preclass_sample_header('本班画像草稿 · '.format_string($course->fullname),$course);
-echo html_writer::link(new moodle_url('/local/preclass_sample/index.php'),'← 返回任务中心');
-echo '<p>当前只显示本课程保存的画像草稿，共'.count($records).'份。未填写与未确认题目不能按0分处理。本样板仅展示原始草稿，不生成能力评分或总体分析。</p>';
-echo html_writer::link(new moodle_url($PAGE->url,['download'=>1,'sesskey'=>sesskey()]),'导出本班画像CSV',['class'=>'btn btn-secondary']);
-echo '<div class="pcs-table-wrap"><table class="pcs-table"><thead><tr><th>模拟学号</th><th>姓名</th><th>保存时间</th><th>画像草稿</th></tr></thead><tbody>';
+local_preclass_sample_header('本班画像草稿', $course);
+echo '<div class="pcs-report-heading"><div><p class="pcs-lead">了解学生的起点，为课堂讨论做好准备。</p><p class="pcs-muted">本班已有 <strong>'.count($records).'</strong> 份保存的草稿。未填写与未确认题目不按0分处理。</p></div>'.html_writer::link(new moodle_url($PAGE->url,['download'=>1,'sesskey'=>sesskey()]),'导出本班画像CSV',['class'=>'pcs-button pcs-button-secondary']).'</div>';
+echo '<div class="pcs-toolbar" data-report-tools hidden><label>查找学生<input type="search" data-report-search placeholder="输入学号或姓名"></label><button type="button" class="pcs-button pcs-button-secondary" data-expand-reports>展开全部答卷</button><span class="pcs-muted" data-report-count role="status"></span></div>';
+echo '<div class="pcs-table-wrap"><table class="pcs-table"><caption class="visually-hidden">本班已保存的画像草稿</caption><thead><tr><th scope="col">学生</th><th scope="col">最近保存</th><th scope="col">画像草稿</th></tr></thead><tbody>';
 foreach($records as $row) {
-    echo '<tr><td>'.s($row->idnumber).'</td><td>'.s(fullname($row)).'</td><td>'.s(userdate($row->timemodified)).'</td><td><details><summary>查看已保存内容</summary><dl>';
-    foreach(sample_readable_answers($row->answers) as $label=>$value){echo '<dt>'.s($label).'</dt><dd>'.($value!==''?s($value):'未填写').'</dd>';}
+    echo '<tr data-report-row data-search="'.s($row->idnumber.' '.fullname($row)).'"><td data-label="学生"><strong>'.s(fullname($row)).'</strong><span class="pcs-student-number">学号 '.s($row->idnumber).'</span></td><td data-label="最近保存">'.s(userdate($row->timemodified,'%m月%d日 %H:%M')).'</td><td data-label="画像草稿"><details data-answer-detail><summary>查看已保存内容<span class="visually-hidden">：'.s(fullname($row)).'</span></summary><dl>';
+    foreach(sample_readable_answers($row->answers) as $label=>$value){echo '<dt>'.s($label).'</dt><dd>'.($value!==''?s($value):'<span class="pcs-muted">未填写</span>').'</dd>';}
     echo '</dl></details></td></tr>';
 }
-echo '</tbody></table></div>';
-echo $OUTPUT->footer();
+echo '</tbody></table></div><div class="pcs-empty" data-report-empty '.($records?'hidden':'').'><h3>'.($records?'没有找到匹配的学生':'本班还没有画像草稿').'</h3><p>'.($records?'检查学号、姓名，或清空搜索后重试。':'学生保存画像后，会显示在这里。').'</p></div><p class="pcs-muted pcs-footnote">导出包含本班全部已保存草稿，不受搜索筛选影响。用表格软件导入CSV时，请将学号列设为文本，以保留前导零。</p>';
+local_preclass_sample_footer();
