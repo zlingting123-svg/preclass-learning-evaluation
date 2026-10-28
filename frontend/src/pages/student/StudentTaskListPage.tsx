@@ -8,11 +8,20 @@ import { EmptyState, ErrorState, LoadingState } from '../../components/ui'
 import { loadPages } from '../../lib/loadPages'
 
 export function StudentTaskListPage() {
-  const classes = useAsync(() => loadPages(q => api.listClasses(q)), [])
+  const classes = useAsync(async () => {
+    const [classPage, cohortPage] = await Promise.all([
+      loadPages(q => api.listClasses(q)), loadPages(q => api.listCohorts(q)),
+    ])
+    return { items: classPage.items, cohorts: cohortPage.items }
+  }, [])
+  const [cohortId, setCohortId] = useState('')
   const [classId, setClassId] = useState<string>('')
-  const selected = classId || classes.data?.items[0]?.id || ''
+  const classItems = (classes.data?.items ?? []).filter(c =>
+    !cohortId || (cohortId === 'legacy' ? !c.cohortId : c.cohortId === cohortId))
+  const selected = classItems.some(c => c.id === classId) ? classId : classItems[0]?.id ?? ''
   const assignments = useAsync(
-    () => loadPages(q => api.listAssignments({ ...q, classId: selected || undefined })),
+    async () => ({ classId: selected, items: selected
+      ? (await loadPages(q => api.listAssignments({ ...q, classId: selected }))).items : [] }),
     [selected],
   )
 
@@ -26,8 +35,10 @@ export function StudentTaskListPage() {
     setJoinError(null)
     setJoining(true)
     try {
-      await api.joinClass({ joinCode: joinCode.trim() })
+      const joined = await api.joinClass({ joinCode: joinCode.trim() })
       setJoinCode('')
+      setCohortId(joined.cohortId || 'legacy')
+      setClassId(joined.id)
       classes.reload()
     } catch (err) {
       setJoinError(err instanceof Error ? err.message : '加入班级失败')
@@ -39,9 +50,7 @@ export function StudentTaskListPage() {
   if (classes.loading) return <LoadingState label="加载班级…" />
   if (classes.error) return <ErrorState error={classes.error} onRetry={classes.reload} />
 
-  const classItems = classes.data?.items ?? []
-
-  if (classItems.length === 0) {
+  if (!classes.data?.items.length) {
     return (
       <div>
         <h1>我的任务</h1>
@@ -64,8 +73,17 @@ export function StudentTaskListPage() {
 
       <div className="card">
         <div className="field">
-          <label>班级</label>
-          <select value={selected} onChange={(e) => setClassId(e.target.value)}>
+          <label htmlFor="studentCohortFilter">教学批次</label>
+          <select id="studentCohortFilter" value={cohortId} onChange={e => { setCohortId(e.target.value); setClassId('') }}>
+            <option value="">全部批次与历史班级</option>
+            <option value="legacy">未关联批次的历史班级</option>
+            {classes.data?.cohorts.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+          </select>
+        </div>
+        <div className="field">
+          <label htmlFor="studentClass">班级</label>
+          <select id="studentClass" value={selected} disabled={!classItems.length} onChange={(e) => setClassId(e.target.value)}>
+            {!classItems.length && <option value="">当前筛选下暂无班级</option>}
             {classItems.map((c: ClassInfo) => (
               <option key={c.id} value={c.id}>
                 {c.name}
@@ -82,9 +100,10 @@ export function StudentTaskListPage() {
         />
       </div>
 
-      {assignments.loading && <LoadingState label="加载作业…" />}
-      {assignments.error && <ErrorState error={assignments.error} onRetry={assignments.reload} />}
-      {!assignments.loading && !assignments.error && (
+      {!selected && <EmptyState label="当前筛选下暂无班级" />}
+      {selected && (assignments.loading || assignments.data?.classId !== selected) && !assignments.error && <LoadingState label="加载作业…" />}
+      {selected && assignments.error && <ErrorState error={assignments.error} onRetry={assignments.reload} />}
+      {selected && assignments.data?.classId === selected && !assignments.loading && !assignments.error && (
         <AssignmentList items={assignments.data?.items ?? []} />
       )}
     </div>

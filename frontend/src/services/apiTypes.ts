@@ -4,6 +4,7 @@ import type {
   AssignmentSummary,
   AuthSession,
   ClassInfo,
+  CohortInfo,
   ID,
   LoginRequest,
   Page,
@@ -35,9 +36,10 @@ export interface FrontendApi {
   logout(): Promise<{ success: true }>
 
   // 班级
-  listClasses(params?: PageQuery): Promise<Page<ClassInfo>>
+  listCohorts(params?: PageQuery): Promise<Page<CohortInfo>>
+  listClasses(params?: PageQuery & { cohortId?: ID }): Promise<Page<ClassInfo>>
   joinClass(input: { joinCode: string }): Promise<ClassInfo>
-  createClass(input: { name: string }): Promise<ClassInfo>
+  createClass(input: { name: string; cohortId?: ID }): Promise<ClassInfo>
 
   // 作业（学生仅见已发布且所属；教师仅见负责范围）
   listAssignments(params: { classId?: string } & PageQuery): Promise<Page<Assignment>>

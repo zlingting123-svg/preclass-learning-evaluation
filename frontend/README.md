@@ -1,7 +1,7 @@
 # 前端（DSH开发，Codex集成修复）
 
 课前问答与学习评价系统的网页前端：教师端、学生端、报告图表与跨设备布局。
-独立 npm 包；公共类型直接引用 `../shared/contracts.ts`（v0.1.1）。2026-10-27已接入本地HTTP后台，18项浏览器联调通过，非云端上线或300人压测。最新启动和验证说明见 `../integration/LOCAL_RUN.md`、`../integration/verification/2026-10-27-integration.md`。DSH交付单记录的是集成前版本，后续修复以此处及Codex记录为准。
+独立 npm 包；公共类型直接引用 `../shared/contracts.ts`（v0.2.0）。2026-10-28接入批次筛选、按授权批次建班及学生跨期选班，21项本地HTTP浏览器联调通过，非云端上线或300人压测。最新启动和验证说明见 `../integration/LOCAL_RUN.md`、`../integration/verification/2026-10-28-cohorts-ci.md`。DSH及旧同事交付单保留历史，后续集成修复以此处及Codex记录为准。
 
 ## 技术基线（已在本机实际安装锁定）
 
@@ -15,13 +15,13 @@
 以下命令均在 `frontend/` 目录执行（已实际验证）：
 
 ```bash
-npm install        # 安装依赖（生成/更新 package-lock.json）
+npm ci             # 按锁文件安装依赖
 npm run dev        # 真实HTTP模式；固定 http://127.0.0.1:5173，代理到127.0.0.1:3001
 npm run dev:mock   # 显式演示模式，有持续横幅；不能用于生产构建
 npm run build      # 类型检查(tsc -b) + 生产构建到 dist/
 npm run check      # 仅类型检查（tsc -b）
 npm run preview    # 预览 dist/ 构建产物
-npm run test:integration # 需先在backend构建；自动启停隔离后台/前端，18项真实HTTP浏览器检查
+npm run test:integration # 需先在backend构建；自动启停隔离后台/前端，21项真实HTTP浏览器检查
 npm run test:config      # 需先build；验证生产禁mock/非法配置及无模拟登录数据
 npm run test:mock        # 显式mock独立冒烟，不能当作HTTP或上线证据
 ```

@@ -1,5 +1,11 @@
 # GitHub同步交接
 
+## 2026-10-28 接续
+
+用户确认继续React/Node，Moodle PR #2（1422d90）作参考且未合并。原任务分支已上传d24aa96（批次前端集成及Windows CI）、39503bb（失败诊断）；PR #1标题/说明已更新，仍open/draft、未合并main。39503bb远端Actions运行40648068561完整通过后台22/HTTP21/配置3/mock。此前一次HTTP异常未复现，原因未定，历史结果保留在integration/verification/2026-10-28-cohorts-ci.md。
+
+GitHub连接器可读、改PR返回403，使用本机GCM已有授权在内存更新相同仓库；后续Git传输连接重置，采用Git data API上传完全相同对象并验证blob/tree/commit SHA，远端父提交未变才force:false推进原任务分支。未改全局认证、仓库权限或同事分支，未记录凭据。最终文档提交及当前状态仍以实际HEAD与PR head核对。
+
 ## 最新同步：backend/oss-foundations（2026-10-27收尾）
 
 - 任务分支：https://github.com/zlingting123-svg/preclass-learning-evaluation/tree/backend/oss-foundations
