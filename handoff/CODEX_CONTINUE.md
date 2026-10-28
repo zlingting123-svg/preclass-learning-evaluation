@@ -3,6 +3,8 @@
 > 本轮已完成：v0.2.0 前端 API、教师批次筛选/按授权批次建班、学生按批次选班与任务隔离、保留旧无批次班级；创建/加入后自动定位对应班级，空筛选不查全部作业。Windows GitHub Actions 检查已加入，使用固定官方Action提交、只读权限与runner现有浏览器，没有秘密或部署步骤。后台 check/build/22 tests/smoke、前端 check/build/21 HTTP/3 config/mock 冒烟本机通过；已查看教师320px、学生375px批次截图。远端CI状态待推送后核对。差异与完整证据见integration/verification/2026-10-28-cohorts-ci.md与2026-10-28-http-browser.json。正式评分/云/真机/300人/名单Web管理权限仍未解决。当前工作区沿用下方 oss-foundations；同事分支只在独立只读审查 worktree 中查看。
 >
 > 下一步：先读取本轮验证记录和最新GitHub状态，再审查账号生命周期方案，补首次/主动改密、管理员受控重置及会话失效；不要恢复旧撤回草稿。名单网页操作者范围、问卷11道未定题型/必填/量表锚点、正式评分规则仍需用户提供；按教学条件逐步推进，不自动迁移Moodle或合并main。本机集成修改说明已写在本机维护文档，未代写同事FRONTEND交付单。
+>
+> CI最新补充：d24aa96首次远端HTTP阶段单次失败且原日志缺少断言；39503bb新增诊断后，远端运行40648068561已完整success，API步骤及日志核实后台22、HTTP21、配置3、mock通过，本机CI=true下21项也通过。首次异常未复现、原因未定，保留记录，不宣称根因已修复；没有删除断言或增加自动重试。Git push连接重置后用同域Git data API上传相同对象、逐层验证SHA并force:false推进原分支，未强推、改权限或记录凭据。后续文档收尾提交不改变39503bb已验证业务源码，实际HEAD及CI以远端为准。
 
 > **2026-10-27 22:56本轮收尾：用户明确要求最后5%额度先上传收尾，停止新增功能。** 代码提交d01415d、a939ac9已推送origin/backend/oss-foundations，草稿PR #1：https://github.com/zlingting123-svg/preclass-learning-evaluation/pull/1；main未合并。当前正确工作tree为本聊天work/oss-foundations，原项目工作区backend/cohorts-roster保持不动。新对话继续必须先核对这个任务分支，不把旧目录v0.1.1覆盖回来。
 >

@@ -36,7 +36,11 @@ PR #2 是独立 Moodle/PHP 样板，不是原前端的 Node 接口适配交付�
 
 官方 actions/checkout 与 actions/setup-node 的 v6 已通过连接器解析并固定提交：checkout d23441a48e516b6c34aea4fa41551a30e30af803、setup-node 249970729cb0ef3589644e2896645e5dc5ba9c38。来源：[checkout](https://github.com/actions/checkout/commit/d23441a48e516b6c34aea4fa41551a30e30af803)、[setup-node](https://github.com/actions/setup-node/commit/249970729cb0ef3589644e2896645e5dc5ba9c38)。没有新增运行依赖或修改 npm 锁文件。
 
-工作流使用 contents:read、checkout 不保留凭据；无 secrets、部署、真实账号、浏览器下载或数据文件上传步骤。使用 runner 已有 Chrome/Edge，找不到明确失败。push、pull_request 与手动触发；同一 ref 新运行取消旧运行。工作流内容与本地检查命令已核对，GitHub Actions 远端运行结果待推送后另记，不能把本机通过当远端通过。
+工作流使用 contents:read、checkout 不保留凭据；无 secrets、部署、真实账号、浏览器下载或数据文件上传步骤。使用 runner 已有 Chrome/Edge，找不到明确失败。push、pull_request 与手动触发；同一 ref 新运行取消旧运行。失败时仅打印测试脚本生成的模拟JSON证据，不上传数据库或口令。
+
+远端首次执行：d24aa96 的 PR 运行 [40647464343](https://github.com/zlingting123-svg/preclass-learning-evaluation/actions/runs/40647464343) 失败于 HTTP 流程；后台22项、smoke、前端安装/check/build及3项配置限制均成功。初始日志在第7项通过后只给 exit code 1，没有具体断言。39503bb 增加逐项开始/失败输出与模拟HTTP证据打印，本机 CI=true 下21项再次通过；随后远端 [40648068561](https://github.com/zlingting123-svg/preclass-learning-evaluation/actions/runs/40648068561) 完整成功，已通过API核对job所有执行步骤并读取日志确认后台22、HTTP21、配置3及mock。机器可读快照见2026-10-28-github-actions.json。未删除断言、未加入自动测试重试；首次单次异常未复现，原因尚未确定，不能宣称已修复其根因。
+
+同步方式：GitHub连接器修改PR说明返回403，使用本机现有GCM授权在内存请求同域API成功。随后Git push多次连接重置；39503bb通过Git data API上传相同blob/tree/commit，逐层核对本地SHA，并在远端仍为父提交时以force:false推进原分支，最终API确认SHA一致。没有改全局Git配置、强推、存储凭据或修改同事分支。
 
 ## 未完成
 
