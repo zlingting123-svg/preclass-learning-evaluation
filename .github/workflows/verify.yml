@@ -62,13 +62,10 @@ jobs:
       - name: Verify real loopback HTTP flow with synthetic data
         working-directory: frontend
         run: npm run test:integration
-      - name: Verify explicit mock mode
-        working-directory: frontend
-        run: npm run test:mock
       - name: Print synthetic HTTP failure evidence
         if: failure()
         working-directory: integration/verification
         run: |
           $date = [TimeZoneInfo]::ConvertTimeBySystemTimeZoneId([DateTime]::UtcNow, 'China Standard Time').ToString('yyyy-MM-dd')
-          $evidencePath = Join-Path (Get-Location) "$date-http-browser.json"
+          $evidencePath = Join-Path (Get-Location) "2026-10-28-core-browser.json"
           if (Test-Path -LiteralPath $evidencePath) { Get-Content -LiteralPath $evidencePath }

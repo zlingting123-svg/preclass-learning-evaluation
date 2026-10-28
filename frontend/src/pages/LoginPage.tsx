@@ -41,14 +41,14 @@ export function LoginPage() {
   return (
     <div className="app login-page">
       <DemoBanner />
-      <aside className="login-story"><span className="brand"><BrandMark /> 学习平台</span><p className="eyebrow">环境评价与管理</p><h2>从课前的一次思考开始</h2><p>记录兴趣与学习基础，带着问题进入课堂。</p><ol><li>阅读课程导读</li><li>记录学习起点</li><li>完成自己的课前任务</li></ol></aside>
+      <aside className="login-story"><span className="brand"><BrandMark /> 学习平台</span><p className="eyebrow">环境评价与管理</p><h2>从课前的一次思考开始</h2><p>在班级中完成问卷，与课程问题保持连接。</p><ol><li>进入所属班级</li><li>填写教师问卷</li><li>使用课程 AI 助手</li></ol></aside>
       <main className="app-main" style={{ maxWidth: 420 }}>
         <p className="eyebrow">学习平台</p><h1>登录</h1><p className="page-lead">欢迎回来，继续你的学习。</p>
         {expired && <div className="notice-box">会话已过期，请重新登录。</div>}
         {error && <ErrorState error={error} />}
         <form onSubmit={handleSubmit}>
           <div className="field">
-            <label htmlFor="username">用户名</label>
+            <label htmlFor="username">学号 / 教师账号</label>
             <input
               id="username"
               type="text"

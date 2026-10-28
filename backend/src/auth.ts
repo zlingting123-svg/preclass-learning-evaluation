@@ -29,6 +29,10 @@ export class LocalAuth implements AuthProvider {
     return { username, passwordHash, user: { id: randomUUID(), displayName, role } };
   }
   /** Caller must wrap this and related enrollment writes in store.transaction. */
+  async prepareImportedStudent(username: string, displayName: string): Promise<Account> {
+    z.object({ username:z.string().regex(/^[a-zA-Z0-9_.@-]{3,100}$/),displayName:z.string().trim().min(1).max(100) }).parse({username,displayName});
+    return {username,passwordHash:await bcrypt.hash('12345',12),user:{id:randomUUID(),displayName,role:'student'}};
+  }
   persistPrepared(account: Account): User {
     ensure(!this.store.get('account', account.username) && !this.store.get('user', account.user.id), 409, 'USERNAME_EXISTS', '账号已存在');
     this.store.put('account', account.username, account); this.store.put('user', account.user.id, account.user);

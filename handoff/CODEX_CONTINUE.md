@@ -1,3 +1,12 @@
+> **2026-10-28 最新：核心问卷 v0.4.0。** 用户提供《更新要求.md》并要求按 GitHub 最新项目修改。本轮基于 origin/integration/learning-platform@3d48082 新建 feature/core-questionnaires，正确本机目录为本聊天 work/core-questionnaires；不要回到旧 oss-foundations 或覆盖同事工作区。实现问卷编辑/发布、教师网页名单预览/确认、doc/docx/xls/xlsx/csv识别、服务端截止与时长、全班完成情况/只读答卷/逐题统计及AI助手。旧评分/复核/画像/课程导读等不再进入当前路由，历史代码与数据保留供追溯。
+>
+> 新导入学生按新需求默认12345，旧账号不重置；原CLI随机口令策略未改。AI由另一位同学实现，本轮chat/generate/insights均明确503未接入，不伪造结果。共享契约0.4.0；需求差异见docs/需求/2026-10-28-核心问卷改版.md，接口交接见docs/integration/AI接口交接.md。
+>
+> 已验证：后台check/build、35/35测试、smoke；前端check/build、生产限制3/3、新HTTP浏览器8/8、320/375/414/768无页面横向溢出；DOCX自建表格、XLS/XLSX/CSV自动测试，DOC上游本地样例188字符/3行。Word空单元格保护修复后再次check/build及8项新后台测试通过。旧24项HTTP与旧mock未作为新路由验收，不要相加。证据integration/verification/2026-10-28-core.md与core-browser.json。
+>
+> 后续先核对本任务分支及GitHub PR；AI同学接三处预留接口，教师使用真实脱敏文件试用导入；复杂排版/图片/加密不保证自动恢复，须预览确认。尚无首次改密/找回、真实AI、云部署、真机或300人压测；不要自动合并main/采购/上线。原资料、数据库与Moodle未删除。
+
+---
 > **GitHub同步完成**：实现提交c60cc6a已推送origin/integration/learning-platform；草稿PR #3 https://github.com/zlingting123-svg/preclass-learning-evaluation/pull/3，目标backend/oss-foundations，包含原PR2样板成果并迁入React。PR1/PR2保留，main未合并。提交后46个文件范围与本机私密口令扫描通过，无work/node_modules/dist/数据库。远端CI需按PR当前head查验；下方24/27是本机证据，不能替代远端结果。
 
 > **最新接续：2026-10-28 React/Node学习平台集成已实现并本机验证。** 用户明确确认React/Node为集成目标，保留Moodle对照。任务分支integration/learning-platform合入原backend/oss-foundations@22be3d4与prototype/moodle-minimal@b7047a6，仅接续文档冲突已保留双方记录。新增shared/learning.ts/profile-schema.ts、后台learning.ts及权限路由、React画像/教师阅读/课程材料、深绿布局、显式sample-seed。契约0.3.0兼容旧作业/名单API，未将两个数据库合并。

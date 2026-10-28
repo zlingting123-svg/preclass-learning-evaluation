@@ -9,7 +9,8 @@
   "scripts": {
     "dev": "vite",
     "dev:mock": "vite --mode demo",
-    "test:integration": "node ../integration/test/http-browser.mjs",
+    "test:integration": "node ../integration/test/core-browser.mjs",
+    "test:integration:legacy": "node ../integration/test/http-browser.mjs",
     "test:config": "node ../integration/test/build-config.mjs",
     "test:mock": "node ../integration/test/mock-smoke.mjs",
     "build": "tsc -b && vite build",
