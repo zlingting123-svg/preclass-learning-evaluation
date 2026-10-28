@@ -1,3 +1,8 @@
+> **2026-10-28 外观试版，待用户选择。** 用户认可基本框架，要求商业化视觉、参考截图和主流AI对话布局。新任务分支design/commercial-preview基于feature/core-questionnaires@2f493d6；新增frontend/design-preview.html、frontend/src/preview/和预览验证文档，原App/Core/后台/共享契约未改变。入口http://127.0.0.1:5173/design-preview.html，现有模拟账号登录，内存路由复用原业务。三种可切外观：紫蓝商业/深绿专业/石墨科技。对话有窄导航、会话列表、欢迎/建议问题、底部输入、失败重试/复制/停止。AI真实接口仍503，不制造回答。
+>
+> 当前已通过frontend check/build、实际HTTP班级/问卷读取、未接入/重试无重复、会话切换、320/375/414/768工作台及对话检查，另用明确UI模拟验证换行/复制/停止/成功消息；pageErrors为空，不是AI/生产/真机/并发验收。截图和对照HTML在本次聊天outputs，说明见frontend/verification/2026-10-28-ui-preview.md。Disco/Chatbase公开参考截图已取得，DeepSeek仅登录、Qwen无完整稳定截图，未伪称抓到聊天界面。
+>
+> 下一步等用户选择外观再接入原主页面，不自动覆盖index/App或合并main。预览会话仅当前页面/模块内存，刷新/离开不保留。此为独立设计预览，生产构建仍原核心版本，AI接入仍按既有交接。
 > **已核实远端验证：** a138f3ba01ed89e15701363fdecf72c26d4a70c9 的GitHub Actions运行40691567935最终success，包含后台35项、smoke、前端构建、生产限制和新HTTP浏览器8项。首次40691167645的smoke无日志失败原因仍未确定；补充安全阶段日志后本机和此轮CI通过，不声称已证明消除了首次根因。本次收尾另加“先清除历史browser JSON”的CI证据保护，避免后端失败时回显旧成功。后续若重现smoke失败，按阶段日志查证，不删断言或加盲目重试。
 > **本轮GitHub：** 草稿PR #4 https://github.com/zlingting123-svg/preclass-learning-evaluation/pull/4 ，feature/core-questionnaires → integration/learning-platform，未合并main。功能提交b2b52d0、CI安全诊断提交a138f3b均已通过GitHub API核实上传（Git传输不通时，Git Data API验证tree/commit SHA后force:false更新）。首轮40691167645后台35项通过，smoke步骤失败且无诊断，不能报远端成功；当前进一步核查新提交，最终状态以Actions实际结果为准。不要将被跳过的浏览器步骤或仓库历史JSON当成本轮远端通过。
 > **2026-10-28 最新：核心问卷 v0.4.0。** 用户提供《更新要求.md》并要求按 GitHub 最新项目修改。本轮基于 origin/integration/learning-platform@3d48082 新建 feature/core-questionnaires，正确本机目录为本聊天 work/core-questionnaires；不要回到旧 oss-foundations 或覆盖同事工作区。实现问卷编辑/发布、教师网页名单预览/确认、doc/docx/xls/xlsx/csv识别、服务端截止与时长、全班完成情况/只读答卷/逐题统计及AI助手。旧评分/复核/画像/课程导读等不再进入当前路由，历史代码与数据保留供追溯。
