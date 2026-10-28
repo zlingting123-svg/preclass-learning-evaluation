@@ -1,3 +1,7 @@
+> **最新接续：2026-10-28 发布测试内容。** 用户要求发布例题供测试；本机A/B班各新增导读+校园环境观察/证据与观点两道虚构练习。脚本moodle-sample/scripts/publish_test_content.php可重复运行，按cmidnumber去重、无覆盖；不计分、无截止日期、不占正式4次计划。任务中心增加page材料入口。学生001002已验证阅读和进入编辑器，未代提交，浏览器留在导读。原11/25/数据库回归通过。证据verification/2026-10-28-content.md。启动后可手动运行发布脚本，新机器不会自动发布。其余分支、权限、真实数据及上线边界仍见下文。
+
+---
+
 > **最新接续：2026-10-28 前端第二轮细化。** 用户同意继续学习平台设计。plugin/index.php、profile.php、reports.php、ui.js、styles.css增加可填写题筛选、未填题定位、矩阵分项进度、教师已有答案筛选，压缩课程与手机首屏。实际verify：11/11、25/25与数据库断言通过；浏览器7/18题切换、未填题聚焦、答案筛选恢复和375无横向溢出通过，证据moodle-sample/verification/2026-10-28-focus.md。缓存须运行work/runtime/php work/moodle/admin/cli/purge_caches.php（相对moodle-sample）。保持原React/Node与共享契约不变，任务分支prototype/moodle-minimal/草稿PR2，未上线、未合并。启动及未测边界见下文。新对话先读本段和UI_DESIGN.md，从已有插件继续。
 
 ---

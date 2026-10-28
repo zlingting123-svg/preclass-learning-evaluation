@@ -39,6 +39,9 @@ foreach ($courses as $course) {
         }
         echo '<div class="pcs-task"><div class="pcs-task-title"><span class="pcs-badge'.$tone.'">'.s($status).'</span><h4>'.s($cm->name).'</h4></div><p class="pcs-muted">文字作业 · 评价体系待配置</p>'.html_writer::link(new moodle_url('/mod/assign/view.php', ['id'=>$cm->id]), s($action).local_preclass_sample_icon('arrow'), ['class'=>'pcs-button'.(!$teacher && $submitted ? ' pcs-button-secondary' : '')]).'</div>';
     }
+    foreach ($modinfo->instances['page'] ?? [] as $resource) {
+        if ($resource->uservisible) { echo '<div class="pcs-task"><h4>'.s($resource->name).'</h4>'.html_writer::link(new moodle_url('/mod/page/view.php',['id'=>$resource->id]),'阅读课程材料',['class'=>'pcs-button pcs-button-secondary']).'</div>'; }
+    }
     if (!$visible) { echo '<div class="pcs-task pcs-task-empty"><h4>作业尚未发布</h4><p class="pcs-muted">'.($teacher ? '作业发布后将显示在这里。' : '当前可以先填写课前画像，作业发布后将显示在这里。').'</p></div>'; }
     echo '<div class="pcs-profile-entry">'.local_preclass_sample_icon('profile').'<div><strong>课前学生画像</strong>';
     if (has_capability('local/preclass_sample:fillprofile', $context)) {
@@ -52,5 +55,5 @@ foreach ($courses as $course) {
     echo '</div></div><div class="pcs-card-footer"><span>每期计划4次作业</span>'.html_writer::link(new moodle_url('/course/view.php', ['id'=>$course->id]), '课程详情').'</div></section>';
 }
 echo '</div><div class="pcs-empty" data-course-empty '.($courses?'hidden':'').'><h3>暂无匹配的课程</h3><p>试试其他课程名称或教学批次；尚未选课时，请联系教师。</p><button type="button" class="pcs-button pcs-button-secondary" data-course-reset hidden>清除筛选</button></div>';
-echo '<p class="pcs-muted pcs-footnote">样板中各班仅发布第1次作业；第2—4次仍为教学计划。</p>';
+echo '<p class="pcs-muted pcs-footnote">正式教学仍仅配置第1次样板作业；额外测试练习不占每期4次作业计划，不计成绩。</p>';
 local_preclass_sample_footer();
