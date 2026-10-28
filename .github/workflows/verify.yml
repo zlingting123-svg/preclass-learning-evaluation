@@ -65,3 +65,10 @@ jobs:
       - name: Verify explicit mock mode
         working-directory: frontend
         run: npm run test:mock
+      - name: Print synthetic HTTP failure evidence
+        if: failure()
+        working-directory: integration/verification
+        run: |
+          $date = [TimeZoneInfo]::ConvertTimeBySystemTimeZoneId([DateTime]::UtcNow, 'China Standard Time').ToString('yyyy-MM-dd')
+          $evidencePath = Join-Path (Get-Location) "$date-http-browser.json"
+          if (Test-Path -LiteralPath $evidencePath) { Get-Content -LiteralPath $evidencePath }

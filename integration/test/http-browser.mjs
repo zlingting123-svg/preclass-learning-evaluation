@@ -35,8 +35,9 @@ const sessions = new Map();
 const userNameFor = user => user.id === teacher.id ? 'synthetic-teacher' : user.id === student.id ? 'synthetic-student' : 'synthetic-outsider';
 
 async function check(name, run) {
+  process.stdout.write(`RUN ${name}\n`);
   try { await run(); results.push({ name, result: 'pass' }); process.stdout.write(`PASS ${name}\n`); }
-  catch (error) { results.push({ name, result: 'fail', message: error.message }); throw error; }
+  catch (error) { results.push({ name, result: 'fail', message: error.message }); process.stdout.write(`FAIL ${name}: ${error.stack ?? error}\n`); throw error; }
 }
 async function visible(locator) { await locator.waitFor({ state: 'visible', timeout: 15000 }); }
 async function login(page, user) {
