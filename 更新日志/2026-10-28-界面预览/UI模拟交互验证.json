@@ -1,0 +1,8 @@
+{
+  "scope": "UI-only simulated adapter; no real AI connected",
+  "results": [
+    "UI模拟适配：Shift+Enter换行、Enter发送、成功消息、复制反馈",
+    "取消在途请求，保留提问、不追加取消后的回答",
+    "会话切换保留独立消息"
+  ]
+}
