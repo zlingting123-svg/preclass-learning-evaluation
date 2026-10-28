@@ -1,5 +1,7 @@
 # 本地集成版启动说明
 
+2026-10-28 当前集成工作区：`C:\Users\96496\Documents\Codex\2026-10-27\01-codex-md-handoff-codex-continue\work\oss-foundations`，分支backend/oss-foundations，契约v0.2.0。在自己的克隆目录使用相同相对命令；下方原项目绝对路径是历史信息。新增批次用后台受控CLI显式配置，见backend/ROSTER.md，没有默认真实班级/账号。前端教师/学生页面可筛选授权/选课批次；创建与加入后自动定位对应班级。验证更新见verification/2026-10-28-cohorts-ci.md。
+
 适用2026-10-27版本；Node v24.15.0、npm11.12.1，Windows PowerShell。项目仍在：
 
 ```text

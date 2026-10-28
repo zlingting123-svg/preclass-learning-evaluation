@@ -110,7 +110,7 @@ try {
     await studentPage.getByPlaceholder('输入教师提供的班级加入码').fill(code);
     await studentPage.getByRole('button', { name: '加入', exact: true }).click();
     await studentPage.getByRole('option', { name: fixtureNames.className, exact: true }).waitFor({ state: 'attached' });
-    assert.equal(await studentPage.locator('select').inputValue(), classInfo.id);
+    assert.equal(await studentPage.getByLabel('班级', { exact: true }).inputValue(), classInfo.id);
     assert.equal((await frontApi(studentPage, 'listClasses')).data.items[0].joinCode, undefined);
   });
   await check('教师页面创建草稿并发布；独立学生会话读取题目', async () => {
@@ -263,6 +263,86 @@ try {
     const response = await frontApi(studentPage, 'listClasses'); assert.equal(response.ok, false); assert.equal(response.status, 503);
     await studentPage.unroute('**/api/v1/classes*');
   });
+  let autumn, spring, autumnClass, springClass, autumnAssignment, springAssignment;
+  await check('教师仅见授权批次；按批次建班、筛选并兼容历史班级，伪造批次写入被拒绝', async () => {
+    const { createCohort } = await backendModule('cohorts');
+    const admin = { id: randomUUID(), displayName: '批次配置模拟管理员', role: 'admin' };
+    store.put('user', admin.id, admin);
+    const makeCohort = (name, teacherId) => createCohort(store, admin, { name, courseName: '模拟课程',
+      startsOn: '2026-11-01', endsOn: '2027-01-31', teacherIds: [teacherId] });
+    autumn = makeCohort('模拟秋季批次', teacher.id); spring = makeCohort('模拟春季批次', teacher.id);
+    const foreign = makeCohort('其他教师私有批次', outsider.id);
+    await navigate(teacherPage, '/teacher/overview');
+    const createCohortSelect = teacherPage.getByLabel('新班级所属批次', { exact: true });
+    await visible(createCohortSelect);
+    assert.equal(await createCohortSelect.locator('option', { hasText: foreign.name }).count(), 0);
+    await createCohortSelect.selectOption(autumn.id);
+    await teacherPage.getByLabel('班级名称', { exact: true }).fill('模拟秋季新班');
+    await teacherPage.getByRole('button', { name: '创建', exact: true }).click();
+    await visible(teacherPage.getByRole('link', { name: '模拟秋季新班', exact: true }));
+    const filtered = await frontApi(teacherPage, 'listClasses', { cohortId: autumn.id });
+    assert.equal(filtered.ok, true); assert.equal(filtered.data.items.length, 1);
+    autumnClass = filtered.data.items[0]; assert.equal(autumnClass.cohortId, autumn.id);
+    springClass = service.createClass(teacher, '模拟春季班', spring.id);
+    const denied = await frontApi(teacherPage, 'createClass', { name: '越权批次建班', cohortId: foreign.id });
+    assert.equal(denied.ok, false); assert.equal(denied.status, 403);
+    await teacherPage.getByLabel('教学批次', { exact: true }).selectOption(autumn.id);
+    assert.equal(await teacherPage.getByRole('link', { name: classInfo.name, exact: true }).count(), 0);
+    await teacherPage.getByLabel('教学批次', { exact: true }).selectOption('legacy');
+    await visible(teacherPage.getByRole('link', { name: classInfo.name, exact: true }));
+    assert.equal(await teacherPage.getByRole('link', { name: autumnClass.name, exact: true }).count(), 0);
+    service.join(student, autumnClass.joinCode);
+    const publish = (c, title) => {
+      const a = service.saveAssignment(teacher, { classId: c.id, title, instructions: '仅模拟集成',
+        questions: [{ id: randomUUID(), prompt: '模拟题', maxLength: 100 }], deadlineAt: null, rubricId: null, expectedVersion: 0 });
+      return service.transition(teacher, a.id, a.version, 'publish');
+    };
+    autumnAssignment = publish(autumnClass, '仅秋季可见的模拟任务');
+    springAssignment = publish(springClass, '仅春季可见的模拟任务');
+    await teacherPage.setViewportSize({ width: 320, height: 900 });
+    assert.equal(await teacherPage.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+    await teacherPage.screenshot({ path: resolve(screenshots, 'teacher-cohorts-320.png'), fullPage: true });
+  });
+  await check('学生跨期筛选仅展示对应班级任务；空筛选不查询全部作业或残留其他批次', async () => {
+    await navigate(studentPage, '/student/assignments');
+    const filter = studentPage.getByLabel('教学批次', { exact: true }); await visible(filter);
+    assert.equal(await filter.locator('option', { hasText: '其他教师私有批次' }).count(), 0);
+    await filter.selectOption(autumn.id);
+    await visible(studentPage.getByRole('link', { name: autumnAssignment.title, exact: true }));
+    await studentPage.getByPlaceholder('输入教师提供的班级加入码').fill(springClass.joinCode);
+    await studentPage.getByRole('button', { name: '加入', exact: true }).click();
+    await visible(studentPage.getByRole('link', { name: springAssignment.title, exact: true }));
+    assert.equal(await filter.inputValue(), spring.id);
+    assert.equal(await studentPage.getByRole('link', { name: autumnAssignment.title, exact: true }).count(), 0);
+    // Remove only the synthetic legacy enrollment to exercise an empty filter.
+    const member = store.all('member').find(m => m.classId === classInfo.id && m.studentId === student.id);
+    store.remove('member', member.id);
+    await studentPage.getByRole('button', { name: '刷新任务', exact: true }).click(); await visible(filter);
+    const assignmentRequests = [];
+    const capture = request => { if (new URL(request.url()).pathname === '/api/v1/assignments') assignmentRequests.push(request.url()); };
+    studentPage.on('request', capture);
+    try {
+      await filter.selectOption('legacy');
+      await visible(studentPage.getByText('当前筛选下暂无班级', { exact: true }).last());
+      assert.equal(await studentPage.getByRole('link', { name: springAssignment.title, exact: true }).count(), 0);
+      assert.equal(await studentPage.getByRole('link', { name: autumnAssignment.title, exact: true }).count(), 0);
+      assert.deepEqual(assignmentRequests, []);
+    } finally { studentPage.off('request', capture); service.join(student, classInfo.joinCode); }
+    await filter.selectOption(autumn.id);
+    await visible(studentPage.getByRole('link', { name: autumnAssignment.title, exact: true }));
+    await studentPage.setViewportSize({ width: 375, height: 900 });
+    assert.equal(await studentPage.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+    await studentPage.screenshot({ path: resolve(screenshots, 'student-cohorts-375.png'), fullPage: true });
+  });
+  await check('批次接口失败明确报错，重试恢复授权列表；不假报空批次成功', async () => {
+    await teacherPage.route('**/api/v1/cohorts*', route => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ ok: false,
+      error: { code: 'SERVICE_UNAVAILABLE', message: '模拟批次服务不可用' }, requestId: 'synthetic-cohort-outage' }) }));
+    await teacherPage.getByRole('button', { name: '刷新班级与批次', exact: true }).click();
+    await visible(teacherPage.getByRole('alert')); assert.equal(await teacherPage.locator('#newClassCohort').count(), 0);
+    await teacherPage.unroute('**/api/v1/cohorts*');
+    await teacherPage.getByRole('button', { name: '重试', exact: true }).click();
+    await visible(teacherPage.getByLabel('新班级所属批次', { exact: true }));
+  });
   await check('开发服务器拒绝读取后台数据库、源码与环境文件', async () => {
     for (const path of [dbPath, resolve(project, 'backend/src/store.ts'), resolve(frontend, '.env.production')]) {
       const response = await fetch('http://127.0.0.1:5173/@fs/' + path.replaceAll('\\', '/'));
@@ -295,7 +375,8 @@ try {
     scope: 'local HTTP frontend + SQLite backend; synthetic accounts/material; scorer is a test double, no cloud/model/load-test claims',
     passed: results.filter(r => r.result === 'pass').length, failed: results.filter(r => r.result === 'fail').length,
     results, pageErrors, unexpectedHttp, screenshots: resolve(runDirectory, 'screenshots') };
-  writeFileSync(resolve(verification, '2026-10-27-http-browser.json'), JSON.stringify(evidence, null, 2));
+  const date = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Shanghai' }).format(new Date());
+  writeFileSync(resolve(verification, `${date}-http-browser.json`), JSON.stringify(evidence, null, 2));
   if (browser) await browser.close();
   if (vite) await vite.close();
   if (server) await new Promise(done => server.close(done));

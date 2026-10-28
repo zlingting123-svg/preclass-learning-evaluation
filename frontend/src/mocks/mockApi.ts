@@ -4,6 +4,7 @@ import type {
   AssignmentSummary,
   AuthSession,
   ClassInfo,
+  CohortInfo,
   ID,
   LoginRequest,
   Page,
@@ -262,14 +263,21 @@ export const mockApi: FrontendApi = {
     return { success: true }
   },
 
-  async listClasses(params?: PageQuery): Promise<Page<ClassInfo>> {
+  async listCohorts(_params?: PageQuery): Promise<Page<CohortInfo>> {
+    await delay()
+    currentUser()
+    // Existing demo fixtures are legacy classes; do not invent teaching cohorts.
+    return { items: [], nextCursor: null }
+  },
+  async listClasses(params?: PageQuery & { cohortId?: ID }): Promise<Page<ClassInfo>> {
     await delay()
     const user = currentUser()
     const items =
       user.role === 'student'
         ? studentClassIds.map((id) => classes.get(id)).filter((c): c is ClassInfo => Boolean(c))
         : [...classes.values()].filter((c) => c.teacherId === user.id)
-    return paginate(user.role === 'student' ? items.map(({ joinCode: _code, ...c }) => c) : items, params)
+    const filtered = params?.cohortId ? items.filter(c => c.cohortId === params.cohortId) : items
+    return paginate(user.role === 'student' ? filtered.map(({ joinCode: _code, ...c }) => c) : filtered, params)
   },
 
   async joinClass(input: { joinCode: string }): Promise<ClassInfo> {
@@ -282,9 +290,10 @@ export const mockApi: FrontendApi = {
     return info
   },
 
-  async createClass(input: { name: string }): Promise<ClassInfo> {
+  async createClass(input: { name: string; cohortId?: ID }): Promise<ClassInfo> {
     await delay()
     const user = requireTeacher()
+    if (input.cohortId) throw apiError('NOT_FOUND', '演示中未配置该教学批次', 404)
     if (!input.name.trim()) throw apiError('VALIDATION_ERROR', '班级名称不能为空', 400)
     const c: ClassInfo = {
       id: `cls_${randomId()}`,

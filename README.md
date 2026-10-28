@@ -6,7 +6,7 @@
 
 ## 当前进度
 
-已经有React/TypeScript前端、Node/TypeScript后台、SQLite本地存储和本地HTTP集成版，契约v0.1.1。仓库中上一轮证据记录了后台10项业务测试、18项HTTP浏览器联调、3项生产配置检查及显式mock冒烟。**这些是已有验证记录，不代表本轮重新执行，也不是正式云部署、真实评分、300人或真机通过。**
+当前任务分支为 React/TypeScript 前端、Node/TypeScript 后台、SQLite 本地集成版，契约 v0.2.0；支持受控批次/学号导入 CLI、教师批次筛选及按批次建班、学生跨期任务筛选。2026-10-28 本机重新通过后台22项、HTTP浏览器21项、生产配置3项及显式mock冒烟。CI工作流已加入，远端执行状态另见验证记录。**这些是本地软件检查，不是正式云部署、真实评分、300人或真机通过。** 用户已确认继续React/Node，独立Moodle样板只作参考。
 
 尚待完成：用户提供真实问题与评价体系，正式规则/模型适配与评分对照，云认证/存储/HTTPS，300独立账号集中提交，真实设备、云备份及一年运行安排。
 
@@ -16,7 +16,7 @@
 - [同事Codex任务书](02_Codex同事任务书.md)：前端维护、图表和跨设备体验。
 - [双人协作说明](docs/双人协作说明.md)：分支、Fork、PR和职责边界。
 - [本地启动](integration/LOCAL_RUN.md)：实际环境、账号和命令。
-- [当前集成证据](integration/verification/2026-10-27-integration.md)。
+- [当前集成证据](integration/verification/2026-10-28-cohorts-ci.md)；[历史集成记录](integration/verification/2026-10-27-integration.md)。
 - [共享接口](shared/API_CONTRACT.md)与[数据类型](shared/contracts.ts)。
 - [方案展示HTML](docs/项目方案.html)：下载后在浏览器打开，仅为方案展示。
 

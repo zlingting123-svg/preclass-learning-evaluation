@@ -1,5 +1,7 @@
 # 本机后台任务分支交付（持续更新）
 
+2026-10-28 集成补充：用户确认继续React/Node，Moodle PR #2作参考。负责人已补现有前端v0.2.0适配、授权批次筛选/建班、学生跨期选班与任务隔离；名单仍是CLI，没有网页写接口。后台22项、前端21项HTTP及3项生产限制本机通过；Windows CI工作流已加入，远端结果另记。后续同事先同步任务分支并读integration/verification/2026-10-28-cohorts-ci.md，避免重复开发本轮已接通的筛选。契约没有升版，后台业务源码未变。
+
 2026-10-27；分支backend/oss-foundations，草稿PR：[PR #1](https://github.com/zlingting123-svg/preclass-learning-evaluation/pull/1)。main未自动合并。同事不要同时修改该分支，前端在独立frontend任务分支适配。
 
 本轮已收尾上传：开源复用与批次/名单代码分别为d01415d、a939ac9，最终接续文档另提交。未完成的改密草稿已撤回；没有改密/找回/强制首改API或CI工作流，不能按计划文字当作已实现。下一次先核对远程任务分支与当前契约，再继续新功能。

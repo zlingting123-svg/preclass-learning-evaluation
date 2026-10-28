@@ -1,6 +1,6 @@
 # 后台：本地开发版 0.1.0
 
-2026-10-27；共享契约v0.1.1。本地后台及前后端HTTP集成已验证（18项浏览器联调）；云环境、正式评分模型、真机和300人压测未完成。服务拒绝production模式、未配置云适配器和非loopback地址。当前启动见../integration/LOCAL_RUN.md。
+2026-10-28；共享契约v0.2.0，批次与受控名单CLI见ROSTER.md。本轮后台22项及smoke、前后端21项HTTP浏览器联调通过；云环境、正式评分模型、真机和300人压测未完成。服务拒绝production模式、未配置云适配器和非loopback地址。当前启动见../integration/LOCAL_RUN.md，最新证据见../integration/verification/2026-10-28-cohorts-ci.md；下方10项/18项等是基础阶段记录。
 
 ## 安装、检查、启动
 
