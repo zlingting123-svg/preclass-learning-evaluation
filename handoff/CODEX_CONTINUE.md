@@ -287,3 +287,5 @@ frontend：npm ci；npm run check/build；npm run test:config（3项通过）；
 ## 2026-10-29 上传及版本隔离
 
 当前功能已上传 `integration/admin-versioned-20261029`，功能提交afe69cb。versions/下按版本独立子文件夹保存源码与哈希清单：v01-roster基线b24357d、v02-admin-integrated当前afe69cb。根工作区继续开发；版本文件夹不覆盖，运行时分开DB_PATH/端口，不归档数据库或口令。主分支未合并、未部署；最新同步记录见 `更新日志/2026-10-29-上传与版本隔离.md`。旧日志“未上传”为当时状态。
+
+上传已创建草稿PR #10：https://github.com/zlingting123-svg/preclass-learning-evaluation/pull/10 ，目标feature/admin-console。版本目录提交bb11e96已核验远端一致；CI在运行，不能写远端通过。最终分支头以PR为准，所有快照保留来源提交原文。
