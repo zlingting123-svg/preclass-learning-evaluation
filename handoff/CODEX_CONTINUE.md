@@ -1,3 +1,8 @@
+> **2026-10-29 大陆云部署准备。** 用户选择中国大陆云服务器，尚未购买，授权先选配置并准备部署。新分支deploy/mainland-single-host基于feature/admin-console@3ffef2e。建议腾讯轻量内地4核8GB/10Mbps/约120GB/Ubuntu24.04 x86-64；210元/月来自2025官方公告，仅预算基准非当前结算价，需留域名/备份/API预算并办理备案。未购买、未连接或部署公网服务器，二维码仍暂停。
+>
+> 新增显式single-host生产模式（HTTPS APP_ORIGIN、独立绝对DB_PATH/STATIC_DIR、回环监听、正式Host/Origin校验、同源静态/SPA）；未配置生产仍拒绝，productionReady仍false。deployment目录有systemd/Caddy/env/启动前检查、每日备份/独立恢复、Git白名单发布包与SHA256。完整操作见deployment/README.md；本机backend check/build/42项测试、smoke与模拟备份恢复通过；Linux CI新增，实际结果另查。Windows本机不冒充已执行systemd/Caddy或真实TLS。
+>
+> 发布包要求干净提交，执行node deployment/package.mjs 输出目录；只包含源码和编译前端，不含node_modules/私密账号/数据库/work，Linux仍需npm ci和后端build。默认生产主入口为原核心+管理员，独立商业外观未悄悄替换主站。后续服务器/域名/备案准备好后再做SSH、真实HTTPS、手机、运维/异机备份与300独立账号验证；不自动购买或重启现有本机服务。
 > **2026-10-29 独立管理员端。** 用户明确选择管理员而非教师工作台，并在手机微信无法访问后要求暂停二维码/局域网调试，等买服务器再做。已撤销临时0.0.0.0前端监听、恢复127.0.0.1，未关闭防火墙；二维码/生成器只留本地outputs和integration/work/paused-lan，不作课堂可用结果，不继续询问手机测试。
 >
 > 任务分支feature/admin-console基于design/commercial-preview@61751cc。新增backend/src/admin.ts、管理员API、前端AdminPage与样式；原登录页/admin和商业预览均支持管理员分流。账号创建/搜索/角色筛选分页、姓名/启停、重置/撤销会话、全局概览、班级/教师/批次资格明确授权、成员调整、审计同事务已实现。管理员网页不可提权/维护管理员账号；私密模拟管理员demo_admin凭据只在本机work和用户outputs，不上传。

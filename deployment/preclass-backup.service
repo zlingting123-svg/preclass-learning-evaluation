@@ -1,0 +1,15 @@
+[Unit]
+Description=Online SQLite backup for Preclass
+
+[Service]
+Type=oneshot
+User=preclass
+Group=preclass
+WorkingDirectory=/opt/preclass/current/backend
+EnvironmentFile=/etc/preclass.env
+ExecStart=/usr/local/bin/node ../deployment/backup.mjs
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/preclass /var/backups/preclass

@@ -12,9 +12,11 @@ import { PROFILE_QUESTIONS, PROFILE_SCHEMA_VERSION } from '../../shared/profile-
 import { loginLimiters } from './security.js';
 import { questionnaireRoutes } from './questionnaire-routes.js';
 import { adminRoutes } from './admin.js';
+import { staticSite } from './static-site.js';
 
-export function createApp(service: Service, auth: AuthProvider) {
+export function createApp(service: Service, auth: AuthProvider, deployment?:{appOrigin:string;staticDir:string}) {
   const app = express();
+  if(deployment)app.set('trust proxy','loopback');
   app.disable('x-powered-by');
   app.use(helmet({ strictTransportSecurity: false, contentSecurityPolicy: { directives: { upgradeInsecureRequests: null } } }));
   app.use((_req, res, next) => {
@@ -25,7 +27,9 @@ export function createApp(service: Service, auth: AuthProvider) {
   app.use((req, _res, next) => {
     // Intended for Vite's same-origin proxy, not arbitrary CORS clients.
     const origin = req.get('origin');
-    ensure(!origin || ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3001', 'http://127.0.0.1:3001'].includes(origin), 403, 'FORBIDDEN', '请求来源不允许');
+    const allowed=deployment?[deployment.appOrigin]:['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3001', 'http://127.0.0.1:3001'];
+    ensure(!origin||allowed.includes(origin),403,'FORBIDDEN','请求来源不允许');
+    if(deployment)ensure(req.get('host')===new URL(deployment.appOrigin).host,400,'INVALID_HOST','请求主机不匹配');
     next();
   });
   app.use(express.json({ limit: '2mb', strict: true }));
@@ -105,6 +109,7 @@ export function createApp(service: Service, auth: AuthProvider) {
     const csv = service.export(user(res), param(req));
     res.type('text/csv; charset=utf-8').setHeader('Content-Disposition', 'attachment; filename="assignment.csv"'); res.send(csv);
   });
+  if(deployment)staticSite(app,deployment.staticDir);
   app.use((_req, _res, next) => next(new AppError(404, 'NOT_FOUND', '接口不存在')));
   const errors: ErrorRequestHandler = (error: unknown, _req, res, _next) => {
     const bodyError = error as { type?: string };
