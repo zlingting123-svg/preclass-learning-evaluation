@@ -196,3 +196,6 @@
     flex-wrap: wrap;
   }
 }
+
+.admin-delete{color:#b42318!important;border-color:#f0b6b0!important;margin-left:8px}
+.admin-delete:disabled{opacity:.45}

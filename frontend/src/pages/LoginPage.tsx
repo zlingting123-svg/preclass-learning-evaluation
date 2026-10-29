@@ -51,7 +51,7 @@ export function LoginPage() {
         {error && <ErrorState error={error} />}
         <form onSubmit={handleSubmit}>
           <div className="field">
-            <label htmlFor="username">学号 / 教师账号</label>
+            <label htmlFor="username">账号</label>
             <input
               id="username"
               type="text"

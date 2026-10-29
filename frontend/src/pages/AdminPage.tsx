@@ -32,6 +32,7 @@ const auditLabels: Record<string, string> = {
   update_account: "更新账号",
   disable_account: "停用账号",
   reset_password: "重置密码",
+  delete_account: "删除账号",
   create_class: "创建班级",
   update_class: "调整班级",
   enroll_student: "添加班级成员",
@@ -167,6 +168,17 @@ export function AdminConsole({ embedded=false, activeTab, onTabChange }: { embed
     } finally {
       setBusy(false);
     }
+  }
+  async function deleteAccount(account:Account){
+    if(busy)return;setBusy(true);setError('');setNotice('');let deleted=false;
+    try{
+      const preview=await req<{planId:string;account:Account;enrollments:number;teachingClasses:number;retainedResponses:number;retainedConversations:number}>('POST',`/admin/users/${account.id}/delete-preview`,{body:{}});
+      if(!window.confirm(`确认删除账号“${preview.account.username}”（${preview.account.displayName}）？\n\n删除后将撤销登录并移出 ${preview.enrollments} 个班级、解除 ${preview.teachingClasses} 个班级的任课关系。班级和问卷不会被删除。\n保留历史答卷 ${preview.retainedResponses} 份、AI对话 ${preview.retainedConversations} 条及计费/审计记录。\n此操作不能直接撤销。确定继续删除吗？`)){setNotice('已取消删除，账号保持不变');return;}
+      await req('DELETE',`/admin/users/${account.id}`,{body:{planId:preview.planId,expectedVersion:preview.account.version,confirmUsername:preview.account.username}});
+      deleted=true;setUsers(list=>list.filter(u=>u.id!==account.id));setTotal(n=>Math.max(0,n-1));if(edit?.id===account.id)setEdit(null);
+      setNotice('账号已删除，原登录已失效；班级、问卷及历史记录保留');
+      if(users.length===1&&page>1)setPage(page-1);else await load();
+    }catch(e){setError((deleted?'账号已删除，但刷新列表失败：':'')+msg(e));}finally{setBusy(false);}
   }
   if (current?.role !== "admin")
     return (
@@ -488,6 +500,7 @@ export function AdminConsole({ embedded=false, activeTab, onTabChange }: { embed
                           >
                             维护账号
                           </button>
+                          <button className="admin-delete" disabled={u.role==='admin'||u.id===current.id||busy} onClick={()=>void deleteAccount(u)}>删除账号</button>
                         </td>
                       </tr>
                     ))}

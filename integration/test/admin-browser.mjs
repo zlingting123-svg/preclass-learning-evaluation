@@ -1,3 +1,5 @@
+// Historical UI regression only; never enabled in production builds.
+process.env.VITE_LEGACY_UI='true';
 import { createRequire } from "node:module";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -64,7 +66,7 @@ async function check(name, fn) {
 try {
   await check("原登录入口进入独立管理员，全局概览真实读取", async () => {
     await page.goto("http://127.0.0.1:5173/login");
-    await page.getByLabel("学号 / 教师账号").fill("browser_admin");
+    await page.getByLabel("账号").fill("browser_admin");
     await page.getByLabel("密码", { exact: true }).fill(password);
     await page.getByRole("button", { name: "登录", exact: true }).click();
     await page.waitForURL("**/admin");
@@ -205,7 +207,7 @@ try {
       fullPage: true,
     });
     await page.goto("http://127.0.0.1:5173/design-preview.html");
-    await page.getByLabel("学号 / 教师账号").fill("browser_admin");
+    await page.getByLabel("账号").fill("browser_admin");
     await page.getByLabel("密码", { exact: true }).fill(password);
     await page
       .getByRole("button", { name: "进入学习空间", exact: true })
