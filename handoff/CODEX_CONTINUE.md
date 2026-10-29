@@ -1,3 +1,5 @@
+> **2026-10-29 AI独立交付优先入口：** 当前feature/ai-module-only未包含前端/服务管理端改动，请先看[AI_MODULE_ONLY.md](AI_MODULE_ONLY.md)与docs/integration/AI模块独立交付.md。下文是基线历史，不能代替当前AI交付状态。
+
 > **2026-10-28 更新日志归档。** 用户要求上传GitHub并将本轮总结放入更新日志文件夹。仓库新增“更新日志/README.md”索引、“更新日志/2026-10-28-商业界面与AI对话预览.md”，及日期子目录内的本项目三种配色、桌面/手机对话截图与真实HTTP/UI模拟两类验证记录。无口令、令牌、真实学生数据或数据库。继续使用design/commercial-preview和草稿PR #5，未合并main、未替换主界面、未部署；后续先看本轮日志再等用户确定外观。
 > **2026-10-28 外观试版，待用户选择。** 用户认可基本框架，要求商业化视觉、参考截图和主流AI对话布局。新任务分支design/commercial-preview基于feature/core-questionnaires@2f493d6；新增frontend/design-preview.html、frontend/src/preview/和预览验证文档，原App/Core/后台/共享契约未改变。入口http://127.0.0.1:5173/design-preview.html，现有模拟账号登录，内存路由复用原业务。三种可切外观：紫蓝商业/深绿专业/石墨科技。对话有窄导航、会话列表、欢迎/建议问题、底部输入、失败重试/复制/停止。AI真实接口仍503，不制造回答。
 >

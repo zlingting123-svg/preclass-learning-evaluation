@@ -1,3 +1,5 @@
+> 2026-10-29当前任务：feature/ai-module-only从design/commercial-preview@61751cc拆出AI独立交付。禁止带入PR #6的前端、服务管理端和认证变更；接口与接续以docs/integration/AI模块独立交付.md及handoff/AI_MODULE_ONLY.md为准。用户最新要求保存本人学生对话并可删除/续聊，计费账本和教师/管理元数据仍无正文。
+
 # 项目共同工作规则
 
 当前状态补充（2026-10-28）：用户已确认以React/Node为主，迁入学习平台布局、画像、导读和例题；Moodle样板保留对照。integration/learning-platform任务分支契约v0.3.0（兼容0.2.0，新增画像/材料API）；批次/受控名单CLI与前端批次筛选已实现，后台22项/HTTP21项本机通过，CI远端状态见最新验证记录。下方旧阶段中“新增需求未实现/v0.1.1”须按具体需求及handoff/CODEX_CONTINUE.md核对，不代表全部仍未实现。

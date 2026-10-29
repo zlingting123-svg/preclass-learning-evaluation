@@ -1,3 +1,5 @@
+> **2026-10-29 已提供AI后端独立交付。** 主系统问答、持久会话及统计接口以[AI模块独立交付](AI模块独立交付.md)为准；chat已支持mock，generate/insights仍未接入。下文“chat返回503/页面内存”是原交接基线，不是最新实现。
+
 # AI 同学接入说明（核心问卷 v0.4.0）
 
 业务端不实现模型服务。当前接口位于 backend/src/questionnaire-routes.ts，三个请求均返回标准错误信封，HTTP503/code=AI_NOT_CONNECTED。界面显示未接入，不制造AI回答。
