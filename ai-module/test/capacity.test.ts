@@ -4,15 +4,20 @@ import { writeFileSync, mkdirSync } from "node:fs";
 import { createFixture } from "./fixture.js";
 
 // No retries. TCP handshakes are bounded at 1 / 10ms to avoid a local 128-SYN backlog storm.
-// Requests already connected remain concurrent; the fake provider holds responses for 6s.
+// A fixture barrier holds admitted jobs until all 300 arrive; no fixed arrival-speed assumption.
 test("300 simultaneous in-flight upstream API jobs over real HTTP; 350-slot configured headroom; synthetic only", async () => {
   const f = await createFixture({
     students: 300,
     connections: 512,
     concurrency: 350,
-    delayMs: 6000,
-    policy: { maxQueue: 600, queueTimeoutMs: 30000, requestTimeoutMs: 60000 },
+    delayMs: 1,
+    policy: { maxQueue: 600, queueTimeoutMs: 30000, requestTimeoutMs: 180000 },
   });
+  let admitted=0,release!:()=>void,rejectBarrier!:(error:Error)=>void;
+  const barrier=new Promise<void>((resolve,reject)=>{release=resolve;rejectBarrier=reject});
+  const watchdog=setTimeout(()=>rejectBarrier(new Error('300 admitted jobs did not reach fixture barrier')),90000);
+  const stream=f.provider.stream.bind(f.provider);
+  f.provider.stream=async function*(input){admitted++;if(admitted===300){clearTimeout(watchdog);release()}await barrier;yield* stream(input)};
   const start = performance.now();
   try {
     const results = await Promise.all(
@@ -46,12 +51,14 @@ test("300 simultaneous in-flight upstream API jobs over real HTTP; 350-slot conf
           tcpHandshakesAtOnce: 1,
           tcpHandshakePacingMs: 10,
           autoRetries: 0,
+          fixtureRelease: "after all 300 jobs admitted; not a latency benchmark",
         },
         null,
         2,
       ),
     );
   } finally {
+    clearTimeout(watchdog);
     await f.close();
   }
 });
