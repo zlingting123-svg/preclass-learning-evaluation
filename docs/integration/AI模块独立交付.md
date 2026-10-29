@@ -1,6 +1,6 @@
 # AI模块独立交付与前端接入
 
-日期：2026-10-29。任务分支`feature/ai-module-only`，基于同事界面分支`design/commercial-preview@61751cc`。这是从整包PR #6重新提取的AI交付；PR差异不含frontend文件、不含服务管理端、不改原认证实现。接入方可以保持自己的页面布局，合并本分支的AI后端后按本文调用。不要为了使用AI而合并PR #6的全部界面。
+日期：2026-10-29。交付[草稿PR #9](https://github.com/zlingting123-svg/preclass-learning-evaluation/pull/9)。任务分支`feature/ai-module-only`，基于同事界面分支`design/commercial-preview@61751cc`。这是从整包PR #6重新提取的AI交付；PR差异不含frontend文件、不含服务管理端、不改原认证实现。接入方可以保持自己的页面布局，合并本分支的AI后端后按本文调用。不要为了使用AI而合并PR #6的全部界面。
 
 ## 接收内容
 

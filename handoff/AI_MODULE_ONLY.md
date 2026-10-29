@@ -10,6 +10,6 @@
 
 学生最新策略是私有保存/删除/续聊；账本仍不留正文，教师及AI管理元数据不暴露正文。最多100线程/课/学生、100轮/线程，最近3成功轮次/3500字节上下文。删除不清计费或保证清备份/WAL。线程/单实例调度不是共享存储多副本方案。
 
-发布状态：正在上传独立分支并创建单独草稿PR，地址随后补记。整包PR #6保留对照，不重复合并两个PR。原preclass-ai-integration工作区和私有数据库保留，不改原运行进程或主分支。
+发布状态：已上传[独立草稿PR #9](https://github.com/zlingting123-svg/preclass-learning-evaluation/pull/9)，feature/ai-module-only → design/commercial-preview；功能提交df68405，文档同步随后补交，最终头以PR为准。远端CI尚未确认通过。整包PR #6保留对照，不重复合并两个PR。原preclass-ai-integration工作区和私有数据库保留，不改原运行进程或主分支。
 
 下一步：先读本文件、交付指南和工作日志，核对实际分支及远端头；其他创作者只对接API并自行实现界面。要真接模型需先补齐预算、价格、Key环境、来源白名单、阈值和对账，不自动开启付费。不要按旧CODEX_CONTINUE.md的界面交付记录覆盖当前范围。
