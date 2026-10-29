@@ -4,7 +4,7 @@
   "requests": 500,
   "success": 500,
   "establishedConnections": 500,
-  "elapsedMs": 5805,
+  "elapsedMs": 5797,
   "clientConnections": 600,
   "tcpHandshakesAtOnce": 1,
   "tcpHandshakePacingMs": 10,

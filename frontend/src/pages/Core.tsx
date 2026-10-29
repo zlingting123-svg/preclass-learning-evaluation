@@ -73,8 +73,9 @@ export function CoreHome() {
   async function load() {
     try {
       const c = await allClasses();
+      const last=getCurrentUser()?.role==='student'?await request<{classId:string|null}>("GET","/core/ai/last-context"):null;
       setClasses(c);
-      setSelected((s) => s || c[0]?.id || "");
+      setSelected((s) => c.some(item=>item.id===s)?s:c.some(item=>item.id===last?.classId)?last!.classId!:c[0]?.id||"");
     } catch (e) {
       setError(message(e));
     } finally {

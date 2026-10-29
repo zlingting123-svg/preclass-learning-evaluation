@@ -6,7 +6,7 @@
   "actualPeakInFlightProvider": 300,
   "configuredGenerationSlots": 350,
   "queueSlots": 600,
-  "elapsedMs": 9402,
+  "elapsedMs": 9988,
   "clientConnections": 512,
   "tcpHandshakesAtOnce": 1,
   "tcpHandshakePacingMs": 10,

@@ -30,7 +30,7 @@ export function LoginPage() {
           : '/student/assignments'
       const from = (location.state as { from?: unknown } | null)?.from
       const prefix = session.user.role === 'admin' ? '/admin' : session.user.role === 'student' ? '/student/' : '/teacher/'
-      navigate(typeof from === 'string' && from.startsWith(prefix) ? from : home, { replace: true })
+      navigate(typeof from === 'string' && (from.startsWith(prefix)||(session.user.role==='student'&&/^\/core\/classes\/[a-zA-Z0-9_-]+\/assistant$/.test(from))) ? from : home, { replace: true })
     } catch (err) {
       setError(err instanceof ApiError ? err.message : '登录失败，请稍后重试')
     } finally {

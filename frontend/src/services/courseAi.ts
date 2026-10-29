@@ -16,13 +16,19 @@ const errors: Record<string, string> = {
   QUEUE_TIMEOUT: '排队超时，请稍后重新提问。',
   REQUEST_ALREADY_HANDLED: '此请求已处理，不会重复生成或收费。请检查用量后再决定是否新提问。',
 };
-/** POST + SSE. No transcript, keys or session token is stored outside running memory. */
+/** POST + SSE. Credentials stay in memory; persistent transcripts use private server endpoints. */
 export async function askCourse(classId: string, question: string, clientRequestId: string, signal: AbortSignal, emit: (e: AiEvent) => void) {
+  return streamQuestion('/core/ai/chat/stream',{classId,question,clientRequestId},signal,emit);
+}
+export async function askThread(threadId:string, question:string,clientRequestId:string,signal:AbortSignal,emit:(e:AiEvent)=>void){
+ return streamQuestion('/core/ai/threads/'+encodeURIComponent(threadId)+'/questions',{question,clientRequestId},signal,emit);
+}
+async function streamQuestion(path:string,body:unknown,signal:AbortSignal,emit:(e:AiEvent)=>void){
   if (API_MODE !== 'http') throw new Error('AI问答需要连接HTTP后台，演示数据模式不可用。');
   const token = getAccessToken();
-  const response = await fetch(`${API_BASE_URL}/api/v1/core/ai/chat/stream`, { method: 'POST',
+  const response = await fetch(`${API_BASE_URL}/api/v1${path}`, { method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-    body: JSON.stringify({ classId, question, clientRequestId }), signal });
+    body: JSON.stringify(body), signal });
   if (!response.ok) {
     try { await parseApiResponse(response, !!token); } catch (error) {
       if (error instanceof ApiError) throw new Error(errors[error.code] ?? error.message); throw error;

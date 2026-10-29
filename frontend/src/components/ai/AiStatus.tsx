@@ -21,7 +21,7 @@ export function AiStatusPanel({ classId, revision = 0 }: { classId: string; revi
   }, [classId, revision, role]);
   return <aside className="ai-status-panel" aria-label="AI服务与用量">
     <p role="status"><strong>{status?.mode === 'mock' ? '模拟模型已连接 · 不产生费用' : status?.mode === 'disabled' ? 'AI服务未启用' : '正在检查AI服务…'}</strong></p>
-    <p>仅回答本班已发布资料支持的课程问题。当前每个问题独立检索；聊天正文只保留在本页内存，刷新或离开后清除。</p>
+    <p>仅回答本班已发布资料支持的课程问题。{role==='student'?'对话已按个人账号保存，重新登录可继续；可在会话列表中删除。':'学生对话仅本人可读，教师端只显示匿名聚合方向。'}</p>
     {usage && <p>我的累计模型调用 <strong>{usage.modelCalls}</strong> 次 · 输入 {usage.inputTokens} / 输出 {usage.outputTokens} tokens{usage.usageUnknown > 0 ? ` · ${usage.usageUnknown} 次待对账` : ''}</p>}
     {role === 'teacher' && <div><strong>本班提问方向</strong>{topics?.buckets.length ? <ul>{topics.buckets.map(t => <li key={t.bucket+t.topic}>{t.bucket} · 课程资料理解：{t.count} 次</li>)}</ul> : <p>暂无达到展示门槛的主题{topics ? `（至少${topics.privacyThreshold}次）` : ''}；不展示个人问题或对话。</p>}</div>}
     {error && <p role="alert">{error}</p>}

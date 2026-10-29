@@ -1,3 +1,4 @@
+import { conversationRoutes } from './conversation-routes.js';
 import { adminRoutes } from './admin.js';
 import { serverSettings } from './admin-settings.js';
 import { aiRoutes, type CourseAi } from './ai.js';
@@ -59,6 +60,7 @@ export function createApp(service: Service, auth: AuthProvider, ai?: CourseAi) {
   };
   app.get('/api/v1/auth/me', (_req, res) => ok(res, user(res)));
   adminRoutes(app, service, auth, ai);
+  conversationRoutes(app, service, ai);
   aiRoutes(app, service, ai);
   questionnaireRoutes(app,service,ok);
   app.post('/api/v1/auth/logout', (_req, res) => { auth.logout(res.locals.token); ok(res, { success: true }); });

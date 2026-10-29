@@ -48,7 +48,9 @@ export function createCourseAi(core: Service, auth: AuthProvider, options: {
           topicId: 'course_material', title: m.title, content, version: String(m.version), approved: true,
           keywords: rule.keywords.filter(k => (m.title + content).includes(k)) }));
       });
-      return new KeywordKnowledge(sources, { [input.courseId]: rule }).retrieve(input);
+      const followup=/^(那|那么)?(它|这个|这一步|上述内容|刚才的内容|前面的内容)(有什么(作用|意义|区别)|的(作用|意义|目的|步骤|流程)(是什么|有哪些|呢)?|为什么重要|怎么理解)[？?。！!]*$/.test(input.question.trim());
+      const anchor=followup?[...(input.history??[])].reverse().find(m=>m.role==='user'&&rule.keywords.some(k=>m.text.includes(k)))?.text:undefined;
+      return new KeywordKnowledge(sources, { [input.courseId]: rule }).retrieve({...input,question:anchor?anchor+'\n'+input.question:input.question});
     } },
   }, store, policy, config.deployments.map(d => ({ ...d, provider: new MockProvider('ok', options.delayMs ?? 800) })), options.fingerprintKey);
   return { gateway, store, mode: 'mock' as const, close: () => store.close(),
@@ -95,7 +97,7 @@ export function aiRoutes(app: Express, core: Service, ai?: CourseAi) {
   const ok = (res: Response, data: unknown) => res.json({ ok: true, data, requestId: res.locals.requestId });
   const runtime = () => { ensure(ai, 503, 'AI_NOT_CONNECTED', 'AI服务尚未启用'); return ai; };
   const user = (res: Response): User => res.locals.user;
-  app.get('/api/v1/core/ai/status', (_req, res) => ok(res, { mode: ai?.mode ?? 'disabled', liveReady: false, historyStored: false, retrieval: 'keyword_baseline' }));
+  app.get('/api/v1/core/ai/status', (_req, res) => ok(res, { mode: ai?.mode ?? 'disabled', liveReady: false, historyStored: true, retrieval: 'keyword_baseline' }));
   app.get('/api/v1/core/ai/usage', async (_req, res) => ok(res, await runtime().store.summary(user(res).id)));
   app.get('/api/v1/core/ai/topics/:classId', async (req, res) => {
     core.role(user(res), 'teacher'); const classId = identifier.parse(req.params.classId); core.classAccess(user(res), classId);

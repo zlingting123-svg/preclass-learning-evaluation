@@ -29,7 +29,7 @@ export class MockProvider implements ModelProvider {
       });
       yield {
         type: "delta",
-        text: `【本地替身测试，不是真实AI回答】环境评价需结合课程资料分析。[${input.evidence[0]?.id ?? "no-source"}]`,
+        text: `【本地替身测试，不是真实AI回答】${input.history?.length ? `已接续此前${input.history.length}条历史消息。` : ""}环境评价需结合课程资料分析。[${input.evidence[0]?.id ?? "no-source"}]`,
       };
       if (this.mode === "broken") return;
       yield {

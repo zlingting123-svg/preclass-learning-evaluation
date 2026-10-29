@@ -6,6 +6,7 @@ import type {
   Principal,
   Emit,
   Usage,
+  HistoryMessage,
 } from "./contracts.js";
 import type { BillingStore } from "./ledger.js";
 import { Scheduler, type AdmissionScheduler, type Lease } from "./scheduler.js";
@@ -28,7 +29,7 @@ export class Gateway {
   }
   async prepare(
     user: Principal,
-    input: { courseId: string; question: string; clientRequestId: string },
+    input: { courseId: string; question: string; clientRequestId: string; history?:HistoryMessage[] },
   ) {
     requireValue(user.role === "student", 403, "STUDENT_REQUIRED");
     await this.deps.authorization.authorize(user, input.courseId, "ask");
@@ -56,7 +57,7 @@ export class Gateway {
   }
   async answer(
     user: Principal,
-    input: { courseId: string; question: string },
+    input: { courseId: string; question: string; history?:HistoryMessage[] },
     id: string,
     signal: AbortSignal,
     emit: Emit,
@@ -101,6 +102,7 @@ export class Gateway {
       );
       const upstream = {
         question: input.question,
+        history: input.history ? [...input.history] : undefined,
         evidence: found.evidence,
         userId: createHmac("sha256", this.fingerprintKey)
           .update(user.subjectId)
@@ -109,6 +111,7 @@ export class Gateway {
         signal,
       };
       inputBytes = Buffer.byteLength(JSON.stringify(messages(upstream)));
+      while(inputBytes>this.policy.maxInputBytes && upstream.history?.length){upstream.history.splice(0,2);inputBytes=Buffer.byteLength(JSON.stringify(messages(upstream)));}
       requireValue(
         inputBytes <= this.policy.maxInputBytes,
         400,

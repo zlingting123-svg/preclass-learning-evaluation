@@ -1,3 +1,4 @@
+export interface HistoryMessage {role:"user"|"assistant";text:string}
 export type Purpose = "student_qa" | "teacher_analytics" | "system_admin";
 export interface Principal {
   subjectId: string;
@@ -37,6 +38,7 @@ export interface KnowledgeProvider {
     courseId: string;
     scopeIds: string[];
     question: string;
+    history?: HistoryMessage[];
     signal: AbortSignal;
   }): Promise<Retrieval>;
 }
@@ -52,6 +54,7 @@ export type ProviderEvent =
   | { type: "finish"; reason: "stop" | "length" };
 export interface UpstreamInput {
   question: string;
+  history?: HistoryMessage[];
   evidence: Evidence[];
   userId: string;
   maxOutputTokens: number;

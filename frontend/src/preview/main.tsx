@@ -1,4 +1,6 @@
-import { askCourse } from "../services/courseAi";
+import { useConversations } from "../components/ai/useConversations";
+import { DeleteConversation } from "../components/ai/DeleteConversation";
+import type { ChatMessage as Message, ChatThread } from "@shared/conversations";
 import { AiStatusPanel } from "../components/ai/AiStatus";
 import { createRoot } from "react-dom/client";
 import { useEffect, useRef, useState } from "react";
@@ -283,9 +285,10 @@ function Workspace({
   const chat = location.pathname === "/assistant";
   useEffect(() => {
     readClasses()
-      .then((c) => {
+      .then(async(c) => {
+        const last=user.role==='student'?await request<{classId:string|null}>("GET","/core/ai/last-context"):null;
         setClasses(c);
-        setClassId(c[0]?.id ?? "");
+        setClassId(c.some(item=>item.id===last?.classId)?last!.classId!:c[0]?.id??"");
       })
       .catch((e) => setError(errorText(e)));
   }, []);
@@ -809,102 +812,21 @@ function Dashboard({
   );
 }
 
-interface Message {
-  id: string;
-  role: "user" | "assistant";
-  text: string;
-  failed?: boolean;
-  sources?: Array<{id:string; title:string; version:string}>;
-}
-interface Thread {
-  id: string;
-  messages: Message[];
-}
 function Chat({ classId, className }: { classId: string; className: string }) {
-  const [threads, setThreads] = useState<Thread[]>([
-      { id: crypto.randomUUID(), messages: [] },
-    ]),
-    [active, setActive] = useState(""),
-    [input, setInput] = useState(""),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState(""),
-    [history, setHistory] = useState(false),
-    [copied, setCopied] = useState("");
-  const current = threads.find((t) => t.id === active) ?? threads[0],
-    controller = useRef<AbortController | null>(null),
-    busyRef = useRef(false),
-    end = useRef<HTMLDivElement>(null),
-    textarea = useRef<HTMLTextAreaElement>(null);
-  useEffect(() => () => controller.current?.abort(), []);
-  useEffect(() => {
-    end.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  }, [current.messages.length, busy]);
-  function update(threadId: string, fn: (m: Message[]) => Message[]) {
-    setThreads((ts) =>
-      ts.map((t) =>
-        t.id === threadId ? { ...t, messages: fn(t.messages) } : t,
-      ),
-    );
-  }
-  async function send(text: string, retryId?: string) {
-    if (busyRef.current || !text.trim()) return;
-    busyRef.current = true;
-    setBusy(true);
-    setError("");
-    const threadId = current.id,
-      id = retryId ?? crypto.randomUUID(),
-      message: Message = { id, role: "user", text: text.trim() };
-    update(threadId, (m) =>
-      retryId
-        ? m.map((x) => (x.id === id ? { ...x, failed: false } : x))
-        : [...m, message],
-    );
-    setInput("");
-    const abort = new AbortController();
-    controller.current = abort;
-    try {
-      const answerId = crypto.randomUUID();
-      await askCourse(classId, message.text, id, abort.signal, ({event, data}) => {
-        if (abort.signal.aborted) return;
-        if (event === 'delta' || event === 'refusal' || event === 'insufficient_evidence') {
-          update(threadId, messages => {
-            const exists = messages.some(m => m.id === answerId);
-            const text = data.text ?? data.message ?? '';
-            return exists ? messages.map(m => m.id === answerId ? {...m, text: m.text + text} : m)
-              : [...messages, {id: answerId, role: 'assistant', text}];
-          });
-        }
-        if (event === 'sources') update(threadId, messages => [...messages, {id: answerId, role: 'assistant', text: '' , sources: data.sources}]);
-      });
-    } catch (e) {
-      update(threadId, (m) =>
-        m.map((x) => (x.id === id ? { ...x, failed: true } : x)),
-      );
-      setError(
-        e instanceof Error && e.name === "AbortError"
-          ? "已停止发送，问题仍保留。"
-          : errorText(e),
-      );
-    } finally {
-      busyRef.current = false;
-      setBusy(false);
-      controller.current = null;
-    }
-  }
-  function newThread() {
-    const id = crypto.randomUUID();
-    setThreads((t) => [{ id, messages: [] }, ...t]);
-    setActive(id);
-    setInput("");
-    setError("");
-    setHistory(false);
-  }
+  const chat=useConversations(classId),{threads,busy,error}=chat;
+  const current=chat.current??{id:'',messages:[]};
+  const [input,setInput]=useState(''),[history,setHistory]=useState(false),[copied,setCopied]=useState(''),[copyError,setCopyError]=useState(''),[deleting,setDeleting]=useState<ChatThread|null>(null);
+  const end=useRef<HTMLDivElement>(null),textarea=useRef<HTMLTextAreaElement>(null);
+  useEffect(()=>{setInput('');setDeleting(null)},[classId,chat.current?.id]);
+  useEffect(()=>{end.current?.scrollIntoView({behavior:'smooth',block:'nearest'})},[current.messages.length,busy]);
+  async function send(text:string){if(!text.trim()||busy||chat.loading)return;setInput('');await chat.send(text)}
+  async function newThread(){await chat.newThread();setHistory(false)}
   async function copy(m: Message) {
     try {
       await navigator.clipboard.writeText(m.text);
-      setCopied(m.id);
+      setCopied(m.id);setCopyError("");
     } catch {
-      setError("复制失败，请选择文字手动复制。");
+      setCopyError("复制失败，请选择文字手动复制");
     }
   }
   if (getCurrentUser()?.role !== 'student') return <section className="core"><h1>课程 AI 使用统计</h1><AiStatusPanel classId={classId} /></section>;
@@ -912,34 +834,19 @@ function Chat({ classId, className }: { classId: string; className: string }) {
     <main className="pv-chat">
       <aside
         className={`pv-chat-history ${history ? "is-open" : ""}`}
-        aria-label="本页会话"
+        aria-label="历史对话"
       >
-        <button className="pv-new-chat" disabled={busy} onClick={newThread}>
+        <button className="pv-new-chat" disabled={busy||chat.loading} onClick={()=>void newThread()}>
           <Icon name="plus" />
           开启新对话
         </button>
-        <p className="pv-nav-label">本页对话</p>
-        {threads.map((t) => (
-          <button
-            key={t.id}
-            disabled={busy}
-            className={`pv-thread ${current.id === t.id ? "is-active" : ""}`}
-            onClick={() => {
-              setActive(t.id);
-              setError("");
-              setInput("");
-              setHistory(false);
-            }}
-          >
-            <Icon name="chat" />
-            <span>{t.messages[0]?.text ?? "新的课程对话"}</span>
-          </button>
-        ))}
-        <p className="pv-history-note">
-          仅保存在当前页面
-          <br />
-          刷新后不保留会话
-        </p>
+        <button disabled={chat.canStop||chat.loading} className="pv-refresh-chat" onClick={()=>void chat.refresh()}>刷新历史</button>
+        <p className="pv-nav-label">已保存的对话</p>
+        {threads.map(t=><div className="pv-thread-row" key={t.id}>
+          <button disabled={busy||chat.loading} className={`pv-thread ${current.id===t.id?'is-active':''}`} onClick={()=>{void chat.selectThread(t.id);setHistory(false)}}><Icon name="chat"/><span>{t.title}</span></button>
+          <button className="pv-thread-delete" aria-label={'删除对话：'+t.title} disabled={busy||chat.loading} onClick={()=>{setDeleting(t);setHistory(false)}}>删除</button>
+        </div>)}
+        <p className="pv-history-note">已同步到个人账号<br/>重新登录可继续，也可删除</p>
       </aside>
       <section
         className={`pv-chat-main ${!current.messages.length ? "is-welcome" : ""}`}
@@ -959,6 +866,8 @@ function Chat({ classId, className }: { classId: string; className: string }) {
           </button>
           <span className="pv-chat-context">{className}</span>
         </header>
+        {deleting&&<DeleteConversation title={deleting.title} busy={chat.loading} onCancel={()=>setDeleting(null)} onConfirm={()=>{void chat.removeThread(deleting.id);setDeleting(null)}}/>}
+        {chat.loading&&<p role="status" className="pv-chat-loading">正在同步账号对话…</p>}
         {!current.messages.length ? (
           <div className="pv-chat-welcome">
             <span className="pv-ai-orb">
@@ -1002,18 +911,8 @@ function Chat({ classId, className }: { classId: string; className: string }) {
                     <button onClick={() => copy(m)}>
                       {copied === m.id ? "已复制" : "复制"}
                     </button>
-                    {m.failed && (
-                      <>
-                        <span>未发送成功</span>
-                        <button
-                          disabled={busy}
-                          onClick={() => send(m.text, m.id)}
-                        >
-                          <Icon name="retry" />
-                          重试
-                        </button>
-                      </>
-                    )}
+                    {m.role==='assistant'&&['error','cancelled','interrupted'].includes(m.outcome)&&<span>本次回答未完成，记录已保留</span>}
+                    {m.role==='user'&&['error','cancelled','interrupted'].includes(m.outcome)&&<button disabled={busy||chat.loading} onClick={()=>setInput(m.text)}>重新填写</button>}
                   </div>
                 </div>
               </article>
@@ -1030,10 +929,10 @@ function Chat({ classId, className }: { classId: string; className: string }) {
           </div>
         )}
         <div className="pv-composer-wrap">
-          <AiStatusPanel classId={classId} revision={busy ? 1 : 0} />
-          {error && (
+          <AiStatusPanel classId={classId} revision={chat.revision} />
+          {(error||copyError) && (
             <p className="pv-chat-error" role="alert">
-              {error}
+              {error||copyError}
             </p>
           )}
           <form
@@ -1073,7 +972,8 @@ function Chat({ classId, className }: { classId: string; className: string }) {
                   type="button"
                   className="pv-send"
                   aria-label="停止发送"
-                  onClick={() => controller.current?.abort()}
+                  disabled={!chat.canStop}
+                  onClick={chat.stop}
                 >
                   <Icon name="stop" />
                 </button>
@@ -1081,7 +981,7 @@ function Chat({ classId, className }: { classId: string; className: string }) {
                 <button
                   className="pv-send"
                   aria-label="发送"
-                  disabled={!input.trim()}
+                  disabled={!input.trim()||chat.loading}
                 >
                   <Icon name="send" />
                 </button>
@@ -1089,7 +989,7 @@ function Chat({ classId, className }: { classId: string; className: string }) {
             </div>
           </form>
           <p className="pv-chat-disclaimer">
-            请以服务状态为准，模拟回答会明确标记。每个问题独立检索，聊天正文不保存，请核对课程资料。
+            对话已保存到个人账号，可接续追问或删除。历史只作上下文，回答仍以课程资料为依据；模拟回答会明确标记。
           </p>
         </div>
       </section>

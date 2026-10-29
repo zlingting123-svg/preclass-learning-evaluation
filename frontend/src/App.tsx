@@ -32,8 +32,9 @@ function AuthBridge() {
   return null;
 }
 function RequireRole({ teacher = false }: { teacher?: boolean }) {
+  const location=useLocation();
   const user = getCurrentUser();
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/login" state={{from:location.pathname}} replace />;
   if (teacher && user.role !== "teacher") return <Navigate to="/" replace />;
   return <Outlet />;
 }
