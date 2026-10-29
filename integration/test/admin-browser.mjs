@@ -166,6 +166,19 @@ try {
     await page.getByRole("button", { name: "移出班级", exact: true }).click();
     await page.getByRole("status").filter({ hasText: "已移出班级" }).waitFor();
     assert.equal(store.all("member").length, 0);
+    await page.getByLabel("班级名称", { exact: true }).fill("浏览器第二模拟班");
+    await page
+      .getByLabel("授课教师", { exact: true })
+      .selectOption(teacher.user.id);
+    await page.getByRole("button", { name: "保存班级", exact: true }).click();
+    await page.getByRole("status").filter({ hasText: "班级已保存" }).waitFor();
+    const second = store
+      .all("class")
+      .find((c) => c.name === "浏览器第二模拟班");
+    assert.equal(
+      await page.getByLabel("当前管理班级", { exact: true }).inputValue(),
+      second.id,
+    );
     await page.getByRole("button", { name: "操作日志", exact: true }).click();
     await page
       .getByRole("cell", { name: "移出班级成员", exact: true })

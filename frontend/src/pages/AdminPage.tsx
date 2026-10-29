@@ -72,6 +72,8 @@ export function AdminConsole() {
     [teacherId, setTeacherId] = useState(""),
     [authorizeCohort, setAuthorizeCohort] = useState(false);
   const loadSequence = useRef(0);
+  const selectedClassRef = useRef(classId);
+  selectedClassRef.current = classId;
   const current = getCurrentUser();
   async function all(role: string) {
     const result: Account[] = [];
@@ -141,8 +143,14 @@ export function AdminConsole() {
     try {
       await fn();
       await load();
-      if (classId)
-        setMembers(await req("GET", `/admin/classes/${classId}/members`));
+      const selected = selectedClassRef.current;
+      if (selected) {
+        const latest = await req<Account[]>(
+          "GET",
+          `/admin/classes/${selected}/members`,
+        );
+        if (selectedClassRef.current === selected) setMembers(latest);
+      }
       setNotice(text);
     } catch (e) {
       setError(msg(e));
@@ -506,7 +514,7 @@ export function AdminConsole() {
                 onSubmit={(e) => {
                   e.preventDefault();
                   void run(async () => {
-                    await req(
+                    const saved = await req<Class>(
                       classEdit ? "PUT" : "POST",
                       "/admin/classes" + (classEdit ? "/" + classEdit.id : ""),
                       {
@@ -518,6 +526,8 @@ export function AdminConsole() {
                         },
                       },
                     );
+                    selectedClassRef.current = saved.id;
+                    setClassId(saved.id);
                     setClassEdit(null);
                     setClassName("");
                     setTeacherId("");
@@ -619,6 +629,7 @@ export function AdminConsole() {
               <label>
                 当前管理班级
                 <select
+                  aria-label="当前管理班级"
                   value={classId}
                   onChange={(e) => setClassId(e.target.value)}
                 >
