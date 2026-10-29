@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-28",
+  "kind": "AI module authenticated usage endpoint; NOT whole-site online users",
+  "requests": 500,
+  "success": 500,
+  "establishedConnections": 500,
+  "elapsedMs": 5713,
+  "clientConnections": 600,
+  "tcpHandshakesAtOnce": 1,
+  "tcpHandshakePacingMs": 10,
+  "autoRetries": 0
+}

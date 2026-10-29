@@ -1,3 +1,5 @@
+> **AI独立交付（2026-10-29）**：本分支feature/ai-module-only只增加AI引擎与后端接口，不修改前端及服务管理端。其他创作者请先读[接入指南](docs/integration/AI模块独立交付.md)和[工作日志](更新日志/2026-10-29-AI功能模块独立交付.md)，按自己的页面实现接入。
+
 > **2026-10-28 最新：核心问卷 v0.4.0。** 用户提供《更新要求.md》并要求按 GitHub 最新项目修改。本轮基于 origin/integration/learning-platform@3d48082 新建 feature/core-questionnaires，正确本机目录为本聊天 work/core-questionnaires；不要回到旧 oss-foundations 或覆盖同事工作区。实现问卷编辑/发布、教师网页名单预览/确认、doc/docx/xls/xlsx/csv识别、服务端截止与时长、全班完成情况/只读答卷/逐题统计及AI助手。旧评分/复核/画像/课程导读等不再进入当前路由，历史代码与数据保留供追溯。
 >
 > 新导入学生按新需求默认12345，旧账号不重置；原CLI随机口令策略未改。AI由另一位同学实现，本轮chat/generate/insights均明确503未接入，不伪造结果。共享契约0.4.0；需求差异见docs/需求/2026-10-28-核心问卷改版.md，接口交接见docs/integration/AI接口交接.md。

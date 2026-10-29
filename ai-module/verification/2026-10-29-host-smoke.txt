@@ -1,0 +1,9 @@
+
+> preclass-backend@0.1.0 smoke
+> node test/startup-smoke.mjs
+
+SMOKE create-account passed
+SMOKE server-ready
+SMOKE stopping-server
+SMOKE backup
+PASS: 构建产物启动、受控账号命令、HTTP登录/me、备份命令和恢复副本完整性；仅本机模拟账号。

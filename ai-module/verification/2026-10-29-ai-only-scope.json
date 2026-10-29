@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-29",
+  "base": "61751cc94586f15ffe82e2bd380f3cd739a12ae2",
+  "branch": "feature/ai-module-only",
+  "frontendUnchanged": true,
+  "originalAuthUnchanged": true,
+  "originalQuestionnaireRoutesUnchanged": true,
+  "serviceAdminIncluded": false,
+  "aiTests": {
+    "pass": 18,
+    "fail": 0
+  },
+  "backendTests": {
+    "pass": 53,
+    "fail": 0
+  },
+  "smoke": "passed",
+  "realModelCallsEnabled": false,
+  "scope": "AI engine, backend adapters, shared conversation DTO, tests and handoff; no UI changes",
+  "limits": [
+    "single-instance SQLite",
+    "mock-only host",
+    "no real provider or whole-site 300/500 acceptance"
+  ]
+}
