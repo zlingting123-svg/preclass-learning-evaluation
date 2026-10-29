@@ -64,6 +64,7 @@ test("单机生产配置需显式开启、HTTPS来源和独立持久目录，默
     process.env.STATIC_DIR = resolve(folder, "public");
     process.env.DB_PATH = resolve(folder, "private/app.sqlite");
     assert.equal(config().production, true);
+    assert.equal(config().requestTimeoutMs,120000);
     process.env.DB_PATH = resolve(folder, "public/app.sqlite");
     assert.throws(() => config(), /数据库不能/);
     process.env.DB_PATH = "relative.sqlite";

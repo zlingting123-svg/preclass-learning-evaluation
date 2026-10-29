@@ -11,7 +11,7 @@ const service = new Service(store), auth = new LocalAuth(store), ai = localCours
 const server = createApp(service, auth, ai, settings.appOrigin&&settings.staticDir?{appOrigin:settings.appOrigin,staticDir:settings.staticDir}:undefined).listen(settings.port, settings.host, () => {
   process.stdout.write(JSON.stringify({ event: 'local_server_started', host: settings.host, port: settings.port, productionReady: false }) + '\n');
 });
-server.requestTimeout = 30000;
+server.requestTimeout = settings.requestTimeoutMs;
 server.headersTimeout = 10000;
 server.on('error', () => { process.stderr.write('后台启动失败，请检查端口与本地数据库权限\n'); ai?.close(); store.close(); process.exitCode = 1; });
 for (const signal of ['SIGINT', 'SIGTERM'] as const) process.on(signal, () => server.close(() => { ai?.close(); store.close(); process.exit(0); }));

@@ -1,4 +1,5 @@
-import { existsSync, accessSync, constants } from "node:fs";
+import { existsSync, accessSync, constants, mkdirSync, lstatSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { dirname } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { config } from "../backend/dist/backend/src/config.js";
@@ -12,7 +13,12 @@ if (process.getuid?.() === 0)
 const c = config();
 if (!c.production || !c.staticDir || !existsSync(c.staticDir + "/index.html"))
   throw Error("Production frontend/config missing");
+if(!existsSync(c.staticDir+"/design-preview.html"))throw Error("Learning-space production entry missing");
+const python=spawnSync(process.env.REFERENCE_PYTHON??'python3',['-c','import pypdf; print(pypdf.__version__)'],{encoding:'utf8',timeout:10000});
+if(python.status!==0)throw Error("PDF parser unavailable: install backend/scripts/requirements.txt in REFERENCE_PYTHON venv");
 accessSync(dirname(c.dbPath), constants.W_OK);
+for(const name of ['reference-files','ai']){const path=dirname(c.dbPath)+'/'+name;if(existsSync(path)&&lstatSync(path).isSymbolicLink())throw Error('Private storage cannot be a symlink');mkdirSync(path,{recursive:true,mode:0o700});accessSync(path,constants.W_OK);}
+
 if (!existsSync(c.dbPath))
   throw Error(
     "Create the database and a private administrator first; no demo seeding",

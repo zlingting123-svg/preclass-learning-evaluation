@@ -17,5 +17,7 @@ export function config() {
   ensure(['127.0.0.1', 'localhost', '::1'].includes(host), 503, 'LOCAL_ONLY', '当前适配器仅允许本机访问');
   const port = Number(process.env.PORT ?? '3001');
   ensure(Number.isInteger(port) && port >= 1 && port <= 65535, 400, 'VALIDATION_ERROR', '端口配置无效');
-  return { host, port, dbPath: resolve(process.env.DB_PATH ?? 'work/local.sqlite'),production,appOrigin,staticDir };
+  const requestTimeoutMs=Number(process.env.HTTP_REQUEST_TIMEOUT_MS??(production?'120000':'30000'));
+  ensure(Number.isInteger(requestTimeoutMs)&&requestTimeoutMs>=30000&&requestTimeoutMs<=300000,503,'HTTP_TIMEOUT_INVALID','HTTP请求超时必须为30000至300000毫秒');
+  return { host, port, requestTimeoutMs, dbPath: resolve(process.env.DB_PATH ?? 'work/local.sqlite'),production,appOrigin,staticDir };
 }

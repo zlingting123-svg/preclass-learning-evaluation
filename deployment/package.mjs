@@ -86,7 +86,7 @@ writeFileSync(
   JSON.stringify(
     {
       commit,
-      frontendEntry: "index.html",
+      frontendEntry: "design-preview.html",
       deployment: "single-host behind HTTPS proxy",
       files: inventory,
     },

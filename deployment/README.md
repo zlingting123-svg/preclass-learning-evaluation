@@ -88,3 +88,15 @@ curl -f -H 'Host: classroom.你的域名' http://127.0.0.1:3001/api/v1/health
 ## 本机集成补记（2026-10-29）
 
 当前组合包含 `file:../ai-module` 依赖：部署前先在 ai-module 执行 npm ci、npm run build，再安装构建 backend。发布包白名单已包含此模块；新组合尚未在Linux重新打包安装验收。前端现在构建两个入口，用户当前选择的学习空间为 `/design-preview.html`，根入口保留原核心业务。备份脚本只覆盖主数据库，另需安全备份数据库旁 ai/metadata.sqlite 和 fingerprint.secret；不得将它们放入公开源码或发布包。真实部署前必须完成组合验证及恢复演练。
+
+## 2026-10-29 服务器适配（取代前文相应旧说明）
+
+- Caddy单次请求上限改为8MB，允许4MiB分块；这是每块上限，不是整份PDF大小。根网址跳转到已选学习空间 `/design-preview.html`。模板使用官方Caddy标准发行版，已验证版本2.11.7；[request_body文档](https://caddyserver.com/docs/caddyfile/directives/request_body)中的相关功能需要兼容版本，安装后必须执行caddy validate。
+- 正式HTTP请求超时默认120秒，可通过HTTP_REQUEST_TIMEOUT_MS设为30000至300000毫秒，只针对单个分块请求；解析后台任务有自己的超时。应用仍只监听回环地址。
+- Python使用独立环境：`python3 -m venv /opt/preclass/python`，然后 `/opt/preclass/python/bin/pip install -r /opt/preclass/current/backend/scripts/requirements.txt`；REFERENCE_PYTHON指向该环境。预检检查pypdf、学习空间构建文件及数据目录可写性。不要把本机Python环境复制到Linux。
+- 应用数据保留在DB_PATH旁的reference-files/和ai/，部署时为preclass用户准备0700数据目录；预检拒绝这些目录使用符号链接。代码与Python环境由root管理并保持应用用户不可写，应用仍以preclass用户运行。默认AI_MODE=disabled，实际模型、搜索密钥和AI预读留待配置验收。
+- preclass-backup.service现以root执行受控backup-full.sh：先停止preclass服务，生成一致的主库、资料原件/解析文件、AI用量库与指纹密钥备份，再恢复原先运行的服务。每日timer会造成备份期间停服（耗时取决于资料量），应调整到非教学时段；备份失败会返回失败，脚本仍尝试恢复服务。只有root应能修改/切换 /opt/preclass/current、其发布代码、脚本及 /etc/preclass.env，防止应用用户修改被root执行的内容。
+- 完整备份目录包含manifest.json及各文件SHA-256。用 `node deployment/verify-backup.mjs /var/backups/preclass/某个备份目录` 验证，能识别缺失、额外文件、符号链接和篡改。恢复时先停服务，核验后复制到新的独立私有数据目录，将主库/资料/AI目录的属主设为preclass，再调整DB_PATH，保留旧数据用于回退。备份含密钥和个人数据，禁止放入公开目录或仓库，并需配置受控异机副本。
+- `node deployment/backup.mjs` 的默认行为仍为仅主库在线备份，兼容旧工具；它不等同于完整资料备份。FULL_BACKUP=1只允许由已停止应用的完整备份流程使用。
+- 发布包包含AI模块、Python脚本/依赖清单、两个前端入口及部署工具；不含versions历史快照、运行资料、数据库或密钥。安装顺序依然为ai-module npm ci/build，再backend npm ci/build，再前端构建（若包内已有dist可不重建）。从原始根目录的干净提交运行打包工具，不能在历史快照子目录直接打包。
+- 新增Ubuntu24.04 CI任务，执行后台回归、Python依赖、非root预检、备份/恢复校验、发布包构建、Caddy配置与实际代理分块上传。本机仅有macOS验证，不冒充systemd、Linux云主机、真实域名或证书验收。

@@ -1,15 +1,11 @@
 [Unit]
-Description=Online SQLite backup for Preclass
+Description=Preclass complete offline backup (application downtime for backup)
+After=network.target
 
 [Service]
 Type=oneshot
-User=preclass
-Group=preclass
-WorkingDirectory=/opt/preclass/current/backend
+User=root
+Group=root
 EnvironmentFile=/etc/preclass.env
-ExecStart=/usr/local/bin/node ../deployment/backup.mjs
+ExecStart=/bin/bash /opt/preclass/current/deployment/backup-full.sh
 UMask=0077
-NoNewPrivileges=true
-ProtectSystem=strict
-ProtectHome=true
-ReadWritePaths=/var/lib/preclass /var/backups/preclass
