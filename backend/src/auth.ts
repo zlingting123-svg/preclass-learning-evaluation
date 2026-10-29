@@ -4,6 +4,7 @@ import { z } from 'zod';
 import type { AuthSession, Role, User } from '../../shared/contracts.js';
 import type { Store } from './store.js';
 import { ensure } from './errors.js';
+import { serverSettings } from './admin-settings.js';
 
 export interface Account { user: User; username: string; passwordHash: string; disabled?: boolean; version?: number }
 interface Session { userId: string; expiresAt: string; epoch?: number }
@@ -44,7 +45,7 @@ export class LocalAuth implements AuthProvider {
     const valid = await bcrypt.compare(password, account?.passwordHash ?? this.dummyHash);
     ensure(valid && account && !account.disabled && Buffer.byteLength(password) <= 72, 401, 'UNAUTHENTICATED', '账号或口令错误');
     const accessToken = randomBytes(32).toString('base64url');
-    const expiresAt = new Date(this.now() + 8 * 60 * 60 * 1000).toISOString();
+    const expiresAt = new Date(this.now() + serverSettings(this.store).sessionHours * 60 * 60 * 1000).toISOString();
     this.store.put<Session>('session', digest(accessToken), { userId: account.user.id, expiresAt, epoch: this.store.get<{version:number}>('session_epoch',account.user.id)?.version??0 });
     return { user: account.user, accessToken, expiresAt };
   }

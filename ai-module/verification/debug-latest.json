@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-28",
+  "scope": "running local mock API; no paid calls; no transcript stored",
+  "passed": 11,
+  "results": [
+    {
+      "name": "API健康状态可读且未宣称真实模型就绪",
+      "result": "pass"
+    },
+    {
+      "name": "无凭据访问被拒绝",
+      "result": "pass"
+    },
+    {
+      "name": "教师不能冒充学生提问",
+      "result": "pass"
+    },
+    {
+      "name": "未选课程被拒绝",
+      "result": "pass"
+    },
+    {
+      "name": "问答SSE包含来源、输出和done结束标记",
+      "result": "pass"
+    },
+    {
+      "name": "完成后重放同一请求不会再次生成",
+      "result": "pass"
+    },
+    {
+      "name": "课程无关问题固定拒答",
+      "result": "pass"
+    },
+    {
+      "name": "课程相关但无证据时返回资料不足",
+      "result": "pass"
+    },
+    {
+      "name": "拒答不增加模型调用，用量统计只增加一次完成",
+      "result": "pass"
+    },
+    {
+      "name": "学生无管理员用量权限",
+      "result": "pass"
+    },
+    {
+      "name": "管理员可查看350并发配置及余额未配置状态",
+      "result": "pass"
+    }
+  ]
+}

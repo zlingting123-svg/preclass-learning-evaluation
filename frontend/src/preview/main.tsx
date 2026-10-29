@@ -1,9 +1,15 @@
+import { ApiManager, ServerManager, Metadata } from './ServicePanels';
+import type { AuthSession } from '@shared/contracts';
+import { parseApiResponse } from '../services/httpClient';
+import { API_BASE_URL } from '../config';
+import './service.css';
 import {newId} from '../lib/newId';
 import { createRoot } from "react-dom/client";
 import {AdminConsole} from '../pages/AdminPage';
 import { useEffect, useRef, useState } from "react";
 import {
   MemoryRouter,
+  Navigate,
   Routes,
   Route,
   Link,
@@ -32,6 +38,7 @@ import "../styles/learning.css";
 import "./preview.css";
 
 type IconName =
+  | "shield"
   | "spark"
   | "grid"
   | "book"
@@ -54,6 +61,7 @@ function Icon({
   className?: string;
 }) {
   const shapes: Record<IconName, React.ReactNode> = {
+    shield: <><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6Z"/><path d="m8 12 3 3 5-6"/></>,
     spark: (
       <>
         <path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z" />
@@ -128,37 +136,21 @@ async function readClasses() {
 }
 
 function Preview() {
-  const [user, setUser] = useState<User | null>(getCurrentUser()),
-    [theme, setTheme] = useState("violet");
-  useEffect(() => {
-    setUnauthorizedHandler(() => {
-      clearSession();
-      setUser(null);
-    });
-    return () => setUnauthorizedHandler(null);
-  }, []);
-  return (
-    <div className="studio" data-theme={theme}>
-      {user?.role==='admin'?<AdminConsole/>:user ? (
-        <MemoryRouter>
-          <Workspace
-            user={user}
-            theme={theme}
-            setTheme={setTheme}
-            logout={() => {
-              void api.logout().catch(() => {});
-              clearSession();
-              setUser(null);
-            }}
-          />
-        </MemoryRouter>
-      ) : (
-        <PreviewLogin done={setUser} />
-      )}
-    </div>
-  );
+  const [user,setUser]=useState<User|null>(getCurrentUser()),[theme,setTheme]=useState('forest');
+  return <div className="studio" data-theme={theme}><MemoryRouter><PreviewRoutes user={user} setUser={setUser} theme={theme} setTheme={setTheme}/></MemoryRouter></div>;
 }
-function PreviewLogin({ done }: { done: (u: User) => void }) {
+function PreviewRoutes({user,setUser,theme,setTheme}:{user:User|null;setUser:(user:User|null)=>void;theme:string;setTheme:(theme:string)=>void}){
+ const navigate=useNavigate(),location=useLocation();
+ useEffect(()=>{setUnauthorizedHandler(()=>{setUser(null);navigate(location.pathname==='/service-login'?'/service-login':'/login',{replace:true})});return()=>setUnauthorizedHandler(null)},[navigate,location.pathname,setUser]);
+ const done=(next:User)=>{setUser(next);navigate('/',{replace:true})};
+ const logout=()=>{void api.logout().catch(()=>{});clearSession();setUser(null);navigate('/login',{replace:true})};
+ return <Routes>
+  <Route path="/service-login" element={<PreviewLogin mode="admin" done={done}/>}/>
+  <Route path="/login" element={<PreviewLogin done={done}/>}/>
+  <Route path="/*" element={user?<Workspace user={user} theme={theme} setTheme={setTheme} logout={logout}/>:<Navigate to="/login" replace/>}/>
+ </Routes>;
+}
+function PreviewLogin({ done, mode="learning" }: { done: (u: User) => void; mode?:"learning"|"admin" }) {
   const [username, setUsername] = useState(""),
     [password, setPassword] = useState(""),
     [busy, setBusy] = useState(false),
@@ -169,7 +161,7 @@ function PreviewLogin({ done }: { done: (u: User) => void }) {
     setBusy(true);
     setError("");
     try {
-      const s = await api.login({ username, password });
+      const s = mode==='admin' ? await parseApiResponse<AuthSession>(await fetch(`${API_BASE_URL}/api/v1/auth/admin-login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})}),false) : await api.login({ username, password });
       setSession(s);
       done(s.user);
     } catch (e) {
@@ -219,11 +211,11 @@ function PreviewLogin({ done }: { done: (u: User) => void }) {
       <main>
         <div className="pv-login-form">
           <span className="pv-eyebrow">WELCOME BACK</span>
-          <h2>欢迎回到学习空间</h2>
-          <p className="pv-muted">登录你的班级，继续今天的学习。</p>
+          <h2>{mode==='admin'?'服务管理员登录':'欢迎回到学习空间'}</h2>
+          <p className="pv-muted">{mode==='admin'?'使用专用管理员账号，维护账户与平台服务。':'登录你的班级，继续今天的学习。'}</p>
           <form onSubmit={login}>
             <label>
-              学号 / 教师账号
+              {mode==='admin'?'管理员账号':'学号 / 教师账号'}
               <input
                 autoComplete="username"
                 required
@@ -247,13 +239,11 @@ function PreviewLogin({ done }: { done: (u: User) => void }) {
               </p>
             )}
             <button className="pv-primary pv-wide" disabled={busy}>
-              {busy ? "正在登录…" : "进入学习空间"}
+              {busy ? "正在登录…" : mode==='admin'?"进入服务管理":"进入学习空间"}
               <Icon name="arrow" />
             </button>
           </form>
-          <a className="pv-original" href="/">
-            返回当前版本
-          </a>
+          {mode==='admin'?<Link className="pv-original" to="/login">返回师生登录</Link>:<><a className="pv-original" href="/">返回当前版本</a><Link className="pv-service-entry" to="/service-login"><Icon name="shield"/>服务管理 <small>专用账号入口</small></Link></>}
         </div>
       </main>
     </div>
@@ -277,10 +267,11 @@ function Workspace({
     [mobile, setMobile] = useState(false);
   const navigate = useNavigate(),
     location = useLocation();
-  const teacher = user.role === "teacher";
+  const teacher = user.role === "teacher", admin=user.role==='admin';
   const selected = classes.find((c) => c.id === classId);
-  const chat = location.pathname === "/assistant";
+  const chat = !admin && location.pathname === "/assistant";
   useEffect(() => {
+    if(admin)return;
     readClasses()
       .then((c) => {
         setClasses(c);
@@ -305,19 +296,19 @@ function Workspace({
           <span className="pv-course-icon">环</span>
           <div>
             <strong>环境评价与管理</strong>
-            <small>{teacher ? "教师工作空间" : "学生学习空间"}</small>
+            <small>{admin?"服务管理空间":teacher ? "教师工作空间" : "学生学习空间"}</small>
           </div>
         </div>
         <p className="pv-nav-label">WORKSPACE</p>
         <nav>
-          {[
+          {(admin?[["/","grid","服务概览"],["/accounts","users","账户管理"],["/api","spark","API 管理"],["/server","shield","服务器设置"],["/usage","book","用量查询"],["/audit","book","操作日志"]]:[
             ["/", "grid", teacher ? "班级工作台" : "我的班级"],
             ["/questionnaires", "book", "问卷与统计"],
             ["/assistant", "spark", "AI 问答助手"],
             ...(teacher && classId
               ? [[`/core/classes/${classId}/roster`, "users", "班级成员"]]
               : []),
-          ].map(([path, icon, label]) => (
+          ]).map(([path, icon, label]) => (
             <Link
               key={path}
               aria-label={label}
@@ -330,20 +321,21 @@ function Workspace({
             </Link>
           ))}
         </nav>
+        {!admin&&<Link className="pv-service-entry" to="/service-login"><Icon name="shield"/>服务管理 <small>专用账号入口</small></Link>}
         <div className="pv-sidebar-tip">
           <Icon name="spark" />
-          <strong>你的课程学习搭档</strong>
-          <p>从一个好问题开始，让理解更进一步。</p>
-          <button onClick={() => navigate("/assistant")}>
-            开始课程对话 <Icon name="arrow" />
+          <strong>{admin?"平台服务管理":"你的课程学习搭档"}</strong>
+          <p>{admin?"管理账户与运行设置，让师生专注课程。":"从一个好问题开始，让理解更进一步。"}</p>
+          <button onClick={() => navigate(admin?"/accounts":"/assistant")}>
+            {admin?"查找平台账户":"开始课程对话"} <Icon name="arrow" />
           </button>
-          <small>AI 服务待接入</small>
+          <small>{admin?"专用管理员权限":"AI 服务状态以对话页为准"}</small>
         </div>
         <div className="pv-profile">
           <span className="pv-avatar">{user.displayName[0]}</span>
           <div>
             <strong>{user.displayName}</strong>
-            <small>{teacher ? "教师账号" : "学生账号"} · 本机预览</small>
+            <small>{admin?"管理员账号":teacher ? "教师账号" : "学生账号"} · 本机预览</small>
           </div>
           <button
             className="pv-icon-button"
@@ -373,7 +365,7 @@ function Workspace({
           <div className="pv-breadcrumb">
             工作空间 <span>/</span>{" "}
             <strong>
-              {chat
+              {admin?({"/":"服务概览","/accounts":"账户管理","/api":"API 管理","/server":"服务器设置","/usage":"用量查询","/audit":"操作日志"} as Record<string,string>)[location.pathname]??'服务管理':chat
                 ? "AI 课程助手"
                 : location.pathname === "/"
                   ? "班级概览"
@@ -394,9 +386,7 @@ function Workspace({
                 <option value="graphite">石墨科技</option>
               </select>
             </label>
-            <a href="/" className="pv-version-link">
-              当前版本 ↗
-            </a>
+            {admin?<Link to="/login" className="pv-version-link">返回师生登录 ↗</Link>:<a href="/" className="pv-version-link">当前版本 ↗</a>}
           </div>
         </header>
         {error && (
@@ -404,7 +394,15 @@ function Workspace({
             {error}
           </p>
         )}
-        <Routes>
+        {admin?<div className="pv-page pv-service"><Routes>
+          <Route path="/" element={<AdminConsole key="overview" embedded activeTab="overview" onTabChange={tab=>navigate(tab==='users'?'/accounts':'/')}/>}/>
+          <Route path="/accounts" element={<AdminConsole key="users" embedded activeTab="users"/>}/>
+          <Route path="/audit" element={<AdminConsole key="audit" embedded activeTab="audit"/>}/>
+          <Route path="/api" element={<><h1>API 管理</h1><ApiManager/></>}/>
+          <Route path="/server" element={<><h1>服务器设置</h1><ServerManager/></>}/>
+          <Route path="/usage" element={<><h1>用量查询</h1><Metadata kind="usage"/></>}/>
+          <Route path="*" element={<Navigate to="/" replace/>}/>
+        </Routes></div>:<Routes>
           <Route
             path="/"
             element={
@@ -508,7 +506,7 @@ function Workspace({
               </div>
             }
           />
-        </Routes>
+        </Routes>}
       </div>
     </div>
   );
@@ -1094,4 +1092,6 @@ function Chat({ classId, className }: { classId: string; className: string }) {
     </main>
   );
 }
-createRoot(document.getElementById("root")!).render(<Preview />);
+const previewRoot=createRoot(document.getElementById("root")!);
+previewRoot.render(<Preview />);
+if(import.meta.hot)import.meta.hot.dispose(()=>previewRoot.unmount());

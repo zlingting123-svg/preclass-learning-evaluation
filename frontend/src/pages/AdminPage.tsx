@@ -21,6 +21,8 @@ interface Class {
 }
 const msg = (e: unknown) => (e instanceof Error ? e.message : "操作失败");
 const auditLabels: Record<string, string> = {
+  "api.configure": "配置API",
+  "server.configure": "配置服务器",
   create_account: "创建账号",
   update_account: "更新账号",
   disable_account: "停用账号",
@@ -31,8 +33,8 @@ const auditLabels: Record<string, string> = {
   unenroll_student: "移出班级成员",
   authorize_cohort_teacher: "授予教学批次资格",
 };
-export function AdminConsole() {
-  const [tab, setTab] = useState("overview"),
+export function AdminConsole({ embedded=false, activeTab, onTabChange }: { embedded?:boolean;activeTab?:string;onTabChange?:(tab:string)=>void } = {}) {
+  const [localTab, setLocalTab] = useState("overview"),
     [summary, setSummary] = useState<Record<string, number>>({}),
     [users, setUsers] = useState<Account[]>([]),
     [total, setTotal] = useState(0),
@@ -71,6 +73,7 @@ export function AdminConsole() {
     [className, setClassName] = useState(""),
     [teacherId, setTeacherId] = useState(""),
     [authorizeCohort, setAuthorizeCohort] = useState(false);
+  const tab=activeTab??localTab, setTab=onTabChange??setLocalTab;
   const loadSequence = useRef(0);
   const selectedClassRef = useRef(classId);
   selectedClassRef.current = classId;
@@ -96,9 +99,9 @@ export function AdminConsole() {
         "GET",
         `/admin/users?page=${page}&q=${encodeURIComponent(search)}${role ? "&role=" + role : ""}`,
       ),
-      req<Class[]>("GET", "/admin/classes"),
-      all("teacher"),
-      all("student"),
+      embedded?Promise.resolve([]):req<Class[]>("GET", "/admin/classes"),
+      embedded?Promise.resolve([]):all("teacher"),
+      embedded?Promise.resolve([]):all("student"),
       req<typeof audit>("GET", "/admin/audit"),
     ]);
     if (sequence !== loadSequence.current) return;
@@ -166,7 +169,7 @@ export function AdminConsole() {
       </main>
     );
   return (
-    <div className="admin-shell">
+    <div className={"admin-shell"+(embedded?" admin-embedded":"")}>
       <aside className="admin-nav">
         <h2>学习空间</h2>
         <p>独立管理中心</p>
@@ -239,9 +242,7 @@ export function AdminConsole() {
                 ["teachers", "教师"],
                 ["students", "学生"],
                 ["disabled", "已停用"],
-                ["classes", "班级"],
-                ["surveys", "问卷"],
-                ["responses", "已提交答卷"],
+                ...(!embedded?[["classes", "班级"],["surveys", "问卷"],["responses", "已提交答卷"]]:[]),
               ].map(([key, label]) => (
                 <article key={key}>
                   <span>{label}</span>
@@ -252,14 +253,14 @@ export function AdminConsole() {
             <section>
               <h2>管理范围</h2>
               <p>
-                统一创建与维护师生账号、分配授课教师、调整班级成员。停用账号或重置密码会使原会话失效。
+                {embedded?"统一查找和维护平台账户。课程、问卷和教学统计继续留在师生端。停用或重置密码会撤销原登录。":"统一创建与维护师生账号、分配授课教师、调整班级成员。停用账号或重置密码会使原会话失效。"}
               </p>
               <p>
                 管理员账号由本机受控命令维护；此页面不开放自助注册、提权或删除历史答卷。
               </p>
               <div className="admin-actions">
                 <button onClick={() => setTab("users")}>管理账号</button>
-                <button onClick={() => setTab("classes")}>管理班级</button>
+                {!embedded&&<button onClick={() => setTab("classes")}>管理班级</button>}
               </div>
             </section>
           </>

@@ -1,3 +1,5 @@
+> 2026-10-29用户纠正：服务管理界面必须基于图片中的GitHub学习空间UI。本工作区基于其他工作者feature/admin-console@3ffef2e；保留原preview.css与师生/登录布局，管理内容嵌入同一pv-workspace。上一轮preclass-ai-integration/ef9adb6已由4b7af6d撤回，不得恢复其自制管理UI或以旧/login页面替代本次目标。正确入口http://127.0.0.1:5175/design-preview.html；最新接续见handoff/SERVICE_PREVIEW.md。
+
 # 项目共同工作规则
 
 当前状态补充（2026-10-28）：用户已确认以React/Node为主，迁入学习平台布局、画像、导读和例题；Moodle样板保留对照。integration/learning-platform任务分支契约v0.3.0（兼容0.2.0，新增画像/材料API）；批次/受控名单CLI与前端批次筛选已实现，后台22项/HTTP21项本机通过，CI远端状态见最新验证记录。下方旧阶段中“新增需求未实现/v0.1.1”须按具体需求及handoff/CODEX_CONTINUE.md核对，不代表全部仍未实现。

@@ -20,7 +20,8 @@
     "roster:commit": "tsx src/roster-cli.ts commit",
     "backup": "tsx src/manage.ts backup",
     "worker": "tsx src/worker-main.ts",
-    "sample:seed": "node dist/backend/src/sample-seed.js"
+    "sample:seed": "node dist/backend/src/sample-seed.js",
+    "admin:bootstrap": "node dist/backend/src/admin-bootstrap.js"
   },
   "dependencies": {
     "bcryptjs": "3.0.3",
@@ -31,7 +32,8 @@
     "helmet": "8.3.0",
     "word-extractor": "1.0.4",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
-    "zod": "4.6.7"
+    "zod": "4.6.7",
+    "course-ai-module": "file:../ai-module"
   },
   "devDependencies": {
     "@types/express": "5.0.6",

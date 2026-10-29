@@ -1,3 +1,5 @@
+> **2026-10-29按用户截图纠正UI，本地完成。** 当前feature/service-admin-preview基于3ffef2e；正确入口5175/design-preview.html。原preclass-ai-integration的ef9adb6已被4b7af6d撤回；本轮直接保留其他工作者学习空间，管理功能嵌入同一pv布局，不用旧管理外壳。最新状态见[SERVICE_PREVIEW.md](SERVICE_PREVIEW.md)，不要依照下文历史独立管理端重新制作。
+
 > **2026-10-29 独立管理员端。** 用户明确选择管理员而非教师工作台，并在手机微信无法访问后要求暂停二维码/局域网调试，等买服务器再做。已撤销临时0.0.0.0前端监听、恢复127.0.0.1，未关闭防火墙；二维码/生成器只留本地outputs和integration/work/paused-lan，不作课堂可用结果，不继续询问手机测试。
 >
 > 任务分支feature/admin-console基于design/commercial-preview@61751cc。新增backend/src/admin.ts、管理员API、前端AdminPage与样式；原登录页/admin和商业预览均支持管理员分流。账号创建/搜索/角色筛选分页、姓名/启停、重置/撤销会话、全局概览、班级/教师/批次资格明确授权、成员调整、审计同事务已实现。管理员网页不可提权/维护管理员账号；私密模拟管理员demo_admin凭据只在本机work和用户outputs，不上传。
