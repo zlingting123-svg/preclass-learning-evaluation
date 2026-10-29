@@ -1,0 +1,35 @@
+{
+  "name": "preclass-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.15.0 <25"
+  },
+  "scripts": {
+    "dev": "vite",
+    "dev:mock": "vite --mode demo",
+    "test:integration": "node ../integration/test/core-browser.mjs",
+    "test:integration:legacy": "node ../integration/test/http-browser.mjs",
+    "test:config": "node ../integration/test/build-config.mjs",
+    "test:mock": "node ../integration/test/mock-smoke.mjs",
+    "build": "tsc -b && vite build",
+    "check": "tsc -b",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "echarts": "6.1.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "7.18.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "5.1.1",
+    "playwright-core": "1.64.1",
+    "typescript": "~5.6.2",
+    "vite": "7.3.7"
+  }
+}

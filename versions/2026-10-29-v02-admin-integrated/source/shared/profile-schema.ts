@@ -1,0 +1,423 @@
+// Original questionnaire from user materials; copied faithfully from the retained Moodle sample.
+import type { ProfileQuestion, ProfileAnswers } from "./learning.js";
+export const PROFILE_SCHEMA_VERSION = "source-draft-1";
+export const PROFILE_SOURCE_SHA256 =
+  "238c71e424181c8851a1c329bf3f1d7b589760ff9860b796f5781d9cecb52443";
+export const PROFILE_QUESTIONS: ProfileQuestion[] = [
+  {
+    id: "profile-01",
+    number: 1,
+    section: "第一部分：基本背景",
+    prompt: "你的年级是？",
+    sourceLines: ["- 大一 / 大二 / 大三"],
+    type: null,
+    required: null,
+    scaleAnchors: null,
+  },
+  {
+    id: "profile-02",
+    number: 2,
+    section: "第一部分：基本背景",
+    prompt: "你所属的专业/学院是？",
+    sourceLines: ["- （填空题）"],
+    type: "text",
+    required: null,
+    scaleAnchors: null,
+  },
+  {
+    id: "profile-03",
+    number: 3,
+    section: "第一部分：基本背景",
+    prompt: "你之前是否接触过环境类课程？",
+    sourceLines: [
+      "- 完全没接触过",
+      "- 听说过一些名词（如碳中和、PM2.5）",
+      "- 上过相关通识课",
+      "- 系统学习过专业知识",
+    ],
+    type: null,
+    required: null,
+    scaleAnchors: null,
+  },
+  {
+    id: "profile-04",
+    number: 4,
+    section: "第一部分：基本背景",
+    prompt: "你认为环境评价与管理主要是在干什么？",
+    sourceLines: [
+      "- 管工厂冒烟排水",
+      "- 管垃圾分类回收",
+      "- 管国家政策法规",
+      "- 管企业怎么赚钱同时不破坏环境",
+      "- 说不清楚",
+    ],
+    type: null,
+    required: null,
+    scaleAnchors: null,
+  },
+  {
+    id: "profile-05",
+    number: 5,
+    section: "第二部分：认知与基础（摸底知识储备）",
+    prompt: "你了解以下哪些环境名词？",
+    sourceLines: [
+      "- COD和BOD",
+      "- 光化学氧化",
+      "- 土壤盐渍化",
+      "- 环境分区管控",
+      "- 等效A声级",
+    ],
+    type: null,
+    required: null,
+    scaleAnchors: null,
+  },
+  {
+    id: "profile-06",
+    number: 6,
+    section: "第二部分：认知与基础（摸底知识储备）",
+    prompt: "提到“环境影响评价（环评） 管理”，你的第一反应是？",
+    sourceLines: [
+      "- 完全陌生",
+      "- 觉得是很复杂的技术报告",
+      "- 知道是项目开工前的环保审批",
+      "- 非常了解其流程",
+    ],
+    type: null,
+    required: null,
+    scaleAnchors: null,
+  },
+  {
+    id: "profile-07",
+    number: 7,
+    section: "第二部分：认知与基础（摸底知识储备）",
+    prompt: "你对以下热词的熟悉程度如何？（1-5分打分）",
+    sourceLines: [
+      "- 碳达峰 / 碳中和",
+      "- 排污许可证",
+      "- 绿水青山就是金山银山",
+      "- 生物多样性",
+      "- ESG（环境、社会和公司治理）",
+    ],
+    type: "matrix_scale",
+    required: null,
+    scaleAnchors: null,
+    rows: [
+      {
+        id: "r1",
+        label: "碳达峰 / 碳中和",
+      },
+      {
+        id: "r2",
+        label: "排污许可证",
+      },
+      {
+        id: "r3",
+        label: "绿水青山就是金山银山",
+      },
+      {
+        id: "r4",
+        label: "生物多样性",
+      },
+      {
+        id: "r5",
+        label: "ESG（环境、社会和公司治理）",
+      },
+    ],
+  },
+  {
+    id: "profile-08",
+    number: 8,
+    section: "第二部分：认知与基础（摸底知识储备）",
+    prompt: "以下环境管理制度听过吗？（1-5分打分）",
+    sourceLines: [
+      "- 环境分区管控",
+      "- 排污许可制度",
+      "- 总量控制",
+      "- 三同时制度",
+    ],
+    type: "matrix_scale",
+    required: null,
+    scaleAnchors: null,
+    rows: [
+      {
+        id: "r1",
+        label: "环境分区管控",
+      },
+      {
+        id: "r2",
+        label: "排污许可制度",
+      },
+      {
+        id: "r3",
+        label: "总量控制",
+      },
+      {
+        id: "r4",
+        label: "三同时制度",
+      },
+    ],
+  },
+  {
+    id: "profile-09",
+    number: 9,
+    section: "第三部分：兴趣与动机（调整授课切入点）",
+    prompt: "你认为这门课这会有什么收获？（多选）",
+    sourceLines: [
+      "- 拿学分/凑通识分",
+      "- 对环保话题本身感兴趣",
+      "- 未来想从事相关工作（如考公、去国企）",
+      "- 想了解当下的社会热点（如气候变暖）",
+      "- 会对配合本专业学习有帮助（如工程、经济、法律类）",
+    ],
+    type: "multiple_choice",
+    required: null,
+    scaleAnchors: null,
+    choices: [
+      {
+        id: "c1",
+        label: "拿学分/凑通识分",
+      },
+      {
+        id: "c2",
+        label: "对环保话题本身感兴趣",
+      },
+      {
+        id: "c3",
+        label: "未来想从事相关工作（如考公、去国企）",
+      },
+      {
+        id: "c4",
+        label: "想了解当下的社会热点（如气候变暖）",
+      },
+      {
+        id: "c5",
+        label: "会对配合本专业学习有帮助（如工程、经济、法律类）",
+      },
+    ],
+  },
+  {
+    id: "profile-10",
+    number: 10,
+    section: "第三部分：兴趣与动机（调整授课切入点）",
+    prompt: "在环境话题中，你最感兴趣的是哪一类？",
+    sourceLines: [
+      "- 宏观政策类：如国家双碳战略、国际气候谈判",
+      "- 生活实用类：如垃圾分类、装修污染、食品安全",
+      "- 商业管理类：如企业如何合规、绿色金融、ESG投资",
+      "- 工程技术类：如污水处理技术、空气净化技术",
+      "- 自然生态类：如野生动物保护、国家公园",
+    ],
+    type: null,
+    required: null,
+    scaleAnchors: null,
+  },
+  {
+    id: "profile-11",
+    number: 11,
+    section: "第四部分：学习偏好（优化课堂互动）",
+    prompt: "作为非专业学生，你担心这门课最难的地方是？",
+    sourceLines: [
+      "- 专业术语太多，听不懂",
+      "- 法律法规太枯燥，记不住",
+      "- 涉及理科计算（如污染物浓度计算）",
+      "- 需要写复杂的报告",
+      "- 没什么担心的，应该挺有趣",
+    ],
+    type: null,
+    required: null,
+    scaleAnchors: null,
+  },
+  {
+    id: "profile-12",
+    number: 12,
+    section: "第四部分：学习偏好（优化课堂互动）",
+    prompt: "你希望老师在讲课时多结合哪类案例？",
+    sourceLines: [
+      "- 本专业相关：结合我的专业背景讲环境影响",
+      "- 社会热点：如日本核污水排放、某地化工厂爆炸",
+      "- 校园生活：学校食堂垃圾处理、宿舍节能",
+      "- 职场技能：以后工作中可能遇到的环保合规问题",
+    ],
+    type: null,
+    required: null,
+    scaleAnchors: null,
+  },
+  {
+    id: "profile-13",
+    number: 13,
+    section: "第四部分：学习偏好（优化课堂互动）",
+    prompt: "你更喜欢哪种课堂形式？",
+    sourceLines: [
+      "- 老师多讲故事和案例，少念PPT",
+      "- 多放视频/纪录片片段",
+      "- 组织小组讨论或辩论",
+      "- 带一些简单的互动问答/投票",
+      "- 系统讲授理论知识",
+    ],
+    type: null,
+    required: null,
+    scaleAnchors: null,
+  },
+  {
+    id: "profile-14",
+    number: 14,
+    section: "第五部分：学科交叉",
+    prompt:
+      "你希望这门课帮你建立哪些“本专业+环境评价与管理”的交叉知识目标？（可多选）",
+    sourceLines: [
+      "-理解环境法规与政策对本专业的要求",
+      "-掌握跨学科（本专业+环保）的分析方法",
+      "-识别本专业在实际工作中的环保责任",
+      "-学习跨专业协作与沟通技能",
+      "-看懂跨学科的综合案例",
+      "其他：_________",
+    ],
+    type: "multiple_choice",
+    required: null,
+    scaleAnchors: null,
+    choices: [
+      {
+        id: "c1",
+        label: "理解环境法规与政策对本专业的要求",
+      },
+      {
+        id: "c2",
+        label: "掌握跨学科（本专业+环保）的分析方法",
+      },
+      {
+        id: "c3",
+        label: "识别本专业在实际工作中的环保责任",
+      },
+      {
+        id: "c4",
+        label: "学习跨专业协作与沟通技能",
+      },
+      {
+        id: "c5",
+        label: "看懂跨学科的综合案例",
+      },
+      {
+        id: "c6",
+        label: "其他",
+      },
+    ],
+  },
+  {
+    id: "profile-15",
+    number: 15,
+    section: "第五部分：学科交叉",
+    prompt:
+      "开课前，你能想到“环境评价与管理”和你本专业之间有哪些可能的连接点吗？",
+    sourceLines: [
+      "-完全想不到",
+      "-本专业在制造/建设过程中的环境影响",
+      "-本专业工作可能面临的法律与合规责任",
+      "-绿色技术/环保政策对本专业的促进",
+      "其他：_________",
+    ],
+    type: null,
+    required: null,
+    scaleAnchors: null,
+  },
+  {
+    id: "profile-16",
+    number: 16,
+    section: "第五部分：学科交叉",
+    prompt:
+      "你希望老师多用哪些跨学科案例或任务，帮你理解不同学科在环境评价中的角色？（可多选）",
+    sourceLines: [
+      "-建设项目环评审批（如工厂、楼盘怎么建）",
+      "-企业日常环保合规与风险规避",
+      "-污染与公共健康影响（如化工污染）",
+      "-碳达峰碳中和与行业转型",
+      "-数据、AI辅助环评与管理",
+      "-生态保护与城乡规划冲突",
+      "其他：_________",
+    ],
+    type: "multiple_choice",
+    required: null,
+    scaleAnchors: null,
+    choices: [
+      {
+        id: "c1",
+        label: "建设项目环评审批（如工厂、楼盘怎么建）",
+      },
+      {
+        id: "c2",
+        label: "企业日常环保合规与风险规避",
+      },
+      {
+        id: "c3",
+        label: "污染与公共健康影响（如化工污染）",
+      },
+      {
+        id: "c4",
+        label: "碳达峰碳中和与行业转型",
+      },
+      {
+        id: "c5",
+        label: "数据、AI辅助环评与管理",
+      },
+      {
+        id: "c6",
+        label: "生态保护与城乡规划冲突",
+      },
+      {
+        id: "c7",
+        label: "其他",
+      },
+    ],
+  },
+  {
+    id: "profile-17",
+    number: 17,
+    section: "第六部分：其他（可选）",
+    prompt: "你希望考试采用什么方式进行？",
+    sourceLines: ["-开卷", "-闭卷", "-有限开卷"],
+    type: null,
+    required: null,
+    scaleAnchors: null,
+  },
+  {
+    id: "profile-18",
+    number: 18,
+    section: "第六部分：其他（可选）",
+    prompt: "如果让你提一个关于环境的问题，你最想问什么？",
+    sourceLines: ["- （填空题，收集学生最真实的疑惑）"],
+    type: "text",
+    required: null,
+    scaleAnchors: null,
+  },
+];
+export const profileFilled = (
+  value: ProfileAnswers[string] | undefined,
+  other = "",
+): boolean =>
+  !!other.trim() ||
+  (typeof value === "string"
+    ? !!value.trim()
+    : Array.isArray(value)
+      ? value.length > 0
+      : !!value && Object.keys(value).length > 0);
+export function readableProfile(
+  answers: ProfileAnswers,
+  other: Record<string, string>,
+): { label: string; value: string }[] {
+  return PROFILE_QUESTIONS.filter((q) => q.type !== null).map((q) => {
+    const v = answers[q.id];
+    let value = "";
+    if (typeof v === "string") value = v;
+    else if (Array.isArray(v))
+      value = v
+        .map((id) => q.choices?.find((c) => c.id === id)?.label ?? id)
+        .join("；");
+    else if (v)
+      value =
+        q.rows
+          ?.filter((r) => v[r.id] !== undefined)
+          .map((r) => `${r.label}：${v[r.id]}`)
+          .join("；") ?? "";
+    if (other[q.id]) value += (value ? "；" : "") + "其他：" + other[q.id];
+    return { label: `${q.number}. ${q.prompt}`, value };
+  });
+}

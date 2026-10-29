@@ -1,0 +1,74 @@
+[
+  {
+    "repository": "BerriAI/litellm",
+    "url": "https://github.com/BerriAI/litellm",
+    "defaultBranch": "main",
+    "commit": "295d79fc7d9f935165e07c66e150a8579d511d4c",
+    "commitDate": "2026-10-28T12:36:26Z",
+    "licenseSpdx": "NOASSERTION",
+    "licenseUrl": "https://github.com/BerriAI/litellm/blob/295d79fc7d9f935165e07c66e150a8579d511d4c/LICENSE",
+    "description": "The fastest, litest AI Gateway. Rust core with Python SDK. Call 100+ LLM APIs in OpenAI (or native) format with cost tracking, guardrails, load balancing, and logging [Bedrock, Azure, OpenAI, Anthropic, OpenAI, VertexAI, vLLM, Nvidia NIM]",
+    "reviewDate": "2026-10-28",
+    "runtimeVerified": false
+  },
+  {
+    "repository": "langchain-ai/langchainjs",
+    "url": "https://github.com/langchain-ai/langchainjs",
+    "defaultBranch": "main",
+    "commit": "e8c5dc82ba52cff3bc08cd71f963a69596d7ea4d",
+    "commitDate": "2026-10-28T00:52:16Z",
+    "licenseSpdx": "MIT",
+    "licenseUrl": "https://github.com/langchain-ai/langchainjs/blob/e8c5dc82ba52cff3bc08cd71f963a69596d7ea4d/LICENSE",
+    "description": "The agent engineering platform",
+    "reviewDate": "2026-10-28",
+    "runtimeVerified": false
+  },
+  {
+    "repository": "run-llama/LlamaIndexTS",
+    "url": "https://github.com/run-llama/LlamaIndexTS",
+    "defaultBranch": "main",
+    "commit": "ba24377def1b056f7eae066247e9ae1230509164",
+    "commitDate": "2026-03-11T20:07:07Z",
+    "licenseSpdx": "MIT",
+    "licenseUrl": "https://github.com/run-llama/LlamaIndexTS/blob/ba24377def1b056f7eae066247e9ae1230509164/LICENSE",
+    "description": "Data framework for your LLM applications. Focus on server side solution",
+    "reviewDate": "2026-10-28",
+    "runtimeVerified": false
+  },
+  {
+    "repository": "infiniflow/ragflow",
+    "url": "https://github.com/infiniflow/ragflow",
+    "defaultBranch": "main",
+    "commit": "cbd7a54a3d931b9625855ab2627b6b8308b9c837",
+    "commitDate": "2026-10-28T12:34:23Z",
+    "licenseSpdx": "Apache-2.0",
+    "licenseUrl": "https://github.com/infiniflow/ragflow/blob/cbd7a54a3d931b9625855ab2627b6b8308b9c837/LICENSE",
+    "description": "RAGFlow is a leading open-source Retrieval-Augmented Generation (RAG) engine that fuses cutting-edge RAG with Agent capabilities to create a superior context layer for LLMs",
+    "reviewDate": "2026-10-28",
+    "runtimeVerified": false
+  },
+  {
+    "repository": "langgenius/dify",
+    "url": "https://github.com/langgenius/dify",
+    "defaultBranch": "main",
+    "commit": "1f500e52cc30409959b08e19700b8521aaa80c63",
+    "commitDate": "2026-10-28T03:26:06Z",
+    "licenseSpdx": "NOASSERTION",
+    "licenseUrl": "https://github.com/langgenius/dify/blob/1f500e52cc30409959b08e19700b8521aaa80c63/LICENSE",
+    "description": "Build Agentic workflows, RAG pipelines, with rich AI model and tool support on one collaborative workspace. Deploy on cloud, VPC, or self-hosted, so teams move from prototype to production without rebuilding the stack.",
+    "reviewDate": "2026-10-28",
+    "runtimeVerified": false
+  },
+  {
+    "repository": "labring/FastGPT",
+    "url": "https://github.com/labring/FastGPT",
+    "defaultBranch": "main",
+    "commit": "381b4968d139a6392c2154b62b36d944430cc481",
+    "commitDate": "2026-10-28T09:10:23Z",
+    "licenseSpdx": "NOASSERTION",
+    "licenseUrl": "https://github.com/labring/FastGPT/blob/381b4968d139a6392c2154b62b36d944430cc481/LICENSE",
+    "description": "FastGPT is a knowledge-based platform built on the LLMs, offers a comprehensive suite of out-of-the-box capabilities such as data processing, RAG retrieval, and visual AI workflow orchestration, letting you easily develop and deploy complex question-answering systems without the need for extensive setup or configuration.",
+    "reviewDate": "2026-10-28",
+    "runtimeVerified": false
+  }
+]

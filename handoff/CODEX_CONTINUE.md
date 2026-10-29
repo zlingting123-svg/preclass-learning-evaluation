@@ -283,3 +283,7 @@ frontend：npm ci；npm run check/build；npm run test:config（3项通过）；
 ## 2026-10-29 永久会话
 
 服务器设置增加sessionHours=0永久有效，新会话expiresAt=null（共享AuthSession类型已扩展）；退出/停用/改密与epoch撤销保留。仅后续登录生效，令牌仍只存页面内存，刷新仍需登录。后台82项与smoke、前端构建/配置及模拟浏览器通过，详见永久会话选项日志。
+
+## 2026-10-29 上传及版本隔离
+
+当前功能已上传 `integration/admin-versioned-20261029`，功能提交afe69cb。versions/下按版本独立子文件夹保存源码与哈希清单：v01-roster基线b24357d、v02-admin-integrated当前afe69cb。根工作区继续开发；版本文件夹不覆盖，运行时分开DB_PATH/端口，不归档数据库或口令。主分支未合并、未部署；最新同步记录见 `更新日志/2026-10-29-上传与版本隔离.md`。旧日志“未上传”为当时状态。

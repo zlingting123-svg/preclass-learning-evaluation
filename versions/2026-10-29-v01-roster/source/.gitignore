@@ -1,0 +1,27 @@
+**/node_modules/
+**/dist/
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.template
+!frontend/.env.production
+!frontend/.env.demo
+**/*.log
+**/work/
+**/coverage/
+**/private-data/
+**/credentials/
+.DS_Store
+Thumbs.db
+
+# Never publish local runtime databases, machine-only build state, or secrets.
+**/*.sqlite
+**/*.sqlite-*
+**/*.db
+**/*.db-*
+**/*.tsbuildinfo
+**/.DS_Store
+**/*.pem
+**/*.key
+**/*.p12
+**/*.pfx
