@@ -1,4 +1,6 @@
+import {newId} from '../lib/newId';
 import { createRoot } from "react-dom/client";
+import {AdminConsole} from '../pages/AdminPage';
 import { useEffect, useRef, useState } from "react";
 import {
   MemoryRouter,
@@ -137,7 +139,7 @@ function Preview() {
   }, []);
   return (
     <div className="studio" data-theme={theme}>
-      {user ? (
+      {user?.role==='admin'?<AdminConsole/>:user ? (
         <MemoryRouter>
           <Workspace
             user={user}
@@ -818,7 +820,7 @@ interface Thread {
 }
 function Chat({ classId, className }: { classId: string; className: string }) {
   const [threads, setThreads] = useState<Thread[]>([
-      { id: crypto.randomUUID(), messages: [] },
+      { id: newId(), messages: [] },
     ]),
     [active, setActive] = useState(""),
     [input, setInput] = useState(""),
@@ -848,7 +850,7 @@ function Chat({ classId, className }: { classId: string; className: string }) {
     setBusy(true);
     setError("");
     const threadId = current.id,
-      id = retryId ?? crypto.randomUUID(),
+      id = retryId ?? newId(),
       message: Message = { id, role: "user", text: text.trim() };
     const previous = retryId
       ? current.messages.filter((m) => m.id !== retryId)
@@ -873,7 +875,7 @@ function Chat({ classId, className }: { classId: string; className: string }) {
       });
       update(threadId, (m) => [
         ...m,
-        { id: crypto.randomUUID(), role: "assistant", text: r.reply },
+        { id: newId(), role: "assistant", text: r.reply },
       ]);
     } catch (e) {
       update(threadId, (m) =>
@@ -891,7 +893,7 @@ function Chat({ classId, className }: { classId: string; className: string }) {
     }
   }
   function newThread() {
-    const id = crypto.randomUUID();
+    const id = newId();
     setThreads((t) => [{ id, messages: [] }, ...t]);
     setActive(id);
     setInput("");

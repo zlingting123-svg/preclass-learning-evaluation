@@ -1,3 +1,10 @@
+> **2026-10-29 独立管理员端。** 用户明确选择管理员而非教师工作台，并在手机微信无法访问后要求暂停二维码/局域网调试，等买服务器再做。已撤销临时0.0.0.0前端监听、恢复127.0.0.1，未关闭防火墙；二维码/生成器只留本地outputs和integration/work/paused-lan，不作课堂可用结果，不继续询问手机测试。
+>
+> 任务分支feature/admin-console基于design/commercial-preview@61751cc。新增backend/src/admin.ts、管理员API、前端AdminPage与样式；原登录页/admin和商业预览均支持管理员分流。账号创建/搜索/角色筛选分页、姓名/启停、重置/撤销会话、全局概览、班级/教师/批次资格明确授权、成员调整、审计同事务已实现。管理员网页不可提权/维护管理员账号；私密模拟管理员demo_admin凭据只在本机work和用户outputs，不上传。
+>
+> 本机后台check/build、40/40测试、smoke；前端check/build、生产限制3项；管理员真实隔离Express/SQLite浏览器5项、320/375/768布局通过，无pageErrors。已加入CI步骤，远端结果需另查，不把本地通过当Actions结果。更新日志/2026-10-29-独立管理员端.md有总结、截图和证据，docs/integration/管理员接口交接.md有接口/权限说明。未部署、未真实AI/真机/300人压测。核心0.4.0兼容保留，管理员API为增量路径。
+>
+> 同事另有origin/feature/student-conversations（5775779）未合并，本轮不覆盖其会话工作；后续合并应核对auth.ts会话epoch、预览入口及管理员分流。下一步先审PR和测试，服务器确定后再处理正式HTTPS网址/二维码，不自动购买或部署。
 > **2026-10-28 更新日志归档。** 用户要求上传GitHub并将本轮总结放入更新日志文件夹。仓库新增“更新日志/README.md”索引、“更新日志/2026-10-28-商业界面与AI对话预览.md”，及日期子目录内的本项目三种配色、桌面/手机对话截图与真实HTTP/UI模拟两类验证记录。无口令、令牌、真实学生数据或数据库。继续使用design/commercial-preview和草稿PR #5，未合并main、未替换主界面、未部署；后续先看本轮日志再等用户确定外观。
 > **2026-10-28 外观试版，待用户选择。** 用户认可基本框架，要求商业化视觉、参考截图和主流AI对话布局。新任务分支design/commercial-preview基于feature/core-questionnaires@2f493d6；新增frontend/design-preview.html、frontend/src/preview/和预览验证文档，原App/Core/后台/共享契约未改变。入口http://127.0.0.1:5173/design-preview.html，现有模拟账号登录，内存路由复用原业务。三种可切外观：紫蓝商业/深绿专业/石墨科技。对话有窄导航、会话列表、欢迎/建议问题、底部输入、失败重试/复制/停止。AI真实接口仍503，不制造回答。
 >

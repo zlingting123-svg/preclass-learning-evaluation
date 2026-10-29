@@ -11,6 +11,7 @@ import { LearningService, profileBody, materialBody } from './learning.js';
 import { PROFILE_QUESTIONS, PROFILE_SCHEMA_VERSION } from '../../shared/profile-schema.js';
 import { loginLimiters } from './security.js';
 import { questionnaireRoutes } from './questionnaire-routes.js';
+import { adminRoutes } from './admin.js';
 
 export function createApp(service: Service, auth: AuthProvider) {
   const app = express();
@@ -44,6 +45,7 @@ export function createApp(service: Service, auth: AuthProvider) {
   };
   app.get('/api/v1/auth/me', (_req, res) => ok(res, user(res)));
   questionnaireRoutes(app,service,ok);
+  adminRoutes(app,service,ok);
   app.post('/api/v1/auth/logout', (_req, res) => { auth.logout(res.locals.token); ok(res, { success: true }); });
   app.get('/api/v1/classes', (req, res) => list(req, res, service.classes(user(res), id.optional().parse(req.query.cohortId))));
   app.get('/api/v1/cohorts', (req, res) => list(req, res, service.cohorts(user(res))));
