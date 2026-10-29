@@ -1,3 +1,4 @@
+import {accountDeletionRoutes} from './account-deletion.js';
 import { randomUUID, randomBytes } from "node:crypto";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
@@ -337,6 +338,7 @@ export function adminRoutes(
 ) {
   const service = new AdminService(core),
     u = (r: Response): User => r.locals.user;
+  accountDeletionRoutes(app,service,ok);
   const id = (v: unknown) => z.string().min(1).max(128).parse(v);
   app.get("/api/v1/admin/overview", (_q, r) => ok(r, service.overview(u(r))));
   app.get("/api/v1/admin/users", (q, r) => {

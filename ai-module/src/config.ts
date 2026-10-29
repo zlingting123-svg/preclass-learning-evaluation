@@ -10,7 +10,7 @@ export const policySchema = z
     dailyUserBudgetMicros: z.number().int().nonnegative().safe(),
     monthlyBudgetMicros: z.number().int().nonnegative().safe(),
     maxInputBytes: positive.max(32000),
-    maxOutputTokens: positive.max(4096),
+    maxOutputTokens: positive.max(8192),
     reserveMicros: positive,
     maxQueue: positive.max(1000),
     queueTimeoutMs: positive.max(120000),
@@ -92,7 +92,7 @@ export const configSchema = z
             quotaGroup: text,
             purposes: z
               .array(
-                z.enum(["student_qa", "teacher_analytics", "system_admin"]),
+                z.enum(["student_qa", "teacher_qa", "questionnaire_generate", "teacher_analytics", "system_admin"]),
               )
               .min(1),
             maxConcurrency: positive.max(1000),
@@ -142,7 +142,7 @@ export const configSchema = z
       ctx.addIssue({ code: "custom", message: "no student deployment" });
   });
 export type ModuleConfig = z.infer<typeof configSchema>;
-export function readConfig(path: string): ModuleConfig {
+export function readConfig(path: string, credentialAvailable?: (deployment: ModuleConfig["deployments"][number]) => boolean): ModuleConfig {
   const config = configSchema.parse(JSON.parse(readFileSync(path, "utf8")));
   if (config.mode === "deepseek") {
     requireValue(
@@ -161,14 +161,15 @@ export function readConfig(path: string): ModuleConfig {
       "PROVIDER_POLICY_UNCONFIRMED",
     );
     requireValue(
-      process.env.AI_RETRIEVAL_CALIBRATED === "true",
+      process.env.AI_RETRIEVAL_CALIBRATED === "true" ||
+        (process.env.NODE_ENV === "development" && process.env.AI_RETRIEVAL_BASELINE_ACCEPTED === "PRIVATE_TEST_ONLY"),
       503,
       "RETRIEVAL_UNCALIBRATED",
     );
     requireValue(config.policy.enabled, 503, "AI_DISABLED");
     for (const d of config.deployments)
       requireValue(
-        d.credentialEnv && process.env[d.credentialEnv],
+        credentialAvailable ? credentialAvailable(d) : !!(d.credentialEnv && process.env[d.credentialEnv]),
         503,
         "MISSING_PROVIDER_KEY",
       );

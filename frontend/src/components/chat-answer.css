@@ -1,0 +1,11 @@
+.chat-answer{line-height:1.8;white-space:normal;overflow-wrap:anywhere;min-width:0;max-width:100%}
+.chat-answer p{white-space:normal;margin:0 0 .9em}
+.chat-answer h1,.chat-answer h2,.chat-answer h3,.chat-answer h4{font-size:1.12em;line-height:1.5;margin:1.2em 0 .6em}
+.chat-answer ul,.chat-answer ol{padding-left:1.6em;margin:.6em 0}
+.chat-answer pre{white-space:pre;overflow-x:auto;background:#f5f7fa;border-radius:8px;padding:12px;max-width:100%}
+.chat-answer code{font-size:.9em}
+.chat-answer table{display:block;overflow-x:auto;border-collapse:collapse;margin:1em 0;max-width:100%}
+.chat-answer th,.chat-answer td{border:1px solid #dce5e8;padding:6px 10px;text-align:left}
+.chat-answer blockquote{border-left:3px solid #80afa2;margin:.8em 0;padding-left:1em;color:#536a65}
+.chat-answer .katex-display{overflow-x:auto;overflow-y:hidden;padding:.4em 0;max-width:100%}
+.chat-answer .katex{font-size:1.08em}

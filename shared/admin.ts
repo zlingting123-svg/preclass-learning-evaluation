@@ -6,6 +6,6 @@ export interface ApiSettings {
  enabled:boolean; dailyRequests:number; dailyUserBudgetMicros:number; monthlyBudgetMicros:number;
  maxOutputTokens:number; maxQueue:number; queueTimeoutMs:number; requestTimeoutMs:number; topicsMinCount:number;
  warningMicros:number; stopMicros:number;
- deployments:Array<{id:string;accountId:string;quotaGroup:string;purposes:Array<'student_qa'|'teacher_analytics'|'system_admin'>;maxConcurrency:number;credentialEnv?:string}>;
+ deployments:Array<{id:string;accountId:string;quotaGroup:string;purposes:Array<'student_qa'|'teacher_qa'|'questionnaire_generate'|'teacher_analytics'|'system_admin'>;maxConcurrency:number;credentialEnv?:string}>;
 }
 export interface AdminAudit { id:string; actorId:string; action:string; targetId:string; createdAt:string; }

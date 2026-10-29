@@ -71,6 +71,12 @@ jobs:
       - name: Verify real loopback HTTP flow with synthetic data
         working-directory: frontend
         run: npm run test:integration
+      - name: Verify selected learning-space entry and role routing
+        working-directory: frontend
+        run: node ../integration/test/selected-ui-browser.mjs
+      - name: Verify survey analytics with isolated HTTP data
+        working-directory: frontend
+        run: node ../integration/test/survey-analytics-browser.mjs
       - name: Verify independent admin console with isolated HTTP data
         working-directory: frontend
         run: node ../integration/test/admin-browser.mjs

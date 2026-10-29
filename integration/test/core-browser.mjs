@@ -1,3 +1,5 @@
+// Historical UI regression only; never enabled in production builds.
+process.env.VITE_LEGACY_UI='true';
 import { createRequire } from "node:module";
 import { pathToFileURL, fileURLToPath } from "node:url";
 import { resolve, dirname } from "node:path";
@@ -36,6 +38,8 @@ const teacher = await auth.createUser(
   "模拟教师",
   "teacher",
 );
+const testFrontendPort=Number(process.env.CORE_TEST_FRONTEND_PORT||5173);
+process.env.DEV_FRONTEND_ORIGIN=`http://127.0.0.1:${testFrontendPort}`;
 let server, vite, browser;
 const results = [],
   errors = [];
@@ -45,8 +49,8 @@ async function check(name, fn) {
   console.log("PASS", name);
 }
 async function login(page, username, pw, first=false) {
-  await page.goto("http://127.0.0.1:5173/login");
-  await page.getByLabel("学号 / 教师账号").fill(username);
+  await page.goto(`http://127.0.0.1:${testFrontendPort}/login`);
+  await page.getByLabel("账号").fill(username);
   await page.getByLabel("密码", { exact: true }).fill(pw);
   await page.getByRole("button", { name: "登录", exact: true }).click();
   await page
@@ -62,6 +66,7 @@ try {
   process.env.VITE_API_MODE = "http";
   vite = await createServer({
     root: frontend,
+    server:{port:testFrontendPort},
     configFile: resolve(frontend, "vite.config.ts"),
     logLevel: "error",
   });
@@ -128,10 +133,10 @@ try {
   });
   await check("表一含未提交学生、表二人数及图表、只读答卷", async () => {
     await tp.getByRole("link", { name: "作答情况与统计" }).click();
-    await tp.getByRole("heading", { name: "表一 · 学生作答情况" }).waitFor();
-    await tp.getByText("未开始", { exact: true }).waitFor();
-    await tp.getByText("甲：1 人", { exact: true }).waitFor();
-    await tp.getByRole("img", { name: /各选项选择人数/ }).waitFor();
+    await tp.getByRole("heading", { name: "学生作答情况" }).waitFor();
+    await tp.getByRole("cell", { name: "未开始", exact: true }).waitFor();
+    await tp.locator(".sa-question-grid > .sa-question > .sa-values > li").filter({has:tp.getByText("甲",{exact:true})}).getByText(/^1 人/).waitFor();
+    await tp.getByRole("img", { name: /完整数据见下方明细/ }).waitFor();
     await tp.getByRole("link", { name: "查看作答" }).click();
     await tp
       .getByRole("heading", { name: "模拟核心问卷 · 只读作答" })
@@ -184,7 +189,7 @@ try {
       .click();
     for (const width of [320, 375, 414, 768]) {
       await tp.setViewportSize({ width, height: 900 });
-      await tp.getByRole("heading", { name: "表二 · 逐题作答统计" }).waitFor();
+      await tp.getByRole("heading", { name: "逐题探索" }).waitFor();
       assert.ok(
         await tp.evaluate(
           () => document.documentElement.scrollWidth <= innerWidth + 1,

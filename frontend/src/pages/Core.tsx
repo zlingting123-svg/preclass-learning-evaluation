@@ -13,11 +13,7 @@ import type {
 } from "@shared/questionnaires";
 import { apiRequest as request } from "../services/httpClient";
 import { getCurrentUser } from "../services/api";
-import * as echarts from "echarts/core";
-import { PieChart } from "echarts/charts";
-import { LegendComponent, TooltipComponent } from "echarts/components";
-import { CanvasRenderer } from "echarts/renderers";
-echarts.use([PieChart, LegendComponent, TooltipComponent, CanvasRenderer]);
+import {SurveyAnalytics} from '../components/SurveyAnalytics';
 import "../styles/core.css";
 import { recognizeQuestions } from "@shared/import-questions";
 
@@ -188,15 +184,24 @@ export function CoreHome() {
   );
 }
 
-export function RosterPage(){
- const {classId=''}=useParams();const [members,setMembers]=useState<Array<{studentId:string;studentNumber:string;studentName:string}>>([]),[error,setError]=useState('');
- useEffect(()=>{let active=true;request<typeof members>('GET',`/core/classes/${classId}/members`).then(v=>{if(active)setMembers(v)}).catch(e=>{if(active)setError(message(e))});return()=>{active=false}},[classId]);
- return <section className="core"><Link to="/">返回班级</Link><h1>班级学生名单</h1><p className="muted">名单和账号由管理员统一导入；教师在工作台选择班级后查看。</p><Alert error={error}/><div className="core-table"><table><thead><tr><th>学号</th><th>真实姓名</th></tr></thead><tbody>{members.map(m=><tr key={m.studentId}><td>{m.studentNumber}</td><td>{m.studentName}</td></tr>)}</tbody></table></div></section>;
+export function RosterPage({onClassChange}:{onClassChange?:(id:string)=>void}={}){
+ const {classId=''}=useParams(),nav=useNavigate();
+ const [classes,setClasses]=useState<ClassInfo[]>([]),[members,setMembers]=useState<Array<{studentId:string;studentNumber:string;studentName:string}>>([]),[error,setError]=useState(''),[loading,setLoading]=useState(true);
+ useEffect(()=>{let active=true;void allClasses().then(v=>{if(active)setClasses(v)}).catch(e=>{if(active)setError(message(e))});return()=>{active=false}},[]);
+ useEffect(()=>{let active=true;setMembers([]);setError('');setLoading(true);request<typeof members>('GET',`/core/classes/${classId}/members`).then(v=>{if(active)setMembers(v)}).catch(e=>{if(active)setError(message(e))}).finally(()=>{if(active)setLoading(false)});return()=>{active=false}},[classId]);
+ const selected=classes.find(c=>c.id===classId);
+ return <section className="core"><Link to="/">返回班级</Link><h1>班级学生名单</h1><p className="muted">按班级查看管理员导入的名单；仅显示你有权限查看的班级。</p>
+ <label>查看班级<select aria-label="查看班级" value={classId} onChange={e=>{onClassChange?.(e.target.value);nav(`/core/classes/${encodeURIComponent(e.target.value)}/roster`)}}>{!selected&&<option value={classId}>正在读取班级…</option>}{classes.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
+ <h2>{selected?.name??'当前班级'}{!loading&&!error&&` · ${members.length} 人`}</h2><Alert error={error}/>
+ {loading?<p role="status">正在读取本班名单…</p>:!error&&<><div className="core-table"><table><thead><tr><th>班级</th><th>学号</th><th>真实姓名</th></tr></thead><tbody>{members.map(m=><tr key={m.studentId}><td>{selected?.name??'当前班级'}</td><td>{m.studentNumber}</td><td>{m.studentName}</td></tr>)}</tbody></table></div>{!members.length&&<p>本班暂无学生，请联系管理员导入名单。</p>}</>}
+ </section>;
 }
 
 export function SurveyEditor() {
   const { id, classId } = useParams();
   const nav = useNavigate();
+  const feedback=useRef<HTMLDivElement>(null);
+  function showFeedback(){requestAnimationFrame(()=>{feedback.current?.focus({preventScroll:true});feedback.current?.scrollIntoView({block:"center",behavior:"smooth"})})}
   const [survey, setSurvey] = useState<Survey>({
       id: "",
       classId: classId ?? "",
@@ -228,8 +233,13 @@ export function SurveyEditor() {
     }));
   }
   async function save(publish = false) {
-    setBusy(true);
-    setError("");
+    if(busy)return;
+    setStatus("");setError("");
+    if(publish&&survey.deadlineAt&&Date.parse(survey.deadlineAt)<=Date.now()){
+      setError("截止时间已过，请改为未来的时间，或清空截止时间后再发布；问卷尚未发布。");showFeedback();return;
+    }
+    setBusy(true);setStatus(publish?"正在保存并发布问卷…":"正在保存草稿…");
+    let draftSaved=false;
     try {
       const { id: surveyId, state: _, version, ...body } = survey;
       const s = await request<Survey>(
@@ -237,7 +247,7 @@ export function SurveyEditor() {
         "/core/surveys" + (surveyId ? "/" + surveyId : ""),
         { body: { ...body, expectedVersion: version } },
       );
-      setSurvey(s);
+      setSurvey(s);draftSaved=true;
       if (publish) {
         await request("POST", `/core/surveys/${s.id}/publish`, {
           body: { expectedVersion: s.version },
@@ -248,7 +258,8 @@ export function SurveyEditor() {
         setStatus("草稿已保存");
       }
     } catch (e) {
-      setError(message(e));
+      setStatus("");
+      setError((publish&&draftSaved?"草稿已保存，但发布未成功：":"")+message(e));showFeedback();
     } finally {
       setBusy(false);
     }
@@ -293,8 +304,7 @@ export function SurveyEditor() {
     <section className="core">
       <Link to="/">返回班级</Link>
       <h1>编辑问卷</h1>
-      <Alert error={error} />
-      <p role="status">{status}</p>
+      {!ready&&<Alert error={error} />}
       {ready && (
         <fieldset disabled={busy || survey.state !== "draft"}>
           <label>
@@ -456,10 +466,11 @@ export function SurveyEditor() {
               }
             />
           </label>
+          <div ref={feedback} tabIndex={-1}><Alert error={error}/><p role="status">{status}</p></div>
           <div className="core-actions">
-            <button onClick={() => save()}>保存草稿</button>
+            <button onClick={() => save()}>{busy?"正在处理…":"保存草稿"}</button>
             <button className="primary" onClick={() => save(true)}>
-              保存并发布问卷
+              {busy?"正在处理…":"保存并发布问卷"}
             </button>
           </div>
         </fieldset>
@@ -606,46 +617,6 @@ export function SurveyAnswer() {
   );
 }
 
-function ResultChart({
-  counts,
-}: {
-  counts: Array<{ name: string; value: number }>;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!ref.current) return;
-    const chart = echarts.init(ref.current);
-    chart.setOption({
-      tooltip: { trigger: "item", confine: true },
-      legend: { bottom: 0, type: "scroll" },
-      series: [
-        {
-          type: "pie",
-          radius: ["38%", "66%"],
-          center: ["50%", "43%"],
-          avoidLabelOverlap: true,
-          label: { show: false },
-          data: counts,
-          emphasis: { label: { show: true, fontSize: 14 } },
-        },
-      ],
-    });
-    const resize = new ResizeObserver(() => chart.resize());
-    resize.observe(ref.current);
-    return () => {
-      resize.disconnect();
-      chart.dispose();
-    };
-  }, [counts]);
-  return (
-    <div
-      ref={ref}
-      className="core-chart"
-      role="img"
-      aria-label="各选项选择人数环形图，具体数据见下方文字"
-    />
-  );
-}
 export function SurveyResults() {
   const { id = "" } = useParams();
   const [stats, setStats] = useState<SurveyStats | null>(null),
@@ -715,7 +686,8 @@ export function SurveyResults() {
               <Link to={`/core/surveys/${id}/edit`}>继续编辑并发布</Link>
             )}
           </div>
-          <h2>表一 · 学生作答情况</h2>
+          <SurveyAnalytics stats={stats} />
+          <h2>学生作答情况</h2>
           <div className="core-table">
             <table>
               <thead>
@@ -746,30 +718,6 @@ export function SurveyResults() {
               </tbody>
             </table>
           </div>
-          <h2>表二 · 逐题作答统计</h2>
-          <p>
-            仅统计已提交答卷；多选题可选择多个选项，各选项人数之和可能大于答题人数。
-          </p>
-          {stats.questions.map((q) => (
-            <article className="card" key={q.id}>
-              <h3>{q.title}</h3>
-              <p>有效作答 {q.answered} 人。</p>
-              {q.counts.length ? (
-                <>
-                  <ResultChart counts={q.counts} />
-                  <ul>
-                    {q.counts.map((c) => (
-                      <li key={c.name}>
-                        {c.name}：{c.value} 人
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              ) : (
-                q.texts.map((t, i) => <blockquote key={i}>{t}</blockquote>)
-              )}
-            </article>
-          ))}
           <h2>AI 评价与图表建议</h2>
           <p>{insights || "尚无 AI 评价。未接入前不生成模拟结论。"}</p>
           <button disabled={busy} onClick={ai}>

@@ -1,3 +1,6 @@
+import {PersonalCenter} from '../pages/PersonalCenter';
+import type {PersonalProfile} from '@shared/personal';
+import {ChatAnswer} from '../components/ChatAnswer';
 import {getAccessToken} from '../services/authStore';
 import type {ChatDetail,ChatList} from '@shared/conversations';
 import { KnowledgePanel } from './KnowledgePanel';
@@ -5,7 +8,6 @@ import { AdminRosterPanel } from './AdminRosterPanel';
 import { ClassPicker } from '../components/ClassPicker';
 import { PasswordChangePage } from '../pages/PasswordChangePage';
 import { ApiManager, ServerManager, Metadata } from './ServicePanels';
-import type { AuthSession } from '@shared/contracts';
 import { parseApiResponse } from '../services/httpClient';
 import { API_BASE_URL } from '../config';
 import './service.css';
@@ -147,17 +149,17 @@ function Preview() {
 }
 function PreviewRoutes({user,setUser,theme,setTheme}:{user:User|null;setUser:(user:User|null)=>void;theme:string;setTheme:(theme:string)=>void}){
  const navigate=useNavigate(),location=useLocation();
- useEffect(()=>{setUnauthorizedHandler(()=>{setUser(null);navigate(location.pathname==='/service-login'?'/service-login':'/login',{replace:true})});return()=>setUnauthorizedHandler(null)},[navigate,location.pathname,setUser]);
+ useEffect(()=>{setUnauthorizedHandler(()=>{setUser(null);navigate('/login',{replace:true})});return()=>setUnauthorizedHandler(null)},[navigate,location.pathname,setUser]);
  const done=(next:User)=>{setUser(next);navigate(next.mustChangePassword?'/change-password':'/',{replace:true})};
  const logout=()=>{void api.logout().catch(()=>{});clearSession();setUser(null);navigate('/login',{replace:true})};
  return <Routes>
-  <Route path="/service-login" element={<PreviewLogin mode="admin" done={done}/>}/>
+  <Route path="/service-login" element={<Navigate to="/login" replace/>}/>
   <Route path="/login" element={<PreviewLogin done={done}/>}/>
   <Route path="/change-password" element={user?<PasswordChangePage onComplete={()=>{setUser(null);navigate('/login',{replace:true,state:{passwordChanged:true}})}} onLogout={()=>{setUser(null);navigate('/login',{replace:true})}}/>:<Navigate to="/login" replace/>}/>
-  <Route path="/*" element={user?user.mustChangePassword?<Navigate to="/change-password" replace/>:<Workspace user={user} theme={theme} setTheme={setTheme} logout={logout}/>:<Navigate to="/login" replace/>}/>
+  <Route path="/*" element={user?user.mustChangePassword?<Navigate to="/change-password" replace/>:<Workspace user={user} theme={theme} setTheme={setTheme} logout={logout} onPasswordChanged={()=>{clearSession();setUser(null);navigate('/login',{replace:true,state:{passwordChanged:true}})}}/>:<Navigate to="/login" replace/>}/>
  </Routes>;
 }
-function PreviewLogin({ done, mode="learning" }: { done: (u: User) => void; mode?:"learning"|"admin" }) {
+function PreviewLogin({ done }: { done: (u: User) => void }) {
   const [username, setUsername] = useState(""),
     [password, setPassword] = useState(""),
     [busy, setBusy] = useState(false),
@@ -169,7 +171,7 @@ function PreviewLogin({ done, mode="learning" }: { done: (u: User) => void; mode
     setBusy(true);
     setError("");
     try {
-      const s = mode==='admin' ? await parseApiResponse<AuthSession>(await fetch(`${API_BASE_URL}/api/v1/auth/admin-login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})}),false) : await api.login({ username, password });
+      const s = await api.login({ username, password });
       setSession(s);
       done(s.user);
     } catch (e) {
@@ -219,12 +221,12 @@ function PreviewLogin({ done, mode="learning" }: { done: (u: User) => void; mode
       <main>
         <div className="pv-login-form">
           <span className="pv-eyebrow">WELCOME BACK</span>
-          <h2>{mode==='admin'?'服务管理员登录':'欢迎回到学习空间'}</h2>
-          <p className="pv-muted">{mode==='admin'?'使用专用管理员账号，维护账户与平台服务。':'登录你的班级，继续今天的学习。'}</p>
+          <h2>欢迎回到学习空间</h2>
+          <p className="pv-muted">登录账号，进入你的工作空间。</p>
           {(location.state as {passwordChanged?:boolean}|null)?.passwordChanged&&<p className="svc-notice" role="status">密码已修改，请使用新密码重新登录。</p>}
           <form onSubmit={login}>
             <label>
-              {mode==='admin'?'管理员账号':'学号 / 教师账号'}
+              账号
               <input
                 autoComplete="username"
                 required
@@ -248,11 +250,11 @@ function PreviewLogin({ done, mode="learning" }: { done: (u: User) => void; mode
               </p>
             )}
             <button className="pv-primary pv-wide" disabled={busy}>
-              {busy ? "正在登录…" : mode==='admin'?"进入服务管理":"进入学习空间"}
+              {busy ? "正在登录…" : "进入学习空间"}
               <Icon name="arrow" />
             </button>
           </form>
-          {mode==='admin'?<Link className="pv-original" to="/login">返回师生登录</Link>:<><a className="pv-original" href="/">返回当前版本</a><Link className="pv-service-entry" to="/service-login"><Icon name="shield"/>服务管理 <small>专用账号入口</small></Link></>}
+          
         </div>
       </main>
     </div>
@@ -264,11 +266,13 @@ function Workspace({
   theme,
   setTheme,
   logout,
+  onPasswordChanged,
 }: {
   user: User;
   theme: string;
   setTheme: (s: string) => void;
   logout: () => void;
+  onPasswordChanged: () => void;
 }) {
   const [classes, setClasses] = useState<ClassInfo[]>([]),
     [classId, setClassId] = useState(""),
@@ -277,6 +281,9 @@ function Workspace({
   const navigate = useNavigate(),
     location = useLocation();
   const teacher = user.role === "teacher", admin=user.role==='admin';
+  const [personal,setPersonal]=useState<PersonalProfile|null>(null);
+  useEffect(()=>{let active=true;setPersonal(null);void request<PersonalProfile>('GET','/account/profile').then(p=>{if(active)setPersonal(current=>!current||p.version>=current.version?p:current)}).catch(()=>{});return()=>{active=false}},[user.id]);
+  const personalName=personal?.nickname||user.displayName;
   const selected = classes.find((c) => c.id === classId);
   const chat = !admin && location.pathname === "/assistant";
   useEffect(() => {
@@ -330,7 +337,7 @@ function Workspace({
             </Link>
           ))}
         </nav>
-        {teacher&&<Link className="pv-service-entry" to="/service-login"><Icon name="shield"/>服务管理 <small>专用账号入口</small></Link>}
+        
         <div className="pv-sidebar-tip">
           <Icon name="spark" />
           <strong>{admin?"平台服务管理":"你的课程学习搭档"}</strong>
@@ -341,11 +348,10 @@ function Workspace({
           <small>{admin?"专用管理员权限":"AI 服务状态以对话页为准"}</small>
         </div>
         <div className="pv-profile">
-          <span className="pv-avatar">{user.displayName[0]}</span>
-          <div>
-            <strong>{user.displayName}</strong>
-            <small>{admin?"管理员账号":teacher ? "教师账号" : "学生账号"} · 本机预览</small>
-          </div>
+          <Link to="/personal" className="pv-profile-link" aria-label="个人中心">
+            {personal?.avatarDataUrl?<img src={personal.avatarDataUrl} alt="我的头像"/>:<span className="pv-avatar">{Array.from(personalName)[0]}</span>}
+            <div><strong>{personalName}</strong><small>{admin?"管理员账号":teacher?"教师账号":"学生账号"} · 个人中心</small></div>
+          </Link>
           <button
             className="pv-icon-button"
             aria-label="退出登录"
@@ -374,7 +380,7 @@ function Workspace({
           <div className="pv-breadcrumb">
             工作空间 <span>/</span>{" "}
             <strong>
-              {admin?({"/":"服务概览","/rosters":"名单导入与分班","/classes":"班级与成员","/accounts":"账户管理","/knowledge":"课程资料","/api":"API 管理","/server":"服务器设置","/usage":"用量查询","/audit":"操作日志"} as Record<string,string>)[location.pathname]??'服务管理':chat
+              {admin?({"/personal":"个人中心","/":"服务概览","/rosters":"名单导入与分班","/classes":"班级与成员","/accounts":"账户管理","/knowledge":"课程资料","/api":"API 管理","/server":"服务器设置","/usage":"用量查询","/audit":"操作日志"} as Record<string,string>)[location.pathname]??'服务管理':location.pathname==='/personal'?'个人中心':chat
                 ? "AI 课程助手"
                 : location.pathname === "/"
                   ? "班级概览"
@@ -395,7 +401,7 @@ function Workspace({
                 <option value="graphite">石墨科技</option>
               </select>
             </label>
-            {admin?<Link to="/login" className="pv-version-link">返回师生登录 ↗</Link>:<a href="/" className="pv-version-link">当前版本 ↗</a>}
+            {admin&&<Link to="/login" className="pv-version-link" onClick={e=>{e.preventDefault();logout()}}>切换账号 ↗</Link>}
           </div>
         </header>
         {error && (
@@ -404,6 +410,7 @@ function Workspace({
           </p>
         )}
         {admin?<div className="pv-page pv-service"><Routes>
+          <Route path="/personal" element={<PersonalCenter onSaved={setPersonal} onPasswordChanged={onPasswordChanged} onLogout={logout}/>}/>
           <Route path="/" element={<AdminConsole key="overview" embedded activeTab="overview" onTabChange={tab=>navigate(tab==='users'?'/accounts':'/')}/>}/>
           <Route path="/classes" element={<AdminConsole key="classes" embedded activeTab="classes"/>}/>
           <Route path="/accounts" element={<AdminConsole key="users" embedded activeTab="users"/>}/>
@@ -415,6 +422,7 @@ function Workspace({
           <Route path="/usage" element={<><h1>用量查询</h1><Metadata kind="usage"/></>}/>
           <Route path="*" element={<Navigate to="/" replace/>}/>
         </Routes></div>:<Routes>
+          <Route path="/personal" element={<PersonalCenter onSaved={setPersonal} onPasswordChanged={onPasswordChanged} onLogout={logout}/>}/>
           <Route
             path="/"
             element={
@@ -463,7 +471,7 @@ function Workspace({
                 path="/core/classes/:classId/roster"
                 element={
                   <div className="pv-page pv-legacy">
-                    <RosterPage />
+                    <RosterPage onClassChange={setClassId} />
                   </div>
                 }
               />
@@ -793,6 +801,8 @@ interface Thread {
   messages: Message[];
 }
 function Chat({ classId, className }: { classId: string; className: string }) {
+  const [aiMode,setAiMode]=useState('loading');
+  useEffect(()=>{let active=true;void request<{mode:string}>('GET','/core/ai/status').then(s=>{if(active)setAiMode(s.mode)}).catch(()=>{if(active)setAiMode('unknown')});return()=>{active=false}},[]);
   const [threads,setThreads]=useState<Thread[]>([{id:'',messages:[]}]),[active,setActive]=useState(''),[input,setInput]=useState(''),[busy,setBusy]=useState(false),[error,setError]=useState(''),[history,setHistory]=useState(false),[copied,setCopied]=useState('');
   const current=threads.find(t=>t.id===active)??threads[0]??{id:'',messages:[]},controller=useRef<AbortController|null>(null),busyRef=useRef(false),end=useRef<HTMLDivElement>(null),textarea=useRef<HTMLTextAreaElement>(null),sequence=useRef(0);
   const converted=(d:ChatDetail):Thread=>({id:d.id,title:d.title,messages:d.messages.map(m=>({...m,failed:m.role==='user'&&['error','cancelled','interrupted'].includes(m.outcome)}))});
@@ -832,7 +842,7 @@ function Chat({ classId, className }: { classId: string; className: string }) {
           <div>
             <Icon name="spark" />
             <strong>AI 问答助手</strong>
-            <span className="pv-connection-state">模拟服务</span>
+            <span className="pv-connection-state">{aiMode==='deepseek'?'DeepSeek 已接入':aiMode==='mock'?'模拟服务':aiMode==='disabled'?'未启用':aiMode==='loading'?'读取服务状态…':'状态暂不可用'}</span>
           </div>
           <button
             className="pv-icon-button pv-history-toggle"
@@ -880,7 +890,7 @@ function Chat({ classId, className }: { classId: string; className: string }) {
                   {m.role === "assistant" ? <Icon name="spark" /> : "我"}
                 </span>
                 <div className="pv-message-body">
-                  <p>{m.text}</p>
+                  {m.role==="assistant"?<ChatAnswer text={m.text}/>:<p>{m.text}</p>}
                   {!!m.sources?.length && <div aria-label="回答参考来源"><strong>参考来源：</strong>{m.sources.map((source)=><div key={source.id}>{source.url && /^https:\/\//i.test(source.url) ? <a href={source.url} target="_blank" rel="noopener noreferrer">{source.title}</a> : <span>{source.title}</span>} <small>{source.version}</small></div>)}</div>}
                   <div className="pv-message-actions">
                     <button onClick={() => copy(m)}>
@@ -972,7 +982,7 @@ function Chat({ classId, className }: { classId: string; className: string }) {
             </div>
           </form>
           <p className="pv-chat-disclaimer">
-            AI 服务尚未接入，当前不会生成回答。接入后，请核对重要课程信息。
+            {aiMode==='deepseek'?'优先参考已发布课程资料；缺少资料时可提供课程内的一般知识解释。请核对重要信息。':aiMode==='mock'?'当前为模拟服务，回答仅供界面联调。':aiMode==='disabled'?'AI 服务尚未启用。':'请核对重要课程信息；服务状态以实际请求为准。'}
           </p>
         </div>
       </section>

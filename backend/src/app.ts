@@ -1,3 +1,4 @@
+import {personalProfileRoutes} from './personal-profile.js';
 import { referenceFileRoutes } from './reference-files.js';
 import { staticSite } from './static-site.js';
 import { webKnowledgeRoutes } from './web-knowledge.js';
@@ -67,6 +68,7 @@ export function createApp(service: Service, auth: AuthProvider, ai?: CourseAi, d
   const list = <T extends { id: string }>(req: Request, res: Response, items: T[]) => {
     const { limit, cursor } = pagination(req); return ok(res, page(items, limit, cursor));
   };
+  personalProfileRoutes(app,service,ok);
   app.get('/api/v1/auth/me', (_req, res) => ok(res, user(res)));
   app.put('/api/v1/auth/password',async(req,res)=>{ensure(auth.changePassword,503,'PASSWORD_CHANGE_UNAVAILABLE','当前认证提供方暂不支持改密');await auth.changePassword(res.locals.token,req.body);ok(res,{changed:true});});
   provisioningRoutes(app,service,auth);

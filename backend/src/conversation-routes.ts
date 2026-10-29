@@ -25,7 +25,7 @@ export function conversationRoutes(app:Express,core:Service,ai?:CourseAi){
   let answer='',outcome:ChatOutcome='error',sources:ChatSource[]=[];
   const timer=setTimeout(abort,ai.gateway.policy.requestTimeoutMs);
   try{
-   const principal=await ai.gateway.deps.identity.verify(res.locals.token),input={courseId:detail.classId,question:body.question,clientRequestId:body.clientRequestId,history:chats.context(student,threadId)};
+   const principal=await ai.gateway.deps.identity.verify(res.locals.token),input={courseId:detail.classId,question:body.question,clientRequestId:body.clientRequestId,history:chats.context(student,threadId,Math.max(0,Math.min(24000,ai.gateway.policy.maxInputBytes-Buffer.byteLength(body.question)-6000)))};
    const requestId=await ai.gateway.prepare(principal,input);
    res.status(200).set({'Content-Type':'text/event-stream; charset=utf-8','X-Accel-Buffering':'no','X-Request-Id':requestId});res.flushHeaders();
    await ai.gateway.answer(principal,input,requestId,controller.signal,async(event,data)=>{

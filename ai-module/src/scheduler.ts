@@ -1,6 +1,7 @@
-import type { Deployment, Policy } from "./contracts.js";
+import type { Deployment, Policy, Purpose } from "./contracts.js";
 import { ModuleError, requireValue } from "./errors.js";
 interface Waiting {
+  purpose: Purpose;
   subjectId: string;
   resolve: (lease: Lease) => void;
   reject: (e: unknown) => void;
@@ -12,7 +13,7 @@ export interface Lease {
   release: () => void | Promise<void>;
 }
 export interface AdmissionScheduler {
-  take(subjectId: string, signal: AbortSignal): Promise<Lease>;
+  take(subjectId: string, signal: AbortSignal, purpose?: Purpose): Promise<Lease>;
   fail(group: string): void | Promise<void>;
   status():
     | ReturnType<Scheduler["status"]>
@@ -50,11 +51,11 @@ export class Scheduler {
       const w = this.queue[i];
       const candidates = this.deployments.filter(
         (d) =>
-          d.purposes.includes("student_qa") &&
+          d.purposes.includes(w.purpose) &&
           (this.active.get(d.quotaGroup) ?? 0) < this.capacity(d.quotaGroup) &&
           (this.cooldown.get(d.quotaGroup) ?? 0) <= Date.now(),
       );
-      if (!candidates.length) break;
+      if (!candidates.length) { i++; continue; }
       const d = candidates[this.turn++ % candidates.length];
       this.queue.splice(i, 1);
       w.cleanup();
@@ -75,7 +76,8 @@ export class Scheduler {
       });
     }
   }
-  take(subjectId: string, signal: AbortSignal): Promise<Lease> {
+  take(subjectId: string, signal: AbortSignal, purpose: Purpose = "student_qa"): Promise<Lease> {
+    requireValue(this.deployments.some(d=>d.purposes.includes(purpose)),503,"PURPOSE_NOT_CONFIGURED");
     requireValue(!signal.aborted, 499, "CANCELLED");
     requireValue(!this.users.has(subjectId), 429, "USER_CONCURRENCY_LIMIT");
     requireValue(this.queue.length < this.policy.maxQueue, 429, "QUEUE_FULL");
@@ -83,6 +85,7 @@ export class Scheduler {
     return new Promise((resolve, reject) => {
       let timer: ReturnType<typeof setTimeout>;
       const w: Waiting = {
+        purpose,
         subjectId,
         signal,
         resolve,

@@ -31,7 +31,7 @@ export class Gateway {
     user: Principal,
     input: { courseId: string; question: string; clientRequestId: string; history?:HistoryMessage[] },
   ) {
-    requireValue(user.role === "student", 403, "STUDENT_REQUIRED");
+    requireValue(user.role === "student" || (user.role === "teacher" && this.deps.allowTeacherQuestions === true), 403, "QUESTION_ROLE_REQUIRED");
     await this.deps.authorization.authorize(user, input.courseId, "ask");
     requireValue(this.policy.enabled, 503, "AI_DISABLED");
     requireValue(
@@ -49,6 +49,7 @@ export class Gateway {
         id,
         fingerprint: hash(JSON.stringify(input)),
         subjectId: user.subjectId,
+        purpose: user.role === "teacher" ? "teacher_qa" : "student_qa",
         courseId: input.courseId,
       },
       this.policy,
@@ -79,7 +80,7 @@ export class Gateway {
         scopeIds: grants.scopeIds,
         signal,
       });
-      if (found.status !== "supported") {
+      if (found.status !== "supported" && found.status !== "general_knowledge") {
         const status =
           found.status === "out_of_scope" ? "refusal" : "insufficient_evidence";
         await this.store.noCall(id, status);
@@ -93,7 +94,7 @@ export class Gateway {
         return;
       }
       requireValue(
-        found.evidence.length > 0 &&
+        (found.status === "general_knowledge" ? found.evidence.length === 0 : found.evidence.length > 0) &&
           found.evidence.every(
             (e) => e.approved && grants.scopeIds.includes(e.scopeId),
           ),
@@ -101,6 +102,7 @@ export class Gateway {
         "RETRIEVAL_SCOPE_VIOLATION",
       );
       const upstream = {
+        answerBasis: found.status === "general_knowledge" ? "general_knowledge" as const : "course_evidence" as const,
         question: input.question,
         history: input.history ? [...input.history] : undefined,
         evidence: found.evidence,
@@ -118,7 +120,8 @@ export class Gateway {
         "CONTEXT_TOO_LONG",
       );
       await emit("queued", { requestId: id });
-      lease = await this.scheduler.take(user.subjectId, signal);
+      const purpose=user.role==="teacher"&&this.deployments.some(d=>d.purposes.includes("teacher_qa"))?"teacher_qa":"student_qa";
+      lease = await this.scheduler.take(user.subjectId, signal, purpose);
       signal.throwIfAborted();
       await this.deps.authorization.authorize(user, input.courseId, "ask");
       if (this.balances) await this.balances.admit(lease.deployment, signal);
@@ -139,6 +142,7 @@ export class Gateway {
         })),
         scoreType: found.scoreType,
       });
+      if (found.status === "general_knowledge") await emit("delta", {text:"【一般知识解释，未依据已上传课程资料】\n\n"});
       for await (const event of lease.deployment.provider.stream(upstream)) {
         if (event.type === "model")
           await this.store.update(id, { model: event.model });
@@ -162,7 +166,7 @@ export class Gateway {
       }
       requireValue(finished && usage, 502, "UPSTREAM_INCOMPLETE");
       await this.store.finish(id, usage, this.policy);
-      for (const topic of new Set(found.evidence.map((e) => e.topicId)))
+      for (const topic of user.role==="student"?new Set(found.evidence.map((e) => e.topicId)):[])
         await this.store.topic(input.courseId, topic);
       await emit("done", { requestId: id, usage, usageState: "settled" });
     } catch (error) {

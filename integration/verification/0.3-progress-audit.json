@@ -1,0 +1,34 @@
+{
+  "productVersion": "0.3",
+  "contractVersion": "0.5.0",
+  "backendTests": {
+    "passed": 94,
+    "failed": 0
+  },
+  "aiModuleTests": {
+    "passed": 20,
+    "failed": 0
+  },
+  "builds": [
+    "ai-module",
+    "backend",
+    "frontend"
+  ],
+  "productionConfigChecks": 3,
+  "selectedUiBrowserChecks": 6,
+  "adminBrowserChecks": 5,
+  "coreBrowser": {
+    "passed": 8,
+    "initialBlock": "Existing SSH tunnel on port 5173; kept intact",
+    "rerunPort": 5191
+  },
+  "analyticsBrowser": "passed portable test and deployed-static/isolated-API test",
+  "realModelCallsThisTurn": 0,
+  "serverCurrent": "20261029-survey-analytics",
+  "services": [
+    "preclass-test.service active",
+    "preclass-test-web.service active"
+  ],
+  "healthProductionReady": false,
+  "ci": "pending new commit; do not reuse old run"
+}

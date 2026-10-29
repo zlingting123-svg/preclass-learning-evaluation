@@ -1,5 +1,5 @@
 export interface HistoryMessage {role:"user"|"assistant";text:string}
-export type Purpose = "student_qa" | "teacher_analytics" | "system_admin";
+export type Purpose = "student_qa" | "teacher_qa" | "questionnaire_generate" | "teacher_analytics" | "system_admin";
 export interface Principal {
   subjectId: string;
   role: "student" | "teacher" | "admin";
@@ -29,7 +29,7 @@ export interface Evidence extends Source {
   score: number;
 }
 export interface Retrieval {
-  status: "supported" | "out_of_scope" | "insufficient";
+  status: "supported" | "general_knowledge" | "out_of_scope" | "insufficient";
   evidence: Evidence[];
   scoreType: string;
 }
@@ -53,6 +53,7 @@ export type ProviderEvent =
   | { type: "usage"; usage: Usage }
   | { type: "finish"; reason: "stop" | "length" };
 export interface UpstreamInput {
+  answerBasis?: "course_evidence" | "general_knowledge";
   question: string;
   history?: HistoryMessage[];
   evidence: Evidence[];
@@ -97,6 +98,7 @@ export interface Policy {
   rates: Rates;
 }
 export interface GateDependencies {
+  allowTeacherQuestions?: boolean;
   identity: IdentityResolver;
   authorization: CourseAuthorizer;
   knowledge: KnowledgeProvider;

@@ -25,18 +25,20 @@ export function serviceAdminRoutes(app: Express, core: Service, ai?: CourseAi) {
     }); ok(res, result);
   });
   app.get('/api/v1/admin/api', async (_req, res) => ok(res, {
-    mode: ai?.mode ?? 'disabled', liveReady: false, settings: ai?.management() ?? null,
+    mode: ai?.mode ?? 'disabled', liveReady: ai?.mode==='deepseek', settings: ai?.management() ?? null,
     status: ai ? await ai.gateway.scheduler.status() : null,
-    credentials: ai?.management().deployments.map(d => ({ id: d.id, configured: !!(d.credentialEnv && process.env[d.credentialEnv]) })), balanceState: 'not_configured'
+    ...ai?.credentialStatus(), balanceState: ai?.mode==='deepseek'?'live':'not_configured', balances: ai ? await ai.balanceStatus():[]
   }));
   app.put('/api/v1/admin/api', (req, res) => {
-    ensure(ai, 503, 'AI_NOT_CONNECTED', '请先在服务器启用模拟AI模块');
-    const { expectedVersion, ...value } = apiSettingsBody.parse(req.body); checkVersion(ai.management().version, expectedVersion);
-    ai.configure(value, () => store.transaction(() => {
+    ensure(ai, 503, 'AI_NOT_CONNECTED', '请先在服务器启用AI模块');
+    const { expectedVersion, credentialUpdates=[], ...value } = apiSettingsBody.parse(req.body);
+    ensure(new Set(credentialUpdates.map(v=>v.deploymentId)).size===credentialUpdates.length,400,'DUPLICATE_KEY_UPDATE','同一配置不能重复更新密钥');
+    const updates=Object.fromEntries(credentialUpdates.map(v=>[v.deploymentId,v.apiKey])); checkVersion(ai.management().version, expectedVersion);
+    ai.configure(value, () => {
       checkVersion(store.get<ApiSettings>('ai_admin_settings', 'current')?.version ?? 0, expectedVersion);
       store.put<ApiSettings>('ai_admin_settings', 'current', { ...value, version: expectedVersion + 1 });
       admin.audit(actor(res), 'api.configure', 'ai_admin_settings');
-    })); ok(res, ai.management());
+    }, updates); ok(res, ai.management());
   });
   app.get('/api/v1/admin/usage', async (req, res) => {
     const q = z.object({ userId: z.string().min(1).max(128).optional(), limit: z.coerce.number().int().min(1).max(100).default(20), cursor: z.string().max(256).optional() }).strict().parse(req.query);

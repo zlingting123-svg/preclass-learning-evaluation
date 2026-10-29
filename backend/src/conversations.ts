@@ -14,19 +14,19 @@ export class Conversations {
   core.store.transaction(()=>{for(const turn of core.store.all<Turn>('ai_turn'))if(turn.outcome==='pending')core.store.put('ai_turn',turn.id,{...turn,outcome:'interrupted'});});
  }
  private access(user:User,id:string):Thread {
-  this.core.role(user,'student');const thread=this.core.store.get<Thread>('ai_thread',id);
+  ensure(user.role==='student'||user.role==='teacher',403,'FORBIDDEN','仅师生可使用课程对话');const thread=this.core.store.get<Thread>('ai_thread',id);
   ensure(thread?.ownerId===user.id,404,'THREAD_NOT_FOUND','对话不存在或已删除');this.core.classAccess(user,thread.classId);return thread;
  }
  private turns(id:string){return this.core.store.all<Turn>('ai_turn').filter(t=>t.threadId===id).sort((a,b)=>a.sequence-b.sequence||a.createdAt.localeCompare(b.createdAt)||a.id.localeCompare(b.id));}
  private summary(thread:Thread){const turns=this.turns(thread.id);return {id:thread.id,classId:thread.classId,title:thread.title,createdAt:thread.createdAt,updatedAt:thread.updatedAt,busy:turns.some(t=>t.outcome==='pending'),messageCount:turns.reduce((n,t)=>n+1+(t.answer?1:0),0)};}
  list(user:User,classId:string):ChatList {
-  this.core.role(user,'student');this.core.classAccess(user,classId);
+  ensure(user.role==='student'||user.role==='teacher',403,'FORBIDDEN','仅师生可使用课程对话');this.core.classAccess(user,classId);
   const items=this.core.store.all<Thread>('ai_thread').filter(t=>t.ownerId===user.id&&t.classId===classId).sort((a,b)=>b.updatedAt.localeCompare(a.updatedAt)||b.id.localeCompare(a.id)).map(t=>this.summary(t));
   const selected=this.core.store.get<{threadId:string}>('ai_chat_selection',keyFor(user.id,classId))?.threadId;
   return {items,activeId:items.some(t=>t.id===selected)?selected!:items[0]?.id??null};
  }
  create(user:User,classId:string):ChatDetail {
-  this.core.role(user,'student');this.core.classAccess(user,classId);
+  ensure(user.role==='student'||user.role==='teacher',403,'FORBIDDEN','仅师生可使用课程对话');this.core.classAccess(user,classId);
   return this.core.store.transaction(()=>{
    ensure(this.list(user,classId).items.length<100,409,'THREAD_LIMIT','本课程最多保留100条对话，请先删除不需要的对话');
    const now=new Date().toISOString(),thread:Thread={id:randomUUID(),ownerId:user.id,classId,title:'新的课程对话',createdAt:now,updatedAt:now};
@@ -39,7 +39,7 @@ export class Conversations {
  ])};}
  select(user:User,id:string):ChatDetail {const t=this.access(user,id);this.core.store.put('ai_chat_selection',keyFor(user.id,t.classId),{threadId:id});this.core.store.put('ai_chat_last',user.id,{classId:t.classId,threadId:id});return this.detail(user,id);}
  lastContext(user:User){
-  this.core.role(user,'student');const saved=this.core.store.get<{classId:string;threadId:string}>('ai_chat_last',user.id);
+  ensure(user.role==='student'||user.role==='teacher',403,'FORBIDDEN','仅师生可使用课程对话');const saved=this.core.store.get<{classId:string;threadId:string}>('ai_chat_last',user.id);
   const thread=saved&&this.core.store.get<Thread>('ai_thread',saved.threadId);
   return saved&&thread?.ownerId===user.id&&this.core.classes(user).some(c=>c.id===saved.classId)?saved:{classId:null,threadId:null};
  }
@@ -63,10 +63,21 @@ export class Conversations {
   const thread=this.core.store.get<Thread>('ai_thread',threadId),turn=this.core.store.get<Turn>('ai_turn',turnId);if(!thread||!turn)return;
   this.core.store.transaction(()=>{this.core.store.put('ai_turn',turnId,{...turn,answer:answer.slice(0,24000),outcome,sources});this.core.store.put('ai_thread',threadId,{...thread,updatedAt:new Date().toISOString()});});
  }
- context(user:User,id:string):HistoryMessage[]{
-  this.access(user,id);const history:HistoryMessage[]=[];let bytes=0;
-  for(const turn of this.turns(id).filter(t=>t.outcome==='done').slice(-3).reverse()){
-   const pair:HistoryMessage[]=[{role:'user',text:turn.question},{role:'assistant',text:turn.answer}];const size=Buffer.byteLength(JSON.stringify(pair));if(bytes+size>3500)break;history.unshift(...pair);bytes+=size;
+ context(user:User,id:string,maxBytes=24000):HistoryMessage[]{
+  this.access(user,id);const history:HistoryMessage[]=[];let bytes=2;
+  const clip=(text:string,budget:number)=>{
+   if(Buffer.byteLength(text)<=budget)return text;
+   const chars=Array.from(text);let left=0,right=chars.length;
+   while(left<right){const mid=Math.ceil((left+right)/2);if(Buffer.byteLength(chars.slice(0,mid).join(''))<=Math.max(0,budget-80))left=mid;else right=mid-1;}
+   return chars.slice(0,left).join('')+'\n[较长历史已截取，请勿假定包含完整内容]';
+  };
+  for(const turn of this.turns(id).filter(t=>t.outcome==='done').slice(-6).reverse()){
+   const remaining=maxBytes-bytes;if(remaining<500)break;
+   const question=clip(turn.question,Math.min(2000,remaining-300));
+   let answer=clip(turn.answer,Math.max(0,remaining-Buffer.byteLength(question)-180));
+   const pair:HistoryMessage[]=[{role:'user',text:question},{role:'assistant',text:answer}];
+   let size=Buffer.byteLength(JSON.stringify(pair));while(bytes+size>maxBytes&&answer.length>100){answer=clip(answer,Math.floor(Buffer.byteLength(answer)*.8));pair[1].text=answer;size=Buffer.byteLength(JSON.stringify(pair));}if(bytes+size>maxBytes)break;
+   history.unshift(...pair);bytes+=size;
   }return history;
  }
  exists(id:string){return !!this.core.store.get('ai_thread',id);}

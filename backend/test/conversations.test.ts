@@ -42,7 +42,7 @@ test('持久会话、续聊、删除与权限回归',async t=>{
   assert.equal((await call('/core/ai/threads','POST',{classId:c.id,ownerId:peer.id})).status,400);
   assert.equal((await call('/core/ai/threads','POST',{classId:other.id})).status,403);
   assert.equal((await call('/core/ai/threads/'+first,'GET',undefined,'chat_peer')).status,404);
-  for(const name of ['chat_teacher','chat_admin'])assert.equal((await call('/core/ai/threads/'+first,'GET',undefined,name)).status,403);
+  assert.equal((await call('/core/ai/threads/'+first,'GET',undefined,'chat_teacher')).status,404);assert.equal((await call('/core/ai/threads/'+first,'GET',undefined,'chat_admin')).status,403);
   assert.equal((await call('/core/ai/threads/'+first,'DELETE',undefined,'chat_peer')).status,404);
  });
  await t.test('问答正文与来源落库、同一问题ID不可重复生成',async()=>{
@@ -84,7 +84,7 @@ test('持久会话、续聊、删除与权限回归',async t=>{
   const chats=new Conversations(runtime.core),orphan=chats.create(student,c.id);chats.begin(student,orphan.id,randomUUID(),'环境评价中断测试');
   await stop();runtime=boot();await once(runtime.server,'listening');const detail=(await(await call('/core/ai/threads/'+orphan.id)).json()).data;assert.equal(detail.busy,false);assert.equal(detail.messages[0].outcome,'interrupted');assert.equal((runtime.ai.gateway.deployments[0].provider as MockProvider).calls,0);
   const restored=new Conversations(runtime.core);for(let i=0;i<8;i++){const turn=restored.begin(student,second,randomUUID(),'环境评价第'+i+'轮');restored.finish(second,turn.id,'模拟上下文','done',[])}
-  const history=restored.context(student,second);assert.equal(history.length,6);assert.ok(Buffer.byteLength(JSON.stringify(history))<=3500);
+  const history=restored.context(student,second);assert.equal(history.length,12);assert.ok(Buffer.byteLength(JSON.stringify(history))<=24000);
  });
  }finally{await stop()}
 });

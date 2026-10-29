@@ -33,10 +33,10 @@ test('AI接入现有会话、班级、发布资料、SSE和仅元数据统计', 
   const call = (path:string, token:string, body?:unknown) => fetch(base+path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+token,...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined});
   const ask=(question:string,id=randomUUID(),token=studentSession.accessToken,classId=c.id)=>call('/core/ai/chat/stream',token,{classId,question,clientRequestId:id});
   try {
-    await t.test('未登录、未选班、伪造身份和教师代问被拦截', async()=>{
+    await t.test('未登录、未选班、伪造身份和管理员代问被拦截', async()=>{
       assert.equal((await fetch(base+'/core/ai/status')).status,401);
       assert.equal((await ask('环境评价',randomUUID(),outsideSession.accessToken)).status,403);
-      assert.equal((await ask('环境评价',randomUUID(),teacherSession.accessToken)).status,403);
+      assert.equal((await ask('环境评价',randomUUID(),adminSession.accessToken)).status,403);
       assert.equal((await call('/core/ai/chat/stream',studentSession.accessToken,{classId:c.id,question:'环境评价',clientRequestId:randomUUID(),userId:outside.id})).status,400);
     });
     await t.test('本班草稿及他班已发布资料不能支持回答',async()=>{

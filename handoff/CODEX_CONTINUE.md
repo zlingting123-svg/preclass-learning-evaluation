@@ -1,3 +1,7 @@
+> **当前产品版本0.3（2026-10-29，用户指定）。** 共享接口契约0.5.0。真实DeepSeek、加密Key用途路由、统一登录、账号删除、个人中心和问卷数据舱已完成并在私有服务器部署；旧“尚未购买/AI未接入/个人中心未同步”等记录是历史阶段。先读[0.3进度](../docs/项目进度-0.3.md)和[0.3发布交接](RELEASE_0.3.md)。后台本轮94/94，AI20/20；公网HTTPS、检索校准、真机、整站负载仍未验收。
+
+---
+
 > **最新0.5.0管理员集中名单/首次改密/多教师班级已本地验证。** 当前feature/admin-roster-onboarding，入口仍5175/design-preview.html。先读[SERVICE_PREVIEW.md](SERVICE_PREVIEW.md)和本轮管理员名单说明；下文旧“教师导入/默认12345/单教师”不再适用于当前网页。后台70项和前端检查通过，本地未上传。
 
 > **2026-10-29按用户截图纠正UI，本地完成。** 当前feature/service-admin-preview基于3ffef2e；正确入口5175/design-preview.html。原preclass-ai-integration的ef9adb6已被4b7af6d撤回；本轮直接保留其他工作者学习空间，管理功能嵌入同一pv布局，不用旧管理外壳。最新状态见[SERVICE_PREVIEW.md](SERVICE_PREVIEW.md)，不要依照下文历史独立管理端重新制作。
@@ -307,3 +311,4 @@ frontend：npm ci；npm run check/build；npm run test:config（3项通过）；
 ## 2026-10-29 安装包发行移交
 
 用户要求安装包本体、日志和说明上传项目库。采用同项目Releases标签installer-v04-20261029固定ddc5525，上传已验收tar.gz、SHA、metadata、安装步骤和README；源码分支增加installers/2026-10-29-v04/按版本索引。源快照不改，CI30天附件转为发行区长期下载。上传摘要和附件状态见最新安装包发行区上传日志。
+

@@ -1,6 +1,8 @@
 import type { Deployment } from "./contracts.js";
 import { ModuleError, requireValue } from "./errors.js";
 export class BalanceMonitor {
+  private generation=0;
+  reset(){this.generation++;this.values.clear();this.running.clear();}
   private values = new Map<
     string,
     {
@@ -23,20 +25,21 @@ export class BalanceMonitor {
       return { accountId: d.accountId, state: "not_supported" };
     if ((this.values.get(d.accountId)?.expires ?? 0) < Date.now()) {
       if (!this.running.has(d.accountId)) {
+        const generation=this.generation;
         const pending = (async () => {
           try {
             const value = await d.provider.balance!(AbortSignal.timeout(5000));
-            this.values.set(d.accountId, {
+            if(generation===this.generation)this.values.set(d.accountId, {
               expires: Date.now() + this.settings.ttlMs,
               value,
             });
           } catch {
-            this.values.set(d.accountId, {
+            if(generation===this.generation)this.values.set(d.accountId, {
               expires: Date.now() + this.settings.ttlMs,
               error: true,
             });
           }
-        })().finally(() => this.running.delete(d.accountId));
+        })().finally(() => {if(generation===this.generation)this.running.delete(d.accountId)});
         this.running.set(d.accountId, pending);
       }
       await this.running.get(d.accountId);
