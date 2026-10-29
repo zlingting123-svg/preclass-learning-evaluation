@@ -1,0 +1,10 @@
+{
+  "scope": "isolated UI preview, synthetic accounts, real local HTTP, AI not connected",
+  "checks": [
+    "真实教师登录、班级3人/问卷1份来源于接口",
+    "建议问题填入编辑器，真实未接入错误不会产生虚构回答，重试不重复消息",
+    "新对话与会话切换只在本页保存",
+    "320/375/414/768对话和工作台无页面溢出，移动菜单可用"
+  ],
+  "pageErrors": []
+}

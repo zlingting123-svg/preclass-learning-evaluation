@@ -1,0 +1,29 @@
+✖ 管理员分班建号、强制改密、多教师认领和重复导入闭环 (1887.57475ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2236.867209
+
+✖ failing tests:
+
+test at test/provisioning.test.ts:10:1
+✖ 管理员分班建号、强制改密、多教师认领和重复导入闭环 (1887.57475ms)
+  AssertionError [ERR_ASSERTION]: 管理员名单预览接口应已存在
+
+  404 !== 200
+
+      at TestContext.<anonymous> (/Users/summerwindy/Documents/ChatGPT/课堂系统/preclass-admin-preview/backend/test/provisioning.test.ts:20:92)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1313:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:385:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 404,
+    expected: 200,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

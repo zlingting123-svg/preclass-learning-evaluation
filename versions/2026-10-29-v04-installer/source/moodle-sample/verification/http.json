@@ -1,0 +1,107 @@
+{
+  "scope": "actual localhost Moodle HTTP, synthetic accounts; not cloud, load or physical-device acceptance",
+  "passed": 25,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "login page uses Learning Platform instead of vendor welcome and global metrics",
+      "result": "pass"
+    },
+    {
+      "name": "real logins and teacher task lists are scoped to own class",
+      "result": "pass"
+    },
+    {
+      "name": "task centre uses Learning Platform branding and real submitted state",
+      "result": "pass"
+    },
+    {
+      "name": "one leading-zero student account sees own autumn and cross-term courses",
+      "result": "pass"
+    },
+    {
+      "name": "18 questions retained, 11 unconfigured question types visibly withheld",
+      "result": "pass"
+    },
+    {
+      "name": "profile text, matrix and multiselect are persisted after real POST",
+      "result": "pass"
+    },
+    {
+      "name": "stale draft returns 409 and retains unsaved input without overwriting server",
+      "result": "pass"
+    },
+    {
+      "name": "reloading confirms earlier database content survived the conflict",
+      "result": "pass"
+    },
+    {
+      "name": "unknown choice rejected with 400",
+      "result": "pass"
+    },
+    {
+      "name": "valid text survives rejected payload and failed save is explicit",
+      "result": "pass"
+    },
+    {
+      "name": "invalid CSRF token cannot save answers",
+      "result": "pass"
+    },
+    {
+      "name": "queried user id cannot read another student draft",
+      "result": "pass"
+    },
+    {
+      "name": "same-class student cannot read another student draft",
+      "result": "pass"
+    },
+    {
+      "name": "own-class teacher can view saved profile",
+      "result": "pass"
+    },
+    {
+      "name": "teacher A cannot read class B profile detail",
+      "result": "pass"
+    },
+    {
+      "name": "teacher B cannot read class A profile detail",
+      "result": "pass"
+    },
+    {
+      "name": "student cannot open teacher report",
+      "result": "pass"
+    },
+    {
+      "name": "authorized CSV contains only own-class draft and preserves leading-zero student number",
+      "result": "pass"
+    },
+    {
+      "name": "changing export course id does not bypass permission",
+      "result": "pass"
+    },
+    {
+      "name": "anonymous access requires login",
+      "result": "pass"
+    },
+    {
+      "name": "Moodle online-text answer is persisted and readable",
+      "result": "pass"
+    },
+    {
+      "name": "final submitted answer is readable (database state checked separately)",
+      "result": "pass"
+    },
+    {
+      "name": "task centre reflects actual submitted answer",
+      "result": "pass"
+    },
+    {
+      "name": "other teacher cannot open grading table for foreign course",
+      "result": "pass"
+    },
+    {
+      "name": "student cannot enter other class assignment",
+      "result": "pass"
+    }
+  ]
+}

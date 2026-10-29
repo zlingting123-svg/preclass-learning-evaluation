@@ -1,0 +1,186 @@
+{
+  "checkedOn": "2026-10-27",
+  "source": "GitHub repository API through connected GitHub app; license labels are repository metadata, verify installed package licenses before reuse",
+  "repositories": [
+    {
+      "repository": "moodle/moodle",
+      "url": "https://github.com/moodle/moodle",
+      "description": "Moodle - the world's open source learning platform",
+      "license": "GPL-3.0",
+      "archived": false,
+      "defaultBranch": "main",
+      "pushedAt": "2026-10-21T10:46:01Z"
+    },
+    {
+      "repository": "instructure/canvas-lms",
+      "url": "https://github.com/instructure/canvas-lms",
+      "description": "The open LMS by Instructure, Inc.",
+      "license": "AGPL-3.0",
+      "archived": false,
+      "defaultBranch": "master",
+      "pushedAt": "2026-04-30T14:52:10Z"
+    },
+    {
+      "repository": "better-auth/better-auth",
+      "url": "https://github.com/better-auth/better-auth",
+      "description": "The most comprehensive authentication framework",
+      "license": "MIT",
+      "archived": false,
+      "defaultBranch": "main",
+      "pushedAt": "2026-10-27T04:41:53Z"
+    },
+    {
+      "repository": "supabase/auth",
+      "url": "https://github.com/supabase/auth",
+      "description": "A JWT based API for managing users and issuing JWT tokens",
+      "license": "MIT",
+      "archived": false,
+      "defaultBranch": "master",
+      "pushedAt": "2026-10-26T14:20:38Z"
+    },
+    {
+      "repository": "dcodeIO/bcrypt.js",
+      "url": "https://github.com/dcodeIO/bcrypt.js",
+      "description": "Optimized bcrypt in JavaScript with zero dependencies, with TypeScript support.",
+      "license": "NOASSERTION",
+      "archived": false,
+      "defaultBranch": "main",
+      "pushedAt": "2026-10-01T03:27:47Z"
+    },
+    {
+      "repository": "apache/casbin-node-casbin",
+      "url": "https://github.com/apache/casbin-node-casbin",
+      "description": "An authorization library that supports access control models like ACL, RBAC, ABAC in Node.js and Browser",
+      "license": "Apache-2.0",
+      "archived": false,
+      "defaultBranch": "master",
+      "pushedAt": "2026-10-27T02:05:37Z"
+    },
+    {
+      "repository": "stalniy/casl",
+      "url": "https://github.com/stalniy/casl",
+      "description": "CASL is an isomorphic authorization JavaScript library which restricts what resources a given user is allowed to access",
+      "license": "MIT",
+      "archived": false,
+      "defaultBranch": "main",
+      "pushedAt": "2026-10-27T14:01:14Z"
+    },
+    {
+      "repository": "adaltas/node-csv",
+      "url": "https://github.com/adaltas/node-csv",
+      "description": "Full featured CSV parser with simple api and tested against large datasets.",
+      "license": "MIT",
+      "archived": false,
+      "defaultBranch": "master",
+      "pushedAt": "2026-10-22T10:47:32Z"
+    },
+    {
+      "repository": "express-rate-limit/express-rate-limit",
+      "url": "https://github.com/express-rate-limit/express-rate-limit",
+      "description": "Basic rate-limiting middleware for the Express web server",
+      "license": "MIT",
+      "archived": false,
+      "defaultBranch": "main",
+      "pushedAt": "2026-10-23T01:43:10Z"
+    },
+    {
+      "repository": "helmetjs/helmet",
+      "url": "https://github.com/helmetjs/helmet",
+      "description": "Help secure Express apps with various HTTP headers",
+      "license": "MIT",
+      "archived": false,
+      "defaultBranch": "main",
+      "pushedAt": "2026-10-18T15:36:17Z"
+    },
+    {
+      "repository": "surveyjs/survey-library",
+      "url": "https://github.com/surveyjs/survey-library",
+      "description": "Open-source JavaScript form library for React, Angular, Vue, and plain JavaScript. Render dynamic JSON-driven forms, multi-step form wizards, surveys, quizzes, and other data-entry tools.",
+      "license": "MIT",
+      "archived": false,
+      "defaultBranch": "master",
+      "pushedAt": "2026-10-27T14:15:44Z"
+    },
+    {
+      "repository": "eclipsesource/jsonforms",
+      "url": "https://github.com/eclipsesource/jsonforms",
+      "description": "Customizable JSON Schema-based forms with React, Angular and Vue support out of the box.",
+      "license": "MIT",
+      "archived": false,
+      "defaultBranch": "master",
+      "pushedAt": "2026-10-26T15:57:09Z"
+    },
+    {
+      "repository": "timgit/pg-boss",
+      "url": "https://github.com/timgit/pg-boss",
+      "description": "Queueing jobs in Postgres from Node.js like a boss",
+      "license": "MIT",
+      "archived": false,
+      "defaultBranch": "master",
+      "pushedAt": "2026-10-27T13:59:39Z"
+    },
+    {
+      "repository": "taskforcesh/bullmq",
+      "url": "https://github.com/taskforcesh/bullmq",
+      "description": "BullMQ - Message Queue and Batch processing for NodeJS, Python, .NET, Elixir, Rust and PHP based on Redis or PostgreSQL",
+      "license": "MIT",
+      "archived": false,
+      "defaultBranch": "master",
+      "pushedAt": "2026-10-27T14:20:53Z"
+    },
+    {
+      "repository": "colinhacks/zod",
+      "url": "https://github.com/colinhacks/zod",
+      "description": "TypeScript-first schema validation with static type inference",
+      "license": "MIT",
+      "archived": false,
+      "defaultBranch": "main",
+      "pushedAt": "2026-10-19T22:46:10Z"
+    },
+    {
+      "repository": "apache/echarts",
+      "url": "https://github.com/apache/echarts",
+      "description": "Apache ECharts is a powerful, interactive charting and data visualization library for browser",
+      "license": "Apache-2.0",
+      "archived": false,
+      "defaultBranch": "master",
+      "pushedAt": "2026-10-13T09:27:20Z"
+    },
+    {
+      "repository": "restic/restic",
+      "url": "https://github.com/restic/restic",
+      "description": "Fast, secure, efficient backup program",
+      "license": "BSD-2-Clause",
+      "archived": false,
+      "defaultBranch": "master",
+      "pushedAt": "2026-10-18T14:23:55Z"
+    },
+    {
+      "repository": "grafana/k6",
+      "url": "https://github.com/grafana/k6",
+      "description": "A modern load testing tool, using Go and JavaScript",
+      "license": "AGPL-3.0",
+      "archived": false,
+      "defaultBranch": "master",
+      "pushedAt": "2026-10-27T10:47:58Z"
+    },
+    {
+      "repository": "actions/checkout",
+      "url": "https://github.com/actions/checkout",
+      "description": "Action for checking out a repo",
+      "license": "MIT",
+      "archived": false,
+      "defaultBranch": "main",
+      "pushedAt": "2026-10-17T10:14:02Z"
+    },
+    {
+      "repository": "actions/setup-node",
+      "url": "https://github.com/actions/setup-node",
+      "description": "Set up your GitHub Actions workflow with a specific version of node.js",
+      "license": "MIT",
+      "archived": false,
+      "defaultBranch": "main",
+      "pushedAt": "2026-10-17T10:35:01Z"
+    }
+  ]
+}

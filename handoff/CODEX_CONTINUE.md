@@ -301,3 +301,5 @@ frontend：npm ci；npm run check/build；npm run test:config（3项通过）；
 ## 2026-10-29 一键安装包
 
 正在制作Ubuntu24.04 x86_64首次安装器（deployment/installer/）、Linux打包脚本build-installer.mjs和ubuntu-installer CI；打包前端/后台生产产物、私有Node/Caddy与PDF wheel，基础OS缺项才apt，已有系统/数据拒绝覆盖。密码终端/标准输入，不保存明文；AI关闭。CI一次性VM验证真实systemd启动、登录、备份重启与独立恢复后才上传安装包artifact。当前只本地语法/完整性与备份回归通过，最终Linux结果另查。
+
+一键安装包已完成：ddc5525源码的push CI40844018830中Windows/Ubuntu/ubuntu-installer全部成功，真实一次性VM完成systemd安装、登录、拒绝覆盖、备份重启和恢复验证。约66MiB tar.gz已下载到../outputs/ubuntu-installer-20261029，3329个记录全量校验通过，附SHA256和安装步骤。v04-installer保留源码与CI/校验记录；CI artifact保留30天，本机文件另存。用户云端域名TLS/备案/防火墙和真实负载仍未验收，详见一键安装包日志完成补记。

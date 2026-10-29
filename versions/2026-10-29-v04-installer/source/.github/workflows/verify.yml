@@ -1,0 +1,178 @@
+name: Verify React and Node
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  local-http:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24.15.0
+          package-manager-cache: false
+      - name: Build AI module
+        working-directory: ai-module
+        run: |
+          npm ci
+          npm run check
+          npm run build
+          npm test
+      - name: Install backend from lockfile
+        run: npm ci
+      - name: Remove historical browser evidence before this run
+        run: Remove-Item -LiteralPath '../integration/verification/2026-10-28-core-browser.json' -ErrorAction SilentlyContinue
+      - name: Check backend
+        run: npm run check
+      - name: Build backend and shared contract
+        run: npm run build
+      - name: Test backend permissions and persistence
+        run: npm test
+      - name: Smoke test built backend and backup
+        run: npm run smoke
+      - name: Install frontend from lockfile
+        working-directory: frontend
+        run: npm ci
+      - name: Check frontend
+        working-directory: frontend
+        run: npm run check
+      - name: Build production frontend
+        working-directory: frontend
+        run: npm run build
+      - name: Verify production restrictions
+        working-directory: frontend
+        run: npm run test:config
+      - name: Find runner browser
+        run: |
+          $browserPaths = @(
+            'C:\Program Files\Google\Chrome\Application\chrome.exe',
+            'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe'
+          )
+          $browserPath = $browserPaths | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+          if (-not $browserPath) { throw 'No supported runner browser found; set up the runner explicitly.' }
+          "BROWSER_PATH=$browserPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Verify real loopback HTTP flow with synthetic data
+        working-directory: frontend
+        run: npm run test:integration
+      - name: Verify independent admin console with isolated HTTP data
+        working-directory: frontend
+        run: node ../integration/test/admin-browser.mjs
+      - name: Print current synthetic HTTP failure evidence
+        if: failure()
+        working-directory: integration/verification
+        run: |
+          foreach ($relativePath in @('2026-10-28-core-browser.json','../work/admin-browser/verification.json')) {
+            $evidencePath = Join-Path (Get-Location) $relativePath
+            if (Test-Path -LiteralPath $evidencePath) { Get-Content -LiteralPath $evidencePath } else { Write-Output "No evidence generated in this run: $relativePath" }
+          }
+
+  linux-server-adapter:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: 24.15.0
+          package-manager-cache: false
+      - name: Build current modules and production frontend
+        run: |
+          npm --prefix ai-module ci
+          npm --prefix ai-module run build
+          npm --prefix backend ci
+          npm --prefix backend run check
+          npm --prefix backend run build
+          npm --prefix backend test
+          npm --prefix frontend ci
+          npm --prefix frontend run build
+      - name: Configure isolated PDF runtime
+        run: |
+          python3 -m venv "$RUNNER_TEMP/pdf-runtime"
+          "$RUNNER_TEMP/pdf-runtime/bin/pip" install -r backend/scripts/requirements.txt
+          echo "REFERENCE_PYTHON=$RUNNER_TEMP/pdf-runtime/bin/python" >> "$GITHUB_ENV"
+      - name: Verify nonroot preflight, backups and restore integrity
+        run: |
+          node deployment/test-preflight.mjs
+          node deployment/test-server-adapter.mjs
+          bash -n deployment/backup-full.sh
+          systemd-analyze verify deployment/preclass-backup.service deployment/preclass-backup.timer
+      - name: Verify current release packaging
+        run: node deployment/package.mjs "$RUNNER_TEMP/releases"
+      - name: Download hash-verified Caddy and test actual upload proxy
+        run: |
+          mkdir -p "$RUNNER_TEMP/caddy"
+          curl -fL --retry 3 -o "$RUNNER_TEMP/caddy/caddy.tar.gz" https://github.com/caddyserver/caddy/releases/download/v2.11.7/caddy_2.11.7_linux_amd64.tar.gz
+          echo "727b91701a392de6ebc5027509f548bf39979e5216340d0faed8fa5e69c84f8b  $RUNNER_TEMP/caddy/caddy.tar.gz" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/caddy/caddy.tar.gz" -C "$RUNNER_TEMP/caddy"
+          "$RUNNER_TEMP/caddy/caddy" validate --config deployment/Caddyfile.example --adapter caddyfile
+          CADDY_BIN="$RUNNER_TEMP/caddy/caddy" node deployment/test-caddy-upload.mjs
+
+  ubuntu-installer:
+    needs: linux-server-adapter
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: 24.15.0
+          package-manager-cache: false
+      - name: Prepare OS prerequisites and build application
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y python3-venv ca-certificates libstdc++6 libatomic1 curl
+          npm --prefix ai-module ci
+          npm --prefix ai-module run build
+          npm --prefix backend ci
+          npm --prefix backend run build
+          npm --prefix frontend ci
+          npm --prefix frontend run build
+      - name: Fetch checksum-verified Linux Caddy
+        run: |
+          mkdir -p "$RUNNER_TEMP/caddy"
+          curl -fL --retry 3 -o "$RUNNER_TEMP/caddy/caddy.tar.gz" https://github.com/caddyserver/caddy/releases/download/v2.11.7/caddy_2.11.7_linux_amd64.tar.gz
+          echo "727b91701a392de6ebc5027509f548bf39979e5216340d0faed8fa5e69c84f8b  $RUNNER_TEMP/caddy/caddy.tar.gz" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/caddy/caddy.tar.gz" -C "$RUNNER_TEMP/caddy"
+      - name: Build self-contained application installer
+        run: |
+          node deployment/test-installer-verifier.mjs
+          CADDY_BIN="$RUNNER_TEMP/caddy/caddy" node deployment/build-installer.mjs "$RUNNER_TEMP/installers"
+      - name: Test real systemd installation, backup restart and isolated restore on disposable VM
+        run: sudo env PRECLASS_DISPOSABLE_CI=1 "$(command -v node)" deployment/test-installed-service.mjs "$RUNNER_TEMP/installers/installer-result.json"
+      - name: Upload tested installer
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: preclass-installer-ubuntu24-x64
+          retention-days: 30
+          compression-level: 0
+          path: |
+            ${{ runner.temp }}/installers/*.tar.gz
+            ${{ runner.temp }}/installers/*.sha256
+            ${{ runner.temp }}/installers/installer-info.json
+            ${{ runner.temp }}/installers/README.md
+      - name: Print disposable installation diagnostics
+        if: failure()
+        run: |
+          sudo systemctl status preclass.service preclass-caddy.service preclass-backup.service --no-pager || true
+          sudo journalctl -u preclass.service -u preclass-backup.service --no-pager -n 100 || true
