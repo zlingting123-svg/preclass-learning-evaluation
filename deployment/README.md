@@ -100,3 +100,9 @@ curl -f -H 'Host: classroom.你的域名' http://127.0.0.1:3001/api/v1/health
 - `node deployment/backup.mjs` 的默认行为仍为仅主库在线备份，兼容旧工具；它不等同于完整资料备份。FULL_BACKUP=1只允许由已停止应用的完整备份流程使用。
 - 发布包包含AI模块、Python脚本/依赖清单、两个前端入口及部署工具；不含versions历史快照、运行资料、数据库或密钥。安装顺序依然为ai-module npm ci/build，再backend npm ci/build，再前端构建（若包内已有dist可不重建）。从原始根目录的干净提交运行打包工具，不能在历史快照子目录直接打包。
 - 新增Ubuntu24.04 CI任务，执行后台回归、Python依赖、非root预检、备份/恢复校验、发布包构建、Caddy配置与实际代理分块上传。本机仅有macOS验证，不冒充systemd、Linux云主机、真实域名或证书验收。
+
+### 适配验证补记
+
+整合头0f3ba94的Ubuntu24.04 CI和Windows完整检查均已通过，覆盖Python环境、非root预检、备份完整性/损坏检测、干净发布包和实际Caddy4MiB代理上传。记录见云服务器版本适配日志及v03/verification/。本机独立解包安装构建也通过。正式服务器仍须验证systemd真实生命周期、域名/TLS和实际负载。
+
+部署时 `/var/backups/preclass` 的属主设为root、权限0700；应用preclass用户不应拥有删除备份权限。完整备份由root单元执行；数据目录 `/var/lib/preclass` 由preclass拥有。应另存异机副本。
