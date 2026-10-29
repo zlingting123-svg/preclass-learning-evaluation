@@ -38,6 +38,7 @@ export function Layout() {
               我的班级
             </NavLink>
           )}
+          {user?.role === 'admin' && <NavLink to="/admin">服务管理端</NavLink>}
         </nav>
         <span className="spacer" />
         {user && (

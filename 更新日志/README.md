@@ -4,8 +4,11 @@
 
 | 日期 | 更新 | 状态 |
 |---|---|---|
+| 2026-10-29 | [AI模块、服务管理端与学生会话同步](2026-10-29-AI模块与管理端及学生会话同步.md) | 已上传[草稿PR #6](https://github.com/zlingting123-svg/preclass-learning-evaluation/pull/6)，真实调用关闭 |
+| 2026-10-28 | [服务管理端](2026-10-28-服务管理端.md) | 本机账户与服务器/API管理，已随PR #6上传；未部署 |
+| 2026-10-28 | [AI接入现有主页面及商业预览](2026-10-28-AI模块接入.md) | 本地集成已验证，已随PR #6上传；真实调用关闭 |
 | 2026-10-28 | [商业工作台与 AI 对话界面独立预览](2026-10-28-商业界面与AI对话预览.md) | 已上传独立分支，待选择外观；未替换主页面 |
 
-本次任务分支：`design/commercial-preview`。对应[草稿 PR #5](https://github.com/zlingting123-svg/preclass-learning-evaluation/pull/5)，目标分支为 `feature/core-questionnaires`，未合并 `main`。
+当前接续分支：`feature/student-conversations`，基于`design/commercial-preview@61751cc`。同事此前的[草稿PR #5](https://github.com/zlingting123-svg/preclass-learning-evaluation/pull/5)保留；本轮不直接合并main，最新同步状态见2026-10-29日志。
 
 后续更新在此目录新增日期文件并更新索引；截图放入对应日期子目录，验证证据区分真实 HTTP 和 UI 模拟。禁止提交账号口令、访问令牌、真实学生信息或运行数据库。

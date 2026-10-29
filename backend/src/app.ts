@@ -1,3 +1,7 @@
+import { conversationRoutes } from './conversation-routes.js';
+import { adminRoutes } from './admin.js';
+import { serverSettings } from './admin-settings.js';
+import { aiRoutes, type CourseAi } from './ai.js';
 import express, { type ErrorRequestHandler, type Request, type Response } from 'express';
 import helmet from 'helmet';
 import { randomUUID } from 'node:crypto';
@@ -12,8 +16,10 @@ import { PROFILE_QUESTIONS, PROFILE_SCHEMA_VERSION } from '../../shared/profile-
 import { loginLimiters } from './security.js';
 import { questionnaireRoutes } from './questionnaire-routes.js';
 
-export function createApp(service: Service, auth: AuthProvider) {
+export function createApp(service: Service, auth: AuthProvider, ai?: CourseAi) {
   const app = express();
+  const extraOrigin = process.env.DEV_FRONTEND_ORIGIN;
+  ensure(!extraOrigin || /^http:\/\/(127\.0\.0\.1|localhost):[0-9]{1,5}$/.test(extraOrigin), 503, 'LOCAL_ONLY', '本机前端来源无效');
   app.disable('x-powered-by');
   app.use(helmet({ strictTransportSecurity: false, contentSecurityPolicy: { directives: { upgradeInsecureRequests: null } } }));
   app.use((_req, res, next) => {
@@ -24,17 +30,27 @@ export function createApp(service: Service, auth: AuthProvider) {
   app.use((req, _res, next) => {
     // Intended for Vite's same-origin proxy, not arbitrary CORS clients.
     const origin = req.get('origin');
-    ensure(!origin || ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3001', 'http://127.0.0.1:3001'].includes(origin), 403, 'FORBIDDEN', '请求来源不允许');
+    ensure(!origin || ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3001', 'http://127.0.0.1:3001', ...(extraOrigin ? [extraOrigin] : [])].includes(origin), 403, 'FORBIDDEN', '请求来源不允许');
     next();
   });
   app.use(express.json({ limit: '2mb', strict: true }));
   const ok = (res: Response, data: unknown) => res.json({ ok: true, data, requestId: res.locals.requestId });
   app.get('/api/v1/health', (_req, res) => ok(res, { contractVersion: CONTRACT_VERSION, storage: 'local-sqlite', auth: 'local-bcrypt', productionReady: false }));
-  app.post('/api/v1/auth/login', ...loginLimiters(), async (req, res) => ok(res, await auth.login(req.body)));
+  app.post('/api/v1/admin/login', ...loginLimiters(), async (req,res)=>{
+    const session=await auth.login(req.body);
+    if(session.user.role!=='admin'){auth.logout(session.accessToken);ensure(false,403,'ADMIN_REQUIRED','请使用专用管理员账户');}
+    ok(res,session);
+  });
+  app.post('/api/v1/auth/login', ...loginLimiters(), async (req,res)=>{
+    const session=await auth.login(req.body);
+    if(serverSettings(service.store).maintenance&&session.user.role!=='admin'){auth.logout(session.accessToken);ensure(false,503,'MAINTENANCE','服务维护中，请稍后再登录');}
+    ok(res,session);
+  });
   app.use('/api/v1', (req, res, next) => {
     const header = req.get('authorization');
     ensure(header && header.startsWith('Bearer ') && header.length <= 200, 401, 'UNAUTHENTICATED', '请登录');
-    res.locals.token = header.slice(7); res.locals.user = auth.authenticate(res.locals.token); next();
+    res.locals.token = header.slice(7); res.locals.user = auth.authenticate(res.locals.token);
+    ensure(!serverSettings(service.store).maintenance||res.locals.user.role==='admin'||['/auth/logout','/auth/me'].includes(req.path),503,'MAINTENANCE','服务维护中，请稍后再试'); next();
   });
   const user = (res: Response): User => res.locals.user;
   const param = (req: Request) => id.parse(req.params.id);
@@ -43,6 +59,9 @@ export function createApp(service: Service, auth: AuthProvider) {
     const { limit, cursor } = pagination(req); return ok(res, page(items, limit, cursor));
   };
   app.get('/api/v1/auth/me', (_req, res) => ok(res, user(res)));
+  adminRoutes(app, service, auth, ai);
+  conversationRoutes(app, service, ai);
+  aiRoutes(app, service, ai);
   questionnaireRoutes(app,service,ok);
   app.post('/api/v1/auth/logout', (_req, res) => { auth.logout(res.locals.token); ok(res, { success: true }); });
   app.get('/api/v1/classes', (req, res) => list(req, res, service.classes(user(res), id.optional().parse(req.query.cohortId))));

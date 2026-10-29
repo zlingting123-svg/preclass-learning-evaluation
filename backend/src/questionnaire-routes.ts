@@ -76,7 +76,7 @@ export function questionnaireRoutes(
     ok(res, service.detail(u(res), param(req.params.id))),
   );
   // A real AI integration must replace these explicit unavailable responses. Never fake a reply.
-  for (const kind of ["chat", "generate", "insights"])
+  for (const kind of ["generate", "insights"])
     app.post(`/api/v1/core/ai/${kind}`, (req, res) => {
       const classId = param(req.body.classId);
       core.classAccess(u(res), classId);

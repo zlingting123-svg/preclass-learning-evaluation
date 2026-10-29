@@ -1,0 +1,30 @@
+
+> course-ai-module@0.1.0 test
+> tsx --test test/*.test.ts
+
+✔ DeepSeek adapter handles split UTF8/CRLF, one terminal usage and explicit non-thinking/output cap (44.208459ms)
+✔ DeepSeek truncated stream, upstream 429 and arbitrary base URL fail closed without exposing upstream body (3.094542ms)
+✔ balance single-flight across keys under same account; warning vs stop and unknown are distinct (34.699666ms)
+✔ JWT cannot be forged with X-User headers, wrong signature, expired token, or body supplied user/model/key (145.088542ms)
+✔ daily limit, global reservation and per-student concurrency do not trigger extra model calls (168.522958ms)
+✔ same quotaGroup keys share concurrency and do not access teacher-only deployment; raw SQLite/WAL never contain question or answer (259.13525ms)
+✔ unconfigured policy is rejected, and disabled service makes no upstream calls (13.87825ms)
+✔ store refuses a second process owner and recovers interrupted metadata without transcript (6.191833ms)
+✔ client cancellation is observed and an active provider is accounted conservatively (3.759458ms)
+✔ queued requests recheck revoked course membership before calling provider (90.97225ms)
+✔ 300 simultaneous in-flight upstream API jobs over real HTTP; 350-slot configured headroom; synthetic only (10432.444083ms)
+✔ 500 authenticated requests and simultaneously established TCP connections (paced arrival); no frontend/system capacity claim (5864.651708ms)
+✔ student membership and role checked before provider use (342.099916ms)
+✔ scope refusal and missing evidence never call the answer model (22.175333ms)
+✔ SSE result, durable usage and no stored transcript; completed retries never regenerate (37.353084ms)
+✔ incomplete upstream stream retains worst case reserve as usage_unknown (55.41875ms)
+✔ 205 HTTP requests with a 64-connection client pool; fake upstream bounded to eight (2999.973125ms)
+✔ 205 concurrent logical jobs in the RAM scheduler, not 205 TCP sockets or real model calls (956.932416ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 16673.594375

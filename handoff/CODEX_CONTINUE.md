@@ -1,3 +1,33 @@
+> **2026-10-29 学生持久会话完成，已上传[草稿PR #6](https://github.com/zlingting123-svg/preclass-learning-evaluation/pull/6)（feature/student-conversations → design/commercial-preview）。远端功能提交7ac9d1b已核验，主分支未合并；远端CI状态另行核验。** feature/student-conversations接续5984bc6，并包含此前未上传的b48b080（AI接入）与5984bc6（服务管理）。用户明确改为保存学生对话，覆盖旧不留存正文要求。新增backend/conversations.ts、conversation-routes.ts、shared/conversations.ts与两处学生UI共用useConversations：按账号+课程保存、删除、选择、恢复上次课程与近期上下文续问；教师/管理接口不提供正文，用量账本仍只存元数据。
+>
+> 验证：后台62、AI模块18测试，前后端check/build、smoke和3项生产限制通过，上传前重新核对。CUA模拟学生新建问答→刷新重登自动恢复A班及原消息→追问显示接续2条历史→再次打开仍保留两轮。删除确认已检查并取消保留演示；实际删除/生成中删除/无迟到复活在隔离HTTP测试中通过。SQLite关闭重开恢复、中断不重跑、权限隔离与有界上下文均测试。旧未保存历史无法补回。完整说明docs/integration/2026-10-29-学生对话保存与续聊.md、工作日志更新日志/2026-10-29-AI模块与管理端及学生会话同步.md。
+>
+> 每课100线程、每线程100轮；模型上下文最多最近3个成功轮次/3500字节并受总预算约束。词项基线只支持有限指代追问，真实模型、云、整站300/500和多副本仍未验收。管理端和账号路径/端口沿用下文，所有work、凭据、数据库及实际对话禁止上传。下一步先核对本轮PR和日志，不再按旧“只存页面内存/完全不保存正文”实现，也不把静态UI或mock当成真实DeepSeek验收。
+
+> 学生持久会话进行中：feature/student-conversations基于5984bc6，用户明确要求保存/删除/续聊，覆盖不存正文的旧限制。新增私有会话/轮次/选中记录及接口，正在接入两处学生UI和有界历史上下文；正文不进入管理/教师/用量接口。未验收。
+
+> **2026-10-28 服务管理端已完成本机验证。** feature/service-admin接续本地b48b080；用户澄清管理端仅全站账户/忘记账号恢复与服务器/API设置，不搬入课程知识、问卷详情、班级统计/教学导出。新增backend/admin.ts、admin-settings.ts、admin-bootstrap.ts、shared/admin.ts、前端/admin登录/概览/账户/API/服务器/用量/审计。专用service_admin随机口令只在backend/work/platform-sample/服务管理员账号.txt；sample.py start幂等保留账号。管理员创建受控CLI，网页只创建师生；无永久删除。
+>
+> 认证新增account_control版本快照，每次认证检查停用/撤销；账户修改、改密、撤销立即使旧登录失效。真实角色从user主记录读，不能自停或网页提升管理员。API设置仅mock/环境变量名引用，闲置时应用，持久化在主库并在重启加载。服务器维护模式/后续会话时长可持久设置。管理DTO没有课程正文/问答/密码/令牌，AI对话仍不持久化。
+>
+> 实际结果：backend check/build、52项回归和smoke；frontend check/build与3项生产限制通过。CUA专用管理员登录、按姓名找回001001、账户编辑入口、API次数20→21保存/重读→恢复20、服务器维护关闭/会话8小时保存、操作日志已查看。实际stop/start保留账号、API版本2与服务器版本1；admin-runtime诊断通过。当前是真实HTTP+模拟模型，不是付费API/云/整站并发验收。375宽度账户/API页无整页横向溢出，控制台无warn/error。截图、管理文档、浏览器最终检查见docs/integration/2026-10-28-服务管理端.md及integration/verification/2026-10-28-admin-*。
+>
+> 运行仍SAMPLE_BACKEND_PORT=3002 SAMPLE_FRONTEND_PORT=5174 python3 integration/sample.py start；管理登录/admin/login，师生与预览路由保留。注意旧的“管理员无页面”记录已被本轮替代。后续核对新分支、用户范围与真实配置条件，不把UI配置保存当成真实余额预警通知/300并发或生产认证完成；不自动上传秘密/合并main/部署。
+
+> 管理端范围确认：用户要求只管理全站账户与服务器/API设置，不看课程知识、问卷内容、班级教学统计。已实现backend/admin.ts、admin-settings.ts、认证账户版本撤销、前端/admin各页面；管理员仅受控CLI创建，网页只创建师生账户。原课程导出未搬入管理端。测试与浏览器验证进行中，不宣称完成。
+
+> 2026-10-28 服务管理端进行中：用户明确管理端只负责全站人员账户找回/管理与服务器/API配置，课程知识、问卷详情及班级教学导出继续在师生端。新feature/service-admin基于本地b48b080。正在新增独立/admin登录、账户生命周期、维护/会话设置、模拟API配额与池设置、用量及操作日志。真实API关闭，尚未验收。
+
+> **2026-10-28 AI接入已本机验证。** 分支integration/ai-course-assistant基于同事design/commercial-preview@61751cc；位置为当前preclass-ai-integration（独立克隆，不覆盖旧工作区）。已读取更新日志和AI接口交接，保留主问卷路由、商业预览及三主题，接入现有学生聊天、教师AI使用统计入口。backend/src/ai.ts复用LocalAuth/Service.classAccess，已发布同班资料进入词项基线；ai-module来自独立fc125e8，仅元数据账本、幂等、取消、350/600模拟容量保留。真实模型关闭，generate/insights仍未接入。
+>
+> 验证：backend check/build、43/43测试及smoke；frontend check/build与3项生产限制；复制AI包18/18测试。CUA实际登录现有学生并从主页面及商业预览发送，来源/token更新；无关问题拒答且调用不增长；网页停止显示未知用量；教师看到本班粗主题4次，无个体问题。375px无横向溢出，桌面/手机/教师截图及JSON见integration/verification/2026-10-28-ai-*。开发热更新曾触发预览重复createRoot警告，已添加dispose卸载，最终日志仅留3条旧HMR记录、未见后续新增，详见验证记录。未运行整站300/500、真实DeepSeek、云、多副本或真机。
+>
+> 运行：SAMPLE_BACKEND_PORT=3002 SAMPLE_FRONTEND_PORT=5174 python3 integration/sample.py start，或integration/打开AI接入版.command；主页面5174，商业预览/design-preview.html，后台3002。停止用相同环境变量sample.py stop。当前模拟数据由原库在线备份到backend/work/platform-sample，原数据库不动；账号私密留在work。AI账本在其ai子目录，主库备份命令不涵盖AI账本。默认后台AI_MODE缺省disabled，快捷样板仅mock，拒绝真实模式。
+>
+> 下一步：核对本分支与本轮docs/integration/2026-10-28-AI接入.md，再接真实资料管理/白名单、语义阈值标定、PG/Redis共享适配及经用户确认的预算、真实Key和余额预警；不要把独立模块旧300mock/500连接当成当前整站验收，不合并main或上线。当前界面只提供学生问答/教师方向，管理员为受控API元数据，未做管理页面。
+
+> 2026-10-28 AI集成进行中：基于远程design/commercial-preview@61751cc（精确tree/commit校验的浅克隆），独立integration/ai-course-assistant分支。用户授权将AI模块接入现有主页面及商业预览，保留三主题和问卷业务。已复制独立模块到ai-module，正在适配现有LocalAuth/班级/已发布课程资料。真实调用关闭，未验收；原工作区、账号、数据库保留。下一步完成聊天SSE/取消/用量/教师主题/回归验证后再写通过。
+
 > **2026-10-28 更新日志归档。** 用户要求上传GitHub并将本轮总结放入更新日志文件夹。仓库新增“更新日志/README.md”索引、“更新日志/2026-10-28-商业界面与AI对话预览.md”，及日期子目录内的本项目三种配色、桌面/手机对话截图与真实HTTP/UI模拟两类验证记录。无口令、令牌、真实学生数据或数据库。继续使用design/commercial-preview和草稿PR #5，未合并main、未替换主界面、未部署；后续先看本轮日志再等用户确定外观。
 > **2026-10-28 外观试版，待用户选择。** 用户认可基本框架，要求商业化视觉、参考截图和主流AI对话布局。新任务分支design/commercial-preview基于feature/core-questionnaires@2f493d6；新增frontend/design-preview.html、frontend/src/preview/和预览验证文档，原App/Core/后台/共享契约未改变。入口http://127.0.0.1:5173/design-preview.html，现有模拟账号登录，内存路由复用原业务。三种可切外观：紫蓝商业/深绿专业/石墨科技。对话有窄导航、会话列表、欢迎/建议问题、底部输入、失败重试/复制/停止。AI真实接口仍503，不制造回答。
 >
