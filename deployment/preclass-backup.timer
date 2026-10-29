@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily Preclass backup schedule
+
+[Timer]
+OnCalendar=*-*-* 03:00:00
+Persistent=true
+RandomizedDelaySec=300
+Unit=preclass-backup.service
+
+[Install]
+WantedBy=timers.target

@@ -6,8 +6,8 @@ import { config } from './config.js';
 
 const settings = config();
 const store = new SqliteStore(settings.dbPath);
-const server = createApp(new Service(store), new LocalAuth(store)).listen(settings.port, settings.host, () => {
-  process.stdout.write(JSON.stringify({ event: 'local_server_started', host: settings.host, port: settings.port, productionReady: false }) + '\n');
+const server = createApp(new Service(store), new LocalAuth(store),settings.production?{appOrigin:settings.appOrigin!,staticDir:settings.staticDir!}:undefined).listen(settings.port, settings.host, () => {
+  process.stdout.write(JSON.stringify({ event: settings.production?'single_host_server_started':'local_server_started', host: settings.host, port: settings.port, productionReady: false }) + '\n');
 });
 server.requestTimeout = 30000;
 server.headersTimeout = 10000;
