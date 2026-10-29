@@ -1,3 +1,5 @@
+import {WhaleCompanion} from './WhaleCompanion';
+import type {CompanionState} from './WhaleCompanion';
 import {getAccessToken} from '../services/authStore';
 import type {ChatDetail,ChatList} from '@shared/conversations';
 import { KnowledgePanel } from './KnowledgePanel';
@@ -539,6 +541,7 @@ function Dashboard({
   setClasses: React.Dispatch<React.SetStateAction<ClassInfo[]>>;
   onlySurveys?: boolean;
 }) {
+  const navigate=useNavigate();
   const teacher = user.role === "teacher";
   const [surveys, setSurveys] = useState<Survey[]>([]),
     [loading, setLoading] = useState(true),
@@ -743,10 +746,8 @@ function Dashboard({
         </section>
         <aside className="pv-right-column">
           <div className="pv-assistant-card">
-            <span className="pv-ai-orb">
-              <Icon name="spark" />
-            </span>
-            <span className="pv-status-dot">课程 AI 助手</span>
+            <WhaleCompanion state="welcome" place="home" onActivate={()=>navigate('/assistant')}/>
+            <span className="pv-status-dot">课程 AI 伙伴</span>
             <h2>
               好问题，
               <br />
@@ -795,14 +796,31 @@ interface Thread {
 function Chat({ classId, className }: { classId: string; className: string }) {
   const [threads,setThreads]=useState<Thread[]>([{id:'',messages:[]}]),[active,setActive]=useState(''),[input,setInput]=useState(''),[busy,setBusy]=useState(false),[error,setError]=useState(''),[history,setHistory]=useState(false),[copied,setCopied]=useState('');
   const current=threads.find(t=>t.id===active)??threads[0]??{id:'',messages:[]},controller=useRef<AbortController|null>(null),busyRef=useRef(false),end=useRef<HTMLDivElement>(null),textarea=useRef<HTMLTextAreaElement>(null),sequence=useRef(0);
+  const [availability,setAvailability]=useState<string|null>(null),[motion,setMotion]=useState<CompanionState>('idle'),[asking,setAsking]=useState(false);
+  const companionState:CompanionState=availability===null||availability==='disabled'?'offline':availability==='unavailable'?'failed':asking?'thinking':motion;
   const converted=(d:ChatDetail):Thread=>({id:d.id,title:d.title,messages:d.messages.map(m=>({...m,failed:m.role==='user'&&['error','cancelled','interrupted'].includes(m.outcome)}))});
-  async function load(selected?:string){const seq=++sequence.current;const list=await request<ChatList>('GET',`/core/ai/threads?classId=${encodeURIComponent(classId)}`);const id=selected&&list.items.some(t=>t.id===selected)?selected:list.activeId;const detail=id?await request<ChatDetail>('GET',`/core/ai/threads/${id}`):null;if(seq!==sequence.current)return;setThreads(list.items.length?list.items.map(t=>detail?.id===t.id?converted(detail):{id:t.id,title:t.title,messages:[]}):[{id:'',messages:[]}]);setActive(id??'');}
-  useEffect(()=>{void load().catch(e=>setError(errorText(e)));return()=>{sequence.current++;controller.current?.abort()}},[]);
-  useEffect(()=>{end.current?.scrollIntoView({behavior:'smooth',block:'nearest'})},[current.messages.length,busy]);
-  async function selectThread(id:string){if(busyRef.current)return;setBusy(true);try{const d=await request<ChatDetail>('POST',`/core/ai/threads/${id}/select`,{body:{}});setThreads(ts=>ts.map(t=>t.id===id?converted(d):t));setActive(id);setError('');setInput('');setHistory(false)}catch(e){setError(errorText(e))}finally{setBusy(false)}}
-  async function newThread(){if(busyRef.current)return;setBusy(true);try{const d=await request<ChatDetail>('POST','/core/ai/threads',{body:{classId}});await load(d.id);setInput('');setError('');setHistory(false)}catch(e){setError(errorText(e))}finally{setBusy(false)}}
-  async function deleteThread(id:string){if(!id||!window.confirm('删除这条对话及其中的消息？此操作无法撤销。'))return;controller.current?.abort();setBusy(true);try{await request('DELETE',`/core/ai/threads/${id}`);await load();setError('')}catch(e){setError(errorText(e))}finally{setBusy(false)}}
-  async function send(text:string,_retryId?:string){if(busyRef.current||!text.trim())return;busyRef.current=true;setBusy(true);setError('');const abort=new AbortController();controller.current=abort;let id=current.id;try{if(!id){const d=await request<ChatDetail>('POST','/core/ai/threads',{body:{classId}});id=d.id;setThreads([converted(d)]);setActive(id)}const question=text.trim();setThreads(ts=>ts.map(t=>t.id===id?{...t,messages:[...t.messages,{id:newId(),role:'user',text:question}]}:t));setInput('');const response=await fetch(`${API_BASE_URL}/api/v1/core/ai/threads/${id}/questions`,{method:'POST',headers:{Authorization:'Bearer '+getAccessToken(),'Content-Type':'application/json'},body:JSON.stringify({question,clientRequestId:newId()}),signal:abort.signal});if(!response.ok)await parseApiResponse(response,true);else await response.text();await load(id)}catch(e){setError(e instanceof Error&&e.name==='AbortError'?'已停止生成。':errorText(e));await load(id).catch(()=>{})}finally{busyRef.current=false;setBusy(false);controller.current=null}}
+  async function load(selected?:string){const seq=++sequence.current;const list=await request<ChatList>('GET',`/core/ai/threads?classId=${encodeURIComponent(classId)}`);const id=selected&&list.items.some(t=>t.id===selected)?selected:list.activeId;const detail=id?await request<ChatDetail>('GET',`/core/ai/threads/${id}`):null;if(seq!==sequence.current)return null;setThreads(list.items.length?list.items.map(t=>detail?.id===t.id?converted(detail):{id:t.id,title:t.title,messages:[]}):[{id:'',messages:[]}]);setActive(id??'');return detail}
+  useEffect(()=>{void load().catch(e=>setError(errorText(e)));let alive=true;void request<{mode:string;liveReady:boolean}>('GET','/core/ai/status').then(d=>{if(alive)setAvailability(d.mode==='mock'||d.liveReady?d.mode:'disabled')}).catch(()=>{if(alive){setAvailability('unavailable');setError('暂时无法读取AI服务状态，请刷新后重试。')}});return()=>{alive=false;sequence.current++;controller.current?.abort()}},[]);
+  useEffect(()=>{if(motion!=='done'&&motion!=='failed')return;const timer=setTimeout(()=>setMotion('idle'),motion==='done'?2300:2600);return()=>clearTimeout(timer)},[motion]);
+  useEffect(()=>{end.current?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'nearest'})},[current.messages.length,busy]);
+  async function selectThread(id:string){if(busyRef.current)return;setBusy(true);setMotion('idle');try{const d=await request<ChatDetail>('POST',`/core/ai/threads/${id}/select`,{body:{}});setThreads(ts=>ts.map(t=>t.id===id?converted(d):t));setActive(id);setError('');setInput('');setHistory(false)}catch(e){setError(errorText(e))}finally{setBusy(false)}}
+  async function newThread(){if(busyRef.current)return;setBusy(true);setMotion('idle');try{const d=await request<ChatDetail>('POST','/core/ai/threads',{body:{classId}});await load(d.id);setInput('');setError('');setHistory(false)}catch(e){setError(errorText(e))}finally{setBusy(false)}}
+  async function deleteThread(id:string){if(!id||!window.confirm('删除这条对话及其中的消息？此操作无法撤销。'))return;controller.current?.abort();setBusy(true);setMotion('idle');try{await request('DELETE',`/core/ai/threads/${id}`);await load();setError('')}catch(e){setError(errorText(e))}finally{setBusy(false)}}
+  async function send(text:string,_retryId?:string){
+    if(busyRef.current||!text.trim())return;
+    if(availability===null||availability==='disabled'||availability==='unavailable'){setError(availability==='unavailable'?'暂时无法读取AI服务状态，请刷新后重试。':'AI 服务尚未接入，暂时不能发送问题。');return}
+    busyRef.current=true;setBusy(true);setAsking(true);setMotion('thinking');setError('');const abort=new AbortController();controller.current=abort;let id=current.id;
+    try{
+      if(!id){const d=await request<ChatDetail>('POST','/core/ai/threads',{body:{classId}});id=d.id;setThreads([converted(d)]);setActive(id)}
+      const question=text.trim();setThreads(ts=>ts.map(t=>t.id===id?{...t,messages:[...t.messages,{id:newId(),role:'user',text:question}]}:t));setInput('');
+      const response=await fetch(`${API_BASE_URL}/api/v1/core/ai/threads/${id}/questions`,{method:'POST',headers:{Authorization:'Bearer '+getAccessToken(),'Content-Type':'application/json'},body:JSON.stringify({question,clientRequestId:newId()}),signal:abort.signal});
+      if(!response.ok)await parseApiResponse(response,true);else await response.text();
+      const detail=await load(id),last=detail?.messages.at(-1);
+      if(last&&['done','refusal','insufficient_evidence'].includes(last.outcome))setMotion('done');
+      else {setMotion(last?.outcome==='cancelled'?'idle':'failed');setError('本次请求未完成，请稍后重试。')}
+    }catch(e){const cancelled=e instanceof Error&&e.name==='AbortError';setError(cancelled?'已停止生成。':errorText(e));setMotion(cancelled?'idle':'failed');await load(id).catch(()=>{})}
+    finally{busyRef.current=false;setBusy(false);setAsking(false);controller.current=null}
+  }
   async function copy(m: Message) {
     try {
       await navigator.clipboard.writeText(m.text);
@@ -832,7 +850,7 @@ function Chat({ classId, className }: { classId: string; className: string }) {
           <div>
             <Icon name="spark" />
             <strong>AI 问答助手</strong>
-            <span className="pv-connection-state">模拟服务</span>
+            <span className="pv-connection-state">{availability===null?"读取服务状态…":availability==='disabled'?"待接入":availability==='unavailable'?"状态不可用":availability==='mock'?"模拟服务":"已接入"}</span>
           </div>
           <button
             className="pv-icon-button pv-history-toggle"
@@ -843,11 +861,10 @@ function Chat({ classId, className }: { classId: string; className: string }) {
           </button>
           <span className="pv-chat-context">{className}</span>
         </header>
+        <div className="pv-chat-content">
+        <WhaleCompanion state={companionState} place="chat"/>
         {!current.messages.length ? (
           <div className="pv-chat-welcome">
-            <span className="pv-ai-orb">
-              <Icon name="spark" />
-            </span>
             <p className="pv-eyebrow">YOUR COURSE COMPANION</p>
             <h1>你好，今天想探索什么？</h1>
             <p>从一个课程问题开始，让思路更清晰。</p>
@@ -913,6 +930,7 @@ function Chat({ classId, className }: { classId: string; className: string }) {
             <div ref={end} />
           </div>
         )}
+        </div>
         <div className="pv-composer-wrap">
           {error && (
             <p className="pv-chat-error" role="alert">
@@ -972,7 +990,7 @@ function Chat({ classId, className }: { classId: string; className: string }) {
             </div>
           </form>
           <p className="pv-chat-disclaimer">
-            AI 服务尚未接入，当前不会生成回答。接入后，请核对重要课程信息。
+            {availability==='disabled'||availability===null?'AI 服务尚未接入，当前不会生成回答。':availability==='mock'?'当前为模拟服务。':'请核对重要课程信息。'}
           </p>
         </div>
       </section>

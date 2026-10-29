@@ -1,0 +1,70 @@
+{
+  "scope": "真实隔离HTTP/SQLite与模拟AI；失败/服务关闭为定点路由故障注入；非真实模型/云部署/真机",
+  "checks": [
+    {
+      "name": "主页独有欢迎；形象点击进入问答，无形象设置面板",
+      "result": "pass"
+    },
+    {
+      "name": "推荐问题请求中思考，真实终态后完成，再恢复待机",
+      "result": "pass"
+    },
+    {
+      "name": "拖动四方向，松手回待机，不越界，位置在本机保存",
+      "result": "pass"
+    },
+    {
+      "name": "请求失败播放失败；取消回待机，不误报回答完成",
+      "result": "pass"
+    },
+    {
+      "name": "历史、新建、删除回归；历史加载不播放欢迎或完成",
+      "result": "pass"
+    },
+    {
+      "name": "服务待接入独立动画，不发送模型请求；拖动后恢复待接入",
+      "result": "pass"
+    },
+    {
+      "name": "窄屏无溢出、不覆盖输入框；减少动态效果静止",
+      "result": "pass"
+    },
+    {
+      "name": "手机触控模拟：点击反馈和拖动方向、松手恢复",
+      "result": "pass"
+    }
+  ],
+  "responsive": [
+    {
+      "viewport": 1440,
+      "mascotWidth": 120,
+      "mascotHeight": 135.375
+    },
+    {
+      "viewport": 900,
+      "mascotWidth": 87.59375,
+      "mascotHeight": 98.8125
+    },
+    {
+      "viewport": 768,
+      "mascotWidth": 71.75,
+      "mascotHeight": 80.9375
+    },
+    {
+      "viewport": 414,
+      "mascotWidth": 68,
+      "mascotHeight": 76.703125
+    },
+    {
+      "viewport": 375,
+      "mascotWidth": 68,
+      "mascotHeight": 76.703125
+    },
+    {
+      "viewport": 320,
+      "mascotWidth": 68,
+      "mascotHeight": 76.703125
+    }
+  ],
+  "pageErrors": []
+}

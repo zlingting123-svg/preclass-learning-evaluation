@@ -1,3 +1,7 @@
+> **2026-10-29最新补记：伙伴欢迎大跳与手机适配已验证。** 主页欢迎改为张手上跳36px、回弹和影子变化；移入/点击/键盘聚焦有回应，主页点击短暂反馈后进入AI，拖动不误触。保持SVG节点身份防止吞点击。聊天伙伴根据内容区宽度缩至68–120px，顶部/输入区留边，320–1440六宽度及Chromium触控模拟通过；8组伙伴浏览器检查、前端check/build通过，未复测或冒称真实手机。最新日志更新日志/2026-10-29-伙伴跳跃交互与手机适配.md，证据frontend/verification/2026-10-29-companion-interaction。现有服务仍5175/design-preview.html，动作预览5175/companion-motion-preview.html。本轮只本地修改，未上传或重打安装器。
+
+> **2026-10-29最新：鲸鱼伙伴七类动作已接入本地学习空间。** frontend/src/preview/WhaleCompanion.tsx、companion.css与main.tsx；本地像素资源frontend/public/companion。主页welcome，Chat按服务status/请求结果切换idle/thinking/done/failed/offline，拖动临时覆盖为上下左右四帧步行，松手恢复业务状态，无形象设置面板。前端check/build、新7组浏览器、原学生5组/管理员5组、后台82项通过；资料不足属于收到终态后提示，不代表答案正确。最新日志更新日志/2026-10-29-鲸鱼伙伴七类动作与网页接入.md，证据frontend/verification/2026-10-29-companion。查看动作http://127.0.0.1:5175/companion-motion-preview.html；实际入口仍5175/design-preview.html。此前5186是旧设计稿；新预览使用同一实际组件。未上传本轮改动、未重打安装器/改v01-v04快照、未云部署。下一步用户人工看动作，如需上传需将本轮源码/资源/日志一起同步任务分支，不能冒称旧安装包已包含伙伴。
+
 > **最新0.5.0管理员集中名单/首次改密/多教师班级已本地验证。** 当前feature/admin-roster-onboarding，入口仍5175/design-preview.html。先读[SERVICE_PREVIEW.md](SERVICE_PREVIEW.md)和本轮管理员名单说明；下文旧“教师导入/默认12345/单教师”不再适用于当前网页。后台70项和前端检查通过，本地未上传。
 
 > **2026-10-29按用户截图纠正UI，本地完成。** 当前feature/service-admin-preview基于3ffef2e；正确入口5175/design-preview.html。原preclass-ai-integration的ef9adb6已被4b7af6d撤回；本轮直接保留其他工作者学习空间，管理功能嵌入同一pv布局，不用旧管理外壳。最新状态见[SERVICE_PREVIEW.md](SERVICE_PREVIEW.md)，不要依照下文历史独立管理端重新制作。
@@ -307,3 +311,9 @@ frontend：npm ci；npm run check/build；npm run test:config（3项通过）；
 ## 2026-10-29 安装包发行移交
 
 用户要求安装包本体、日志和说明上传项目库。采用同项目Releases标签installer-v04-20261029固定ddc5525，上传已验收tar.gz、SHA、metadata、安装步骤和README；源码分支增加installers/2026-10-29-v04/按版本索引。源快照不改，CI30天附件转为发行区长期下载。上传摘要和附件状态见最新安装包发行区上传日志。
+
+## 2026-10-29 鲸鱼伙伴设计稿（最新）
+用户要求下载鲸鱼娘、设计具体动作，计划替换主页右侧AI入口并展示于助手界面。本轮下载并校验f0909172434/deepseek-girl-codex-pet@2572709632b0e81401b9e92994f2c3786c186397的透明图集，保留MIT LICENSE、来源清单；没有安装插件。独立交互稿位于上级outputs/whale-companion-20261029/index.html，设计文档docs/design/2026-10-29-鲸鱼伙伴动作设计.md，日志更新日志/2026-10-29-鲸鱼伙伴设计.md。六状态为待机/欢迎/思考/回答完成/失败/待接入，重排现成帧，未生成新绘画。正式前端尚未修改、未发布、未重打包；下一步先确认视觉，再接入真实AI状态并做主页/历史对话等回归。
+
+### 最新补记：鲸鱼伙伴像素v03与边缘修复
+用户指出左残片/右裁断后又要求像素风。下载图集部分帧自身已破损，原clip-path补丁无效，停用原破损帧；当前独立预览已换成参考形象重制的companion-pixel-v03.png。元数据pixel-asset-info.json、六姿态边界pixel-atlas-verification.json、交互verification.json和最终截图均在上级outputs/whale-companion-20261029。按实际源间隙划分SVG区域（x每列512；y范围0..534与534..1024），保留所有角色像素及透明边距，CSS使用pixelated/整像素位移。六状态/模拟过渡/375px/减少动态效果检查通过，并在用户IAB页刷新选择思考目视核对。当前只改独立设计稿，未替换正式前端、未重打安装包、未上传本轮设计稿。下一步先由用户看像素风及动作，再接入正式组件和真实请求状态并回归业务。

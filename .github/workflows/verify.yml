@@ -176,3 +176,13 @@ jobs:
         run: |
           sudo systemctl status preclass.service preclass-caddy.service preclass-backup.service --no-pager || true
           sudo journalctl -u preclass.service -u preclass-backup.service --no-pager -n 100 || true
+
+  companion-updater:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Verify frontend-only atomic update and rollback on Linux
+        run: python3 deployment/test_companion_update.py -v
