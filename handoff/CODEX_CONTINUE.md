@@ -297,3 +297,7 @@ frontend：npm ci；npm run check/build；npm run test:config（3项通过）；
 服务器适配功能已提交c499bc2，容量夹具跨平台同步修正提交e0836bf。干净提交发布包178文件哈希核验通过；v03-server-adapted快照406文件对应e0836bf（排除versions/），旧v01/v02不改。上次23b3b3f远端Windows容量测试实际失败，本轮已修复固定延迟假设并本地AI19通过；新头CI结果另查，不能沿用旧通过结论。
 
 服务器适配已同步PR #10，0f3ba94头的Ubuntu和Windows检查全部SUCCESS（运行40841274654）；Ubuntu验证Python/非root预检、完整备份与发布包、真实Caddy本地代理上传。独立解包npm安装构建通过。原云主机/TLS/systemd真实生命周期及负载仍未验收；详见最新云服务器适配日志。随后只补交验证文档与CI证据，v03源码仍固定e0836bf。
+
+## 2026-10-29 一键安装包
+
+正在制作Ubuntu24.04 x86_64首次安装器（deployment/installer/）、Linux打包脚本build-installer.mjs和ubuntu-installer CI；打包前端/后台生产产物、私有Node/Caddy与PDF wheel，基础OS缺项才apt，已有系统/数据拒绝覆盖。密码终端/标准输入，不保存明文；AI关闭。CI一次性VM验证真实systemd启动、登录、备份重启与独立恢复后才上传安装包artifact。当前只本地语法/完整性与备份回归通过，最终Linux结果另查。

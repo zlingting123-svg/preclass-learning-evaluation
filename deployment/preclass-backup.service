@@ -4,6 +4,7 @@ After=network.target
 
 [Service]
 Type=oneshot
+TimeoutStartSec=infinity
 User=root
 Group=root
 EnvironmentFile=/etc/preclass.env

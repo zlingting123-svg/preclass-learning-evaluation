@@ -125,3 +125,54 @@ jobs:
           tar -xzf "$RUNNER_TEMP/caddy/caddy.tar.gz" -C "$RUNNER_TEMP/caddy"
           "$RUNNER_TEMP/caddy/caddy" validate --config deployment/Caddyfile.example --adapter caddyfile
           CADDY_BIN="$RUNNER_TEMP/caddy/caddy" node deployment/test-caddy-upload.mjs
+
+  ubuntu-installer:
+    needs: linux-server-adapter
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: 24.15.0
+          package-manager-cache: false
+      - name: Prepare OS prerequisites and build application
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y python3-venv ca-certificates libstdc++6 libatomic1 curl
+          npm --prefix ai-module ci
+          npm --prefix ai-module run build
+          npm --prefix backend ci
+          npm --prefix backend run build
+          npm --prefix frontend ci
+          npm --prefix frontend run build
+      - name: Fetch checksum-verified Linux Caddy
+        run: |
+          mkdir -p "$RUNNER_TEMP/caddy"
+          curl -fL --retry 3 -o "$RUNNER_TEMP/caddy/caddy.tar.gz" https://github.com/caddyserver/caddy/releases/download/v2.11.7/caddy_2.11.7_linux_amd64.tar.gz
+          echo "727b91701a392de6ebc5027509f548bf39979e5216340d0faed8fa5e69c84f8b  $RUNNER_TEMP/caddy/caddy.tar.gz" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/caddy/caddy.tar.gz" -C "$RUNNER_TEMP/caddy"
+      - name: Build self-contained application installer
+        run: |
+          node deployment/test-installer-verifier.mjs
+          CADDY_BIN="$RUNNER_TEMP/caddy/caddy" node deployment/build-installer.mjs "$RUNNER_TEMP/installers"
+      - name: Test real systemd installation, backup restart and isolated restore on disposable VM
+        run: sudo env PRECLASS_DISPOSABLE_CI=1 "$(command -v node)" deployment/test-installed-service.mjs "$RUNNER_TEMP/installers/installer-result.json"
+      - name: Upload tested installer
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: preclass-installer-ubuntu24-x64
+          retention-days: 30
+          compression-level: 0
+          path: |
+            ${{ runner.temp }}/installers/*.tar.gz
+            ${{ runner.temp }}/installers/*.sha256
+            ${{ runner.temp }}/installers/installer-info.json
+            ${{ runner.temp }}/installers/README.md
+      - name: Print disposable installation diagnostics
+        if: failure()
+        run: |
+          sudo systemctl status preclass.service preclass-caddy.service preclass-backup.service --no-pager || true
+          sudo journalctl -u preclass.service -u preclass-backup.service --no-pager -n 100 || true

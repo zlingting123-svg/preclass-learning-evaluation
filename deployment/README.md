@@ -106,3 +106,13 @@ curl -f -H 'Host: classroom.你的域名' http://127.0.0.1:3001/api/v1/health
 整合头0f3ba94的Ubuntu24.04 CI和Windows完整检查均已通过，覆盖Python环境、非root预检、备份完整性/损坏检测、干净发布包和实际Caddy4MiB代理上传。记录见云服务器版本适配日志及v03/verification/。本机独立解包安装构建也通过。正式服务器仍须验证systemd真实生命周期、域名/TLS和实际负载。
 
 部署时 `/var/backups/preclass` 的属主设为root、权限0700；应用preclass用户不应拥有删除备份权限。完整备份由root单元执行；数据目录 `/var/lib/preclass` 由preclass拥有。应另存异机副本。
+
+## 一键安装包（构建和测试流程）
+
+`deployment/build-installer.mjs`只允许在Linux x64构建，使用已构建程序和官方Node运行程序、哈希验证的Caddy，重装生产依赖并下载PDF wheel，将其制成独立tar.gz安装包；不把macOS依赖直接复制到Linux。`deployment/installer/README.md`说明目标Ubuntu24.04 x86_64、一次安装步骤和基础OS依赖。
+
+安装器是首次安装器：遇到已有配置、数据库或current会拒绝覆盖；不自动升级或删除数据。管理员初始密码只经交互终端/标准输入，不保存明文。系统基础依赖缺项时可从Ubuntu apt安装；应用依赖及pypdf已包含，基础OS依赖齐全时可用--offline。不是包含整个操作系统的完全离线镜像。
+
+Node/Caddy在/opt/preclass/runtime内私有安装，不替换系统程序。安装器创建preclass/preclass-web账号、root管理的代码和配置，部署应用、HTTPS网关及完整备份服务，默认关闭AI/搜索。域名解析、备案、防火墙和真实HTTPS签发仍需服务器外部准备。下载包应先核对可信来源的sha256再解压执行。
+
+新增ubuntu-installer CI任务，在一次性Ubuntu VM上打包并测试真实systemd安装、管理员登录、拒绝覆盖、停服备份后重启和恢复副本，再上传tar.gz及校验文件为GitHub Actions artifact（保留30天）。只在测试完成后提供包，实际结果见最新日志；本地macOS只做脚本、完整性及原备份回归，不冒充Linux安装验证。
