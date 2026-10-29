@@ -116,3 +116,7 @@ curl -f -H 'Host: classroom.你的域名' http://127.0.0.1:3001/api/v1/health
 Node/Caddy在/opt/preclass/runtime内私有安装，不替换系统程序。安装器创建preclass/preclass-web账号、root管理的代码和配置，部署应用、HTTPS网关及完整备份服务，默认关闭AI/搜索。域名解析、备案、防火墙和真实HTTPS签发仍需服务器外部准备。下载包应先核对可信来源的sha256再解压执行。
 
 新增ubuntu-installer CI任务，在一次性Ubuntu VM上打包并测试真实systemd安装、管理员登录、拒绝覆盖、停服备份后重启和恢复副本，再上传tar.gz及校验文件为GitHub Actions artifact（保留30天）。只在测试完成后提供包，实际结果见最新日志；本地macOS只做脚本、完整性及原备份回归，不冒充Linux安装验证。
+
+### 安装包下载索引
+
+首次安装优先查看[安装包总目录](../installers/README.md)及[v04步骤](../installers/2026-10-29-v04/README.md)。已验收二进制由同项目Releases提供，标签installer-v04-20261029；源码和数据隔离说明不变，已有系统不得用首次安装器覆盖。

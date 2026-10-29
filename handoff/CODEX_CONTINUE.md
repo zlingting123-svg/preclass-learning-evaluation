@@ -303,3 +303,7 @@ frontend：npm ci；npm run check/build；npm run test:config（3项通过）；
 正在制作Ubuntu24.04 x86_64首次安装器（deployment/installer/）、Linux打包脚本build-installer.mjs和ubuntu-installer CI；打包前端/后台生产产物、私有Node/Caddy与PDF wheel，基础OS缺项才apt，已有系统/数据拒绝覆盖。密码终端/标准输入，不保存明文；AI关闭。CI一次性VM验证真实systemd启动、登录、备份重启与独立恢复后才上传安装包artifact。当前只本地语法/完整性与备份回归通过，最终Linux结果另查。
 
 一键安装包已完成：ddc5525源码的push CI40844018830中Windows/Ubuntu/ubuntu-installer全部成功，真实一次性VM完成systemd安装、登录、拒绝覆盖、备份重启和恢复验证。约66MiB tar.gz已下载到../outputs/ubuntu-installer-20261029，3329个记录全量校验通过，附SHA256和安装步骤。v04-installer保留源码与CI/校验记录；CI artifact保留30天，本机文件另存。用户云端域名TLS/备案/防火墙和真实负载仍未验收，详见一键安装包日志完成补记。
+
+## 2026-10-29 安装包发行移交
+
+用户要求安装包本体、日志和说明上传项目库。采用同项目Releases标签installer-v04-20261029固定ddc5525，上传已验收tar.gz、SHA、metadata、安装步骤和README；源码分支增加installers/2026-10-29-v04/按版本索引。源快照不改，CI30天附件转为发行区长期下载。上传摘要和附件状态见最新安装包发行区上传日志。
