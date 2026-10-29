@@ -1,4 +1,4 @@
-> **2026-10-29 学生持久会话完成，本轮上传进行中。** feature/student-conversations接续5984bc6，并包含此前未上传的b48b080（AI接入）与5984bc6（服务管理）。用户明确改为保存学生对话，覆盖旧不留存正文要求。新增backend/conversations.ts、conversation-routes.ts、shared/conversations.ts与两处学生UI共用useConversations：按账号+课程保存、删除、选择、恢复上次课程与近期上下文续问；教师/管理接口不提供正文，用量账本仍只存元数据。
+> **2026-10-29 学生持久会话完成，已上传[草稿PR #6](https://github.com/zlingting123-svg/preclass-learning-evaluation/pull/6)（feature/student-conversations → design/commercial-preview）。远端功能提交7ac9d1b已核验，主分支未合并；远端CI状态另行核验。** feature/student-conversations接续5984bc6，并包含此前未上传的b48b080（AI接入）与5984bc6（服务管理）。用户明确改为保存学生对话，覆盖旧不留存正文要求。新增backend/conversations.ts、conversation-routes.ts、shared/conversations.ts与两处学生UI共用useConversations：按账号+课程保存、删除、选择、恢复上次课程与近期上下文续问；教师/管理接口不提供正文，用量账本仍只存元数据。
 >
 > 验证：后台62、AI模块18测试，前后端check/build、smoke和3项生产限制通过，上传前重新核对。CUA模拟学生新建问答→刷新重登自动恢复A班及原消息→追问显示接续2条历史→再次打开仍保留两轮。删除确认已检查并取消保留演示；实际删除/生成中删除/无迟到复活在隔离HTTP测试中通过。SQLite关闭重开恢复、中断不重跑、权限隔离与有界上下文均测试。旧未保存历史无法补回。完整说明docs/integration/2026-10-29-学生对话保存与续聊.md、工作日志更新日志/2026-10-29-AI模块与管理端及学生会话同步.md。
 >
