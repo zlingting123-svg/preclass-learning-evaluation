@@ -68,6 +68,7 @@ export class AdminService {
       ...a.user,
       username: a.username,
       disabled: !!a.disabled,
+      mustChangePassword: !!a.mustChangePassword,
       version: a.version ?? 0,
     };
   }
@@ -84,7 +85,7 @@ export class AdminService {
       name: c.name,
       teacherId: c.teacherId,
       teacherName:
-        this.store.get<User>("user", c.teacherId)?.displayName ?? "教师不存在",
+        this.store.get<User>("user", c.teacherId)?.displayName ?? (c.teacherId?"教师不存在":"待教师选择"),
       cohortId: c.cohortId ?? null,
       version: c.adminVersion ?? 0,
       memberCount: this.store
@@ -125,6 +126,7 @@ export class AdminService {
       b.displayName,
       b.role,
     );
+    a.mustChangePassword=true;
     return this.store.transaction(() => {
       this.require(u);
       auth.persistPrepared(a);
@@ -210,6 +212,7 @@ export class AdminService {
       );
       this.core.checkVersion(a.version ?? 0, b.expectedVersion);
       a.passwordHash = hash;
+      a.mustChangePassword = true;
       a.version = (a.version ?? 0) + 1;
       this.store.put("account", a.username, a);
       this.bumpSessions(id);

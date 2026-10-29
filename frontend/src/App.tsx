@@ -1,3 +1,5 @@
+import { PasswordChangePage } from "./pages/PasswordChangePage";
+import { clearSession } from "./services/api";
 import { useEffect } from "react";
 import {
   BrowserRouter,
@@ -31,23 +33,27 @@ function AuthBridge() {
 function RequireRole({ teacher = false }: { teacher?: boolean }) {
   const user = getCurrentUser();
   if (!user) return <Navigate to="/login" replace />;
+  if (user.mustChangePassword) return <Navigate to="/change-password" replace/>;
   if (user.role === "admin") return <Navigate to="/admin" replace />;
   if (teacher && user.role !== "teacher") return <Navigate to="/" replace />;
   return <Outlet />;
 }
 function AdminEntry() {
+  if(getCurrentUser()?.mustChangePassword)return <Navigate to="/change-password" replace/>;
   return getCurrentUser()?.role === "admin" ? (
     <AdminConsole />
   ) : (
     <Navigate to="/login" replace />
   );
 }
+function ChangePasswordEntry(){const navigate=useNavigate();return getCurrentUser()?<PasswordChangePage onComplete={()=>{clearSession();navigate("/login",{replace:true,state:{passwordChanged:true}})}} onLogout={()=>navigate("/login",{replace:true})}/>:<Navigate to="/login" replace/>}
 export function App() {
   return (
     <BrowserRouter>
       <AuthBridge />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/change-password" element={<ChangePasswordEntry/>}/>
         <Route path="/admin" element={<AdminEntry />} />
         <Route element={<RequireRole />}>
           <Route element={<Layout />}>

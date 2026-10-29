@@ -1,3 +1,5 @@
+> **最新0.5.0管理员集中名单/首次改密/多教师班级已本地验证。** 当前feature/admin-roster-onboarding，入口仍5175/design-preview.html。先读[SERVICE_PREVIEW.md](SERVICE_PREVIEW.md)和本轮管理员名单说明；下文旧“教师导入/默认12345/单教师”不再适用于当前网页。后台70项和前端检查通过，本地未上传。
+
 > **2026-10-29按用户截图纠正UI，本地完成。** 当前feature/service-admin-preview基于3ffef2e；正确入口5175/design-preview.html。原preclass-ai-integration的ef9adb6已被4b7af6d撤回；本轮直接保留其他工作者学习空间，管理功能嵌入同一pv布局，不用旧管理外壳。最新状态见[SERVICE_PREVIEW.md](SERVICE_PREVIEW.md)，不要依照下文历史独立管理端重新制作。
 
 > **2026-10-29 独立管理员端。** 用户明确选择管理员而非教师工作台，并在手机微信无法访问后要求暂停二维码/局域网调试，等买服务器再做。已撤销临时0.0.0.0前端监听、恢复127.0.0.1，未关闭防火墙；二维码/生成器只留本地outputs和integration/work/paused-lan，不作课堂可用结果，不继续询问手机测试。

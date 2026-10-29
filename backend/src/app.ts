@@ -1,3 +1,4 @@
+import { provisioningRoutes } from './provisioning.js';
 import { serviceAdminRoutes } from './service-admin.js';
 import { serverSettings } from './admin-settings.js';
 import { aiRoutes, type CourseAi } from './ai.js';
@@ -51,6 +52,7 @@ export function createApp(service: Service, auth: AuthProvider, ai?: CourseAi) {
     const header = req.get('authorization');
     ensure(header && header.startsWith('Bearer ') && header.length <= 200, 401, 'UNAUTHENTICATED', '请登录');
     res.locals.token = header.slice(7); res.locals.user = auth.authenticate(res.locals.token);
+    ensure(!res.locals.user.mustChangePassword||['/auth/me','/auth/logout','/auth/password'].includes(req.path),403,'PASSWORD_CHANGE_REQUIRED','首次登录或密码重置后，请先修改初始密码');
     ensure(!serverSettings(service.store).maintenance||res.locals.user.role==='admin'||['/auth/logout','/auth/me'].includes(req.path),503,'MAINTENANCE','服务维护中，请稍后再试'); next();
   });
   const user = (res: Response): User => res.locals.user;
@@ -60,6 +62,8 @@ export function createApp(service: Service, auth: AuthProvider, ai?: CourseAi) {
     const { limit, cursor } = pagination(req); return ok(res, page(items, limit, cursor));
   };
   app.get('/api/v1/auth/me', (_req, res) => ok(res, user(res)));
+  app.put('/api/v1/auth/password',async(req,res)=>{ensure(auth.changePassword,503,'PASSWORD_CHANGE_UNAVAILABLE','当前认证提供方暂不支持改密');await auth.changePassword(res.locals.token,req.body);ok(res,{changed:true});});
+  provisioningRoutes(app,service,auth);
   serviceAdminRoutes(app,service,ai);
   conversationRoutes(app,service,ai);
   aiRoutes(app,service,ai);
@@ -69,10 +73,7 @@ export function createApp(service: Service, auth: AuthProvider, ai?: CourseAi) {
   app.get('/api/v1/classes', (req, res) => list(req, res, service.classes(user(res), id.optional().parse(req.query.cohortId))));
   app.get('/api/v1/cohorts', (req, res) => list(req, res, service.cohorts(user(res))));
   app.get('/api/v1/cohorts/:id', (req, res) => ok(res, service.cohort(user(res), param(req))));
-  app.post('/api/v1/teacher/classes', (req, res) => {
-    const body = z.object({ name: z.string().trim().min(1).max(200), cohortId: id.optional() }).strict().parse(req.body);
-    ok(res, service.createClass(user(res), body.name, body.cohortId));
-  });
+  app.post('/api/v1/teacher/classes',(_req,_res)=>{ensure(false,403,'ADMIN_CLASS_CREATION_REQUIRED','班级由管理员导入，请在教师端选择已有班级');});
   app.post('/api/v1/classes/join', (req, res) => {
     const body = z.object({ joinCode: z.string().trim().min(1).max(100).transform(v => v.toUpperCase()) }).strict().parse(req.body);
     ok(res, service.join(user(res), body.joinCode));

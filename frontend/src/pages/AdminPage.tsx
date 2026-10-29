@@ -23,6 +23,9 @@ const msg = (e: unknown) => (e instanceof Error ? e.message : "操作失败");
 const auditLabels: Record<string, string> = {
   "api.configure": "配置API",
   "server.configure": "配置服务器",
+  change_own_password: "本人修改密码",
+  import_class_roster: "导入名单并建号",
+  claim_class: "教师添加班级",
   create_account: "创建账号",
   update_account: "更新账号",
   disable_account: "停用账号",
@@ -281,7 +284,7 @@ export function AdminConsole({ embedded=false, activeTab, onTabChange }: { embed
                       role: "teacher",
                       password: "",
                     });
-                  }, "账号已创建");
+                  }, "账号已创建，首次登录需修改初始密码");
                 }}
               >
                 <label>

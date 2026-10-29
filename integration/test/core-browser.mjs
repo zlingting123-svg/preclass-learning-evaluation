@@ -44,14 +44,14 @@ async function check(name, fn) {
   results.push({ name, result: "pass" });
   console.log("PASS", name);
 }
-async function login(page, username, pw) {
+async function login(page, username, pw, first=false) {
   await page.goto("http://127.0.0.1:5173/login");
   await page.getByLabel("学号 / 教师账号").fill(username);
   await page.getByLabel("密码", { exact: true }).fill(pw);
   await page.getByRole("button", { name: "登录", exact: true }).click();
   await page
     .getByRole("heading", {
-      name: username === "core-teacher" ? "教师工作台" : "我的班级",
+      name: first ? "首次登录，请修改初始密码" : username === "core-teacher" ? "教师工作台" : "我的班级",
       exact: true,
     })
     .waitFor();
@@ -79,34 +79,21 @@ try {
     sp = await (await browser.newContext()).newPage();
   for (const p of [tp, sp]) p.on("pageerror", (e) => errors.push(e.message));
   let c, survey;
-  await check("真实登录、创建班级、核心入口不展示旧评分/导读", async () => {
-    await login(tp, "core-teacher", password);
-    await tp.getByLabel("新班级名称").fill("模拟核心班");
-    await tp.getByRole("button", { name: "创建班级", exact: true }).click();
-    await tp.getByRole("link", { name: "学生名单与导入" }).waitFor();
-    c = core.classes(teacher)[0];
-    assert.ok(c);
-    assert.equal(await tp.getByText("教师复核", { exact: true }).count(), 0);
+  const initialPassword=randomUUID(),studentPassword=randomUUID();
+  await check("管理员CSV预览并按班建号，前导零与姓名对应",async()=>{
+    await auth.createUser('core-admin',password,'模拟管理员','admin');
+    const token=(await auth.login({username:'core-admin',password})).accessToken;
+    const call=async(path,body)=>{const r=await fetch('http://127.0.0.1:3001/api/v1'+path,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify(body)});assert.equal(r.status,200);return(await r.json()).data};
+    const file=await call('/admin/rosters/files/preview',{name:'模拟名单.csv',base64:Buffer.from('学生姓名,学生学号,班级\n模拟学生,000123,模拟核心班\n未作答学生,000124,模拟核心班').toString('base64')});
+    assert.equal(file.sheets[0].rows[1][1],'000123');
+    const plan=await call('/admin/rosters/preview',{batchName:'模拟核心批次',rows:file.sheets[0].rows.slice(1).map(r=>({studentNumber:r[1],displayName:r[0],className:r[2]}))});
+    const receipt=await call('/admin/rosters/commit',{planId:plan.id,fingerprint:plan.fingerprint,initialPassword});assert.equal(receipt.newAccounts,2);
   });
-  await check("CSV上传、中文别名识别、前导零预览、确认导入", async () => {
-    await tp.getByRole("link", { name: "学生名单与导入" }).click();
-    await tp
-      .locator("input[type=file]")
-      .setInputFiles({
-        name: "模拟名单.csv",
-        mimeType: "text/csv",
-        buffer: Buffer.from(
-          "\ufeff学生姓名,学生学号\n模拟学生,000123\n未作答学生,000124",
-        ),
-      });
-    await tp.getByRole("button", { name: "应用映射，编辑预览" }).click();
-    assert.equal(
-      await tp.getByLabel("第1行学号", { exact: true }).inputValue(),
-      "000123",
-    );
-    await tp.getByRole("button", { name: "校验名单并生成确认预览" }).click();
-    await tp.getByRole("button", { name: "确认正式导入" }).click();
-    await tp.getByText(/已确认导入 2 名学生/).waitFor();
+  await check("教师选择管理员已建班级，名单只读且无导入控件",async()=>{
+    await login(tp,'core-teacher',password);
+    const row=tp.getByRole('row').filter({hasText:'模拟核心班'});await row.getByRole('button',{name:'添加到我的班级'}).click();
+    c=core.classes(teacher)[0];assert.ok(c);
+    await tp.getByRole('link',{name:'班级学生名单'}).click();await tp.getByRole('cell',{name:'000123',exact:true}).waitFor();assert.equal(await tp.locator('input[type=file]').count(),0);
   });
   await check("教师在线编辑、时间限制、发布", async () => {
     await tp.getByRole("link", { name: "返回班级" }).click();
@@ -123,8 +110,13 @@ try {
     survey = surveys.list(teacher, c.id)[0];
     assert.equal(survey.durationMinutes, 10);
   });
-  await check("默认密码登录、问卷可见、单选提交真实持久化", async () => {
-    await login(sp, "000123", "12345");
+  await check("初始密码仅进入改密页，改密重登后可提交问卷", async () => {
+    await login(sp, "000123", initialPassword, true);
+    await sp.getByLabel('当前／初始密码').fill(initialPassword);
+    await sp.getByLabel('新密码',{exact:true}).fill(studentPassword);
+    await sp.getByLabel('确认新密码',{exact:true}).fill(studentPassword);
+    await sp.getByRole('button',{name:'保存新密码并重新登录'}).click();
+    await login(sp,'000123',studentPassword);
     await sp.getByRole("link", { name: "查看 / 作答" }).click();
     await sp.getByLabel("甲", { exact: true }).check();
     await sp.getByRole("button", { name: "提交问卷", exact: true }).click();
@@ -153,7 +145,7 @@ try {
     await sp.getByRole("button", { name: "发送", exact: true }).click();
     await sp
       .getByRole("alert")
-      .filter({ hasText: "AI 服务尚未接入" })
+      .filter({ hasText: /AI ?服务尚未(接入|启用)/ })
       .waitFor();
     assert.equal(await sp.getByText("AI", { exact: true }).count(), 0);
   });
@@ -169,7 +161,7 @@ try {
       expectedVersion: 0,
     });
     surveys.transition(teacher, s.id, s.version, "publish");
-    const user = (await auth.login({ username: "000123", password: "12345" }))
+    const user = (await auth.login({ username: "000123", password: studentPassword }))
       .user;
     const session = surveys.start(user, s.id);
     store.put("survey_response", session.response.id, {

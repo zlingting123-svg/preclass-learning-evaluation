@@ -1,3 +1,6 @@
+import { AdminRosterPanel } from './AdminRosterPanel';
+import { ClassPicker } from '../components/ClassPicker';
+import { PasswordChangePage } from '../pages/PasswordChangePage';
 import { ApiManager, ServerManager, Metadata } from './ServicePanels';
 import type { AuthSession } from '@shared/contracts';
 import { parseApiResponse } from '../services/httpClient';
@@ -142,12 +145,13 @@ function Preview() {
 function PreviewRoutes({user,setUser,theme,setTheme}:{user:User|null;setUser:(user:User|null)=>void;theme:string;setTheme:(theme:string)=>void}){
  const navigate=useNavigate(),location=useLocation();
  useEffect(()=>{setUnauthorizedHandler(()=>{setUser(null);navigate(location.pathname==='/service-login'?'/service-login':'/login',{replace:true})});return()=>setUnauthorizedHandler(null)},[navigate,location.pathname,setUser]);
- const done=(next:User)=>{setUser(next);navigate('/',{replace:true})};
+ const done=(next:User)=>{setUser(next);navigate(next.mustChangePassword?'/change-password':'/',{replace:true})};
  const logout=()=>{void api.logout().catch(()=>{});clearSession();setUser(null);navigate('/login',{replace:true})};
  return <Routes>
   <Route path="/service-login" element={<PreviewLogin mode="admin" done={done}/>}/>
   <Route path="/login" element={<PreviewLogin done={done}/>}/>
-  <Route path="/*" element={user?<Workspace user={user} theme={theme} setTheme={setTheme} logout={logout}/>:<Navigate to="/login" replace/>}/>
+  <Route path="/change-password" element={user?<PasswordChangePage onComplete={()=>{setUser(null);navigate('/login',{replace:true,state:{passwordChanged:true}})}} onLogout={()=>{setUser(null);navigate('/login',{replace:true})}}/>:<Navigate to="/login" replace/>}/>
+  <Route path="/*" element={user?user.mustChangePassword?<Navigate to="/change-password" replace/>:<Workspace user={user} theme={theme} setTheme={setTheme} logout={logout}/>:<Navigate to="/login" replace/>}/>
  </Routes>;
 }
 function PreviewLogin({ done, mode="learning" }: { done: (u: User) => void; mode?:"learning"|"admin" }) {
@@ -155,6 +159,7 @@ function PreviewLogin({ done, mode="learning" }: { done: (u: User) => void; mode
     [password, setPassword] = useState(""),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
+  const location=useLocation();
   async function login(e: React.FormEvent) {
     e.preventDefault();
     if (busy) return;
@@ -213,6 +218,7 @@ function PreviewLogin({ done, mode="learning" }: { done: (u: User) => void; mode
           <span className="pv-eyebrow">WELCOME BACK</span>
           <h2>{mode==='admin'?'服务管理员登录':'欢迎回到学习空间'}</h2>
           <p className="pv-muted">{mode==='admin'?'使用专用管理员账号，维护账户与平台服务。':'登录你的班级，继续今天的学习。'}</p>
+          {(location.state as {passwordChanged?:boolean}|null)?.passwordChanged&&<p className="svc-notice" role="status">密码已修改，请使用新密码重新登录。</p>}
           <form onSubmit={login}>
             <label>
               {mode==='admin'?'管理员账号':'学号 / 教师账号'}
@@ -301,7 +307,7 @@ function Workspace({
         </div>
         <p className="pv-nav-label">WORKSPACE</p>
         <nav>
-          {(admin?[["/","grid","服务概览"],["/accounts","users","账户管理"],["/api","spark","API 管理"],["/server","shield","服务器设置"],["/usage","book","用量查询"],["/audit","book","操作日志"]]:[
+          {(admin?[["/","grid","服务概览"],["/rosters","users","名单导入与分班"],["/accounts","users","账户管理"],["/api","spark","API 管理"],["/server","shield","服务器设置"],["/usage","book","用量查询"],["/audit","book","操作日志"]]:[
             ["/", "grid", teacher ? "班级工作台" : "我的班级"],
             ["/questionnaires", "book", "问卷与统计"],
             ["/assistant", "spark", "AI 问答助手"],
@@ -365,7 +371,7 @@ function Workspace({
           <div className="pv-breadcrumb">
             工作空间 <span>/</span>{" "}
             <strong>
-              {admin?({"/":"服务概览","/accounts":"账户管理","/api":"API 管理","/server":"服务器设置","/usage":"用量查询","/audit":"操作日志"} as Record<string,string>)[location.pathname]??'服务管理':chat
+              {admin?({"/":"服务概览","/rosters":"名单导入与分班","/accounts":"账户管理","/api":"API 管理","/server":"服务器设置","/usage":"用量查询","/audit":"操作日志"} as Record<string,string>)[location.pathname]??'服务管理':chat
                 ? "AI 课程助手"
                 : location.pathname === "/"
                   ? "班级概览"
@@ -398,6 +404,7 @@ function Workspace({
           <Route path="/" element={<AdminConsole key="overview" embedded activeTab="overview" onTabChange={tab=>navigate(tab==='users'?'/accounts':'/')}/>}/>
           <Route path="/accounts" element={<AdminConsole key="users" embedded activeTab="users"/>}/>
           <Route path="/audit" element={<AdminConsole key="audit" embedded activeTab="audit"/>}/>
+          <Route path="/rosters" element={<AdminRosterPanel/>}/>
           <Route path="/api" element={<><h1>API 管理</h1><ApiManager/></>}/>
           <Route path="/server" element={<><h1>服务器设置</h1><ServerManager/></>}/>
           <Route path="/usage" element={<><h1>用量查询</h1><Metadata kind="usage"/></>}/>
@@ -440,7 +447,7 @@ function Workspace({
               ) : (
                 <div className="pv-page">
                   <h1>先加入一个班级</h1>
-                  <p>课程助手需要班级上下文，请联系教师导入名单。</p>
+                  <p>课程助手需要班级上下文，请联系管理员导入名单。</p>
                 </div>
               )
             }
@@ -531,9 +538,7 @@ function Dashboard({
   const [surveys, setSurveys] = useState<Survey[]>([]),
     [loading, setLoading] = useState(true),
     [error, setError] = useState(""),
-    [create, setCreate] = useState(false),
-    [name, setName] = useState(""),
-    [busy, setBusy] = useState(false);
+    [showPicker,setShowPicker]=useState(false);
   const cls = classes.find((c) => c.id === classId);
   useEffect(() => {
     setSurveys([]);
@@ -558,24 +563,6 @@ function Dashboard({
       active = false;
     };
   }, [classId]);
-  async function add(e: React.FormEvent) {
-    e.preventDefault();
-    setBusy(true);
-    setError("");
-    try {
-      const c = await request<ClassInfo>("POST", "/teacher/classes", {
-        body: { name },
-      });
-      setClasses((v) => [...v, c]);
-      setClassId(c.id);
-      setCreate(false);
-      setName("");
-    } catch (e) {
-      setError(errorText(e));
-    } finally {
-      setBusy(false);
-    }
-  }
   return (
     <main className="pv-page">
       <div className="pv-page-title">
@@ -595,31 +582,13 @@ function Dashboard({
           </p>
         </div>
         {teacher && (
-          <button className="pv-primary" onClick={() => setCreate((v) => !v)}>
+          <button className="pv-primary" onClick={() => setShowPicker((v) => !v)}>
             <Icon name="plus" />
-            创建班级
+            添加已有班级
           </button>
         )}
       </div>
-      {create && (
-        <form onSubmit={add} className="pv-create">
-          <label>
-            新班级名称
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              maxLength={200}
-            />
-          </label>
-          <button className="pv-primary" disabled={busy}>
-            确认创建
-          </button>
-          <button type="button" onClick={() => setCreate(false)}>
-            取消
-          </button>
-        </form>
-      )}
+      {teacher&&showPicker&&<ClassPicker onClaimed={id=>{readClasses().then(items=>{setClasses(items);setClassId(id);setShowPicker(false)}).catch(e=>setError(errorText(e)))}}/>}
       {error && (
         <p role="alert" className="pv-error">
           {error}
