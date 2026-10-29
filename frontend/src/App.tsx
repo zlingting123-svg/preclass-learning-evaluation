@@ -10,6 +10,7 @@ import {
 import { getCurrentUser, setUnauthorizedHandler } from "./services/api";
 import { Layout } from "./components/Layout";
 import { LoginPage } from "./pages/LoginPage";
+import { AdminConsole } from "./pages/AdminPage";
 import {
   CoreHome,
   RosterPage,
@@ -30,8 +31,16 @@ function AuthBridge() {
 function RequireRole({ teacher = false }: { teacher?: boolean }) {
   const user = getCurrentUser();
   if (!user) return <Navigate to="/login" replace />;
+  if (user.role === "admin") return <Navigate to="/admin" replace />;
   if (teacher && user.role !== "teacher") return <Navigate to="/" replace />;
   return <Outlet />;
+}
+function AdminEntry() {
+  return getCurrentUser()?.role === "admin" ? (
+    <AdminConsole />
+  ) : (
+    <Navigate to="/login" replace />
+  );
 }
 export function App() {
   return (
@@ -39,6 +48,7 @@ export function App() {
       <AuthBridge />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/admin" element={<AdminEntry />} />
         <Route element={<RequireRole />}>
           <Route element={<Layout />}>
             <Route path="/" element={<CoreHome />} />

@@ -25,9 +25,10 @@ export function LoginPage() {
       const session = await api.login({ username, password })
       setSession(session)
       const home =
-        session.user.role === 'teacher' || session.user.role === 'admin'
+        session.user.role === 'teacher'
           ? '/teacher/overview'
           : '/student/assignments'
+      if(session.user.role === 'admin'){navigate('/admin',{replace:true});return}
       const from = (location.state as { from?: unknown } | null)?.from
       const prefix = session.user.role === 'student' ? '/student/' : '/teacher/'
       navigate(typeof from === 'string' && from.startsWith(prefix) ? from : home, { replace: true })

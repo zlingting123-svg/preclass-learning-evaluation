@@ -1,3 +1,4 @@
+import {newId} from '../lib/newId';
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import type { ClassInfo, Page } from "@shared/contracts";
@@ -25,7 +26,7 @@ const message = (e: unknown) =>
   e instanceof Error ? e.message : "操作失败，请重试";
 const url = (s: string) => encodeURIComponent(s);
 const blankQuestion = (): SurveyQuestion => ({
-  id: crypto.randomUUID(),
+  id: newId(),
   title: "",
   type: "text",
   required: true,

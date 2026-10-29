@@ -5,8 +5,8 @@ import type { AuthSession, Role, User } from '../../shared/contracts.js';
 import type { Store } from './store.js';
 import { ensure } from './errors.js';
 
-export interface Account { user: User; username: string; passwordHash: string }
-interface Session { userId: string; expiresAt: string }
+export interface Account { user: User; username: string; passwordHash: string; disabled?: boolean; version?: number }
+interface Session { userId: string; expiresAt: string; epoch?: number }
 const digest = (token: string) => createHash('sha256').update(token).digest('hex');
 export interface AuthProvider {
   login(input: unknown): Promise<AuthSession>;
@@ -42,15 +42,17 @@ export class LocalAuth implements AuthProvider {
     const { username, password } = z.object({ username: z.string().min(1).max(100), password: z.string().min(1).max(200) }).strict().parse(input);
     const account = this.store.get<Account>('account', username);
     const valid = await bcrypt.compare(password, account?.passwordHash ?? this.dummyHash);
-    ensure(valid && account && Buffer.byteLength(password) <= 72, 401, 'UNAUTHENTICATED', '账号或口令错误');
+    ensure(valid && account && !account.disabled && Buffer.byteLength(password) <= 72, 401, 'UNAUTHENTICATED', '账号或口令错误');
     const accessToken = randomBytes(32).toString('base64url');
     const expiresAt = new Date(this.now() + 8 * 60 * 60 * 1000).toISOString();
-    this.store.put<Session>('session', digest(accessToken), { userId: account.user.id, expiresAt });
+    this.store.put<Session>('session', digest(accessToken), { userId: account.user.id, expiresAt, epoch: this.store.get<{version:number}>('session_epoch',account.user.id)?.version??0 });
     return { user: account.user, accessToken, expiresAt };
   }
   authenticate(token: string): User {
     const session = this.store.get<Session>('session', digest(token));
     ensure(session, 401, 'UNAUTHENTICATED', '请登录');
+    ensure((session.epoch??0)===(this.store.get<{version:number}>('session_epoch',session.userId)?.version??0),401,'SESSION_REVOKED','账号会话已失效，请重新登录');
+    ensure(!this.store.all<Account>('account').find(a=>a.user.id===session.userId)?.disabled,401,'UNAUTHENTICATED','账号不可用');
     if (Date.parse(session.expiresAt) <= this.now()) {
       this.logout(token); ensure(false, 401, 'SESSION_EXPIRED', '登录已过期');
     }
