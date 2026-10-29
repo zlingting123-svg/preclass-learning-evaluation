@@ -11,7 +11,7 @@ export type ApiResponse<T> =
 export interface Page<T> { items: T[]; nextCursor: string | null }
 export interface User { id: ID; displayName: string; role: Role; mustChangePassword?: boolean }
 export interface LoginRequest { username: string; password: string }
-export interface AuthSession { user: User; accessToken: string; expiresAt: ISODateTime }
+export interface AuthSession { user: User; accessToken: string; expiresAt: ISODateTime | null }
 export interface ClassInfo {
   id: ID; name: string; teacherId: ID; memberCount: number;
   /** Present only for the owning teacher, omitted from student responses. */

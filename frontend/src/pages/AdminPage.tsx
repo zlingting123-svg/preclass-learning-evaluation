@@ -1,3 +1,4 @@
+import {AdminRosterPanel} from '../preview/AdminRosterPanel';
 import { useEffect, useRef, useState } from "react";
 import { apiRequest as req } from "../services/httpClient";
 import { getCurrentUser, clearSession, api } from "../services/api";
@@ -14,6 +15,7 @@ interface Class {
   id: string;
   name: string;
   teacherId: string;
+  teacherIds?: string[];
   teacherName: string;
   cohortId: string | null;
   memberCount: number;
@@ -37,6 +39,7 @@ const auditLabels: Record<string, string> = {
   authorize_cohort_teacher: "授予教学批次资格",
 };
 export function AdminConsole({ embedded=false, activeTab, onTabChange }: { embedded?:boolean;activeTab?:string;onTabChange?:(tab:string)=>void } = {}) {
+  const [batchAccounts,setBatchAccounts]=useState(false);
   const [localTab, setLocalTab] = useState("overview"),
     [summary, setSummary] = useState<Record<string, number>>({}),
     [users, setUsers] = useState<Account[]>([]),
@@ -75,6 +78,7 @@ export function AdminConsole({ embedded=false, activeTab, onTabChange }: { embed
     [classEdit, setClassEdit] = useState<Class | null>(null),
     [className, setClassName] = useState(""),
     [teacherId, setTeacherId] = useState(""),
+    [selectedTeachers,setSelectedTeachers] = useState<string[]>([]),
     [authorizeCohort, setAuthorizeCohort] = useState(false);
   const tab=activeTab??localTab, setTab=onTabChange??setLocalTab;
   const loadSequence = useRef(0);
@@ -102,9 +106,9 @@ export function AdminConsole({ embedded=false, activeTab, onTabChange }: { embed
         "GET",
         `/admin/users?page=${page}&q=${encodeURIComponent(search)}${role ? "&role=" + role : ""}`,
       ),
-      embedded?Promise.resolve([]):req<Class[]>("GET", "/admin/classes"),
-      embedded?Promise.resolve([]):all("teacher"),
-      embedded?Promise.resolve([]):all("student"),
+      embedded&&tab!=="classes"?Promise.resolve([]):req<Class[]>("GET", "/admin/classes"),
+      embedded&&tab!=="classes"?Promise.resolve([]):all("teacher"),
+      embedded&&tab!=="classes"?Promise.resolve([]):all("student"),
       req<typeof audit>("GET", "/admin/audit"),
     ]);
     if (sequence !== loadSequence.current) return;
@@ -126,7 +130,7 @@ export function AdminConsole({ embedded=false, activeTab, onTabChange }: { embed
     return () => {
       active = false;
     };
-  }, [page, search, role]);
+  }, [page, search, role, tab]);
   useEffect(() => {
     setMembers([]);
     if (!classId) return;
@@ -271,8 +275,9 @@ export function AdminConsole({ embedded=false, activeTab, onTabChange }: { embed
         {tab === "users" && (
           <>
             <section>
-              <h2>创建师生账号</h2>
-              <form
+              <h2>创建师生账号</h2><button onClick={()=>setBatchAccounts(false)}>手动创建单个账号</button> <button onClick={()=>setBatchAccounts(true)}>从已导入学生名单批量建号</button>
+              {batchAccounts&&<AdminRosterPanel/>}
+              <form style={{display:batchAccounts?"none":undefined}}
                 className="admin-form"
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -524,7 +529,9 @@ export function AdminConsole({ embedded=false, activeTab, onTabChange }: { embed
                       {
                         body: {
                           name: className,
-                          teacherId,
+                          managed: !classEdit,
+                          teacherId: selectedTeachers[0]??teacherId,
+                          teacherIds: selectedTeachers.length?selectedTeachers:[teacherId],
                           authorizeCohort,
                           expectedVersion: classEdit?.version ?? 0,
                         },
@@ -535,6 +542,7 @@ export function AdminConsole({ embedded=false, activeTab, onTabChange }: { embed
                     setClassEdit(null);
                     setClassName("");
                     setTeacherId("");
+                    setSelectedTeachers([]);
                   }, "班级已保存");
                 }}
               >
@@ -547,14 +555,15 @@ export function AdminConsole({ embedded=false, activeTab, onTabChange }: { embed
                   />
                 </label>
                 <label>
-                  授课教师
+                  授课教师（可多选，未选中的原教师将被撤权）
                   <select
                     aria-label="授课教师"
                     required
-                    value={teacherId}
-                    onChange={(e) => setTeacherId(e.target.value)}
+                    multiple
+                    value={selectedTeachers}
+                    onChange={(e) => setSelectedTeachers(Array.from(e.target.selectedOptions,o=>o.value))}
                   >
-                    <option value="">选择教师</option>
+
                     {teachers
                       .filter((t) => !t.disabled)
                       .map((t) => (
@@ -582,6 +591,7 @@ export function AdminConsole({ embedded=false, activeTab, onTabChange }: { embed
                       setClassEdit(null);
                       setClassName("");
                       setTeacherId("");
+                    setSelectedTeachers([]);
                     }}
                   >
                     取消编辑
@@ -605,7 +615,7 @@ export function AdminConsole({ embedded=false, activeTab, onTabChange }: { embed
                     {classes.map((c) => (
                       <tr key={c.id}>
                         <td>{c.name}</td>
-                        <td>{c.teacherName}</td>
+                        <td>{(c.teacherIds??[c.teacherId]).map(id=>teachers.find(t=>t.id===id)?.displayName??id).join("、")}</td>
                         <td>{c.memberCount}</td>
                         <td>
                           <button
@@ -614,6 +624,7 @@ export function AdminConsole({ embedded=false, activeTab, onTabChange }: { embed
                               setAuthorizeCohort(false);
                               setClassName(c.name);
                               setTeacherId(c.teacherId);
+                              setSelectedTeachers(c.teacherIds??[c.teacherId]);
                             }}
                           >
                             编辑班级

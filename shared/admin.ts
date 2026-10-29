@@ -1,6 +1,6 @@
 /** Service administration metadata only; never course content, passwords or API secrets. */
 export interface AdminAccount { id:string; username:string; displayName:string; role:'student'|'teacher'|'admin'; disabled:boolean; version:number; }
-export interface ServerSettings { maintenance:boolean; sessionHours:number; version:number; }
+export interface ServerSettings { maintenance:boolean; sessionHours:number; /* 0 means no session expiry */ version:number; }
 export interface ApiSettings {
  version:number;
  enabled:boolean; dailyRequests:number; dailyUserBudgetMicros:number; monthlyBudgetMicros:number;

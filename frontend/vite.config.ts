@@ -38,6 +38,7 @@ export default defineConfig(({ command, mode }) => {
   build: {
     // 拆分 ECharts 与 React 依赖，减小主包体积并利于缓存。
     rollupOptions: {
+      input: {main:fileURLToPath(new URL("./index.html",import.meta.url)),design:fileURLToPath(new URL("./design-preview.html",import.meta.url))},
       output: {
         manualChunks: {
           echarts: ['echarts'],

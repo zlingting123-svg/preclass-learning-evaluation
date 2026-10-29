@@ -77,7 +77,8 @@ export class Provisioning {
   this.core.role(actor,'teacher');return this.store.transaction(()=>{
    const m=this.store.get<ManagedClass>('managed_class',classId);ensure(m,404,'NOT_FOUND','此班级未由管理员开放');
    const c=this.store.get<ClassRecord>('class',classId)!;const key=keyFor(classId,actor.id);
-   if(!this.store.get('class_teacher',key)){this.store.put('class_teacher',key,{id:key,classId,teacherId:actor.id});if(!c.teacherId)this.store.put<ClassRecord>('class',c.id,{...c,teacherId:actor.id});this.admin.audit(actor,'claim_class',classId)}
+   ensure(!this.store.get("class_teacher_block",key),403,"CLASS_CLAIM_REVOKED","管理员已撤销此班级权限，请联系管理员重新分配");
+   if(!this.store.get('class_teacher',key)){this.store.put('class_teacher',key,{id:key,classId,teacherId:actor.id});this.store.put('class',c.id,{...c,teacherId:c.teacherId||actor.id,adminVersion:((c as ClassRecord & {adminVersion?:number}).adminVersion??0)+1});this.admin.audit(actor,'claim_class',classId)}
    return this.info(m,actor);
   });
  }
@@ -87,6 +88,8 @@ export function provisioningRoutes(app:Express,core:Service,auth:AuthProvider){
  app.post('/api/v1/admin/rosters/files/preview',async(req,res)=>{service.admin.require(u(res));ok(res,await previewFile(req.body))});
  app.post('/api/v1/admin/rosters/preview',(req,res)=>ok(res,service.preview(u(res),req.body)));
  app.post('/api/v1/admin/rosters/commit',async(req,res)=>ok(res,await service.commit(u(res),res.locals.token,req.body)));
+ app.get('/api/v1/admin/rosters/pending',(_req,res)=>{service.admin.require(u(res));ok(res,core.store.all<Plan>('admin_roster_plan').filter(p=>p.actorId===u(res).id&&p.rows.length>0).map(p=>({id:p.id,batchName:p.batchName,count:p.rows.length}))) });
+ app.post('/api/v1/admin/rosters/pending/:id/select',(req,res)=>{service.admin.require(u(res));const plan=core.store.get<Plan>('admin_roster_plan',id.parse(req.params.id));ensure(plan&&plan.actorId===u(res).id&&plan.rows.length,404,'NOT_FOUND','未找到待建号名单');const fresh=service.preview(u(res),{batchName:plan.batchName,rows:plan.rows});core.store.remove('admin_roster_plan',plan.id);ok(res,fresh)});
  app.get('/api/v1/admin/rosters/classes',(_req,res)=>ok(res,service.list(u(res),true)));
  app.get('/api/v1/teacher/class-catalog',(_req,res)=>ok(res,service.list(u(res))));
  app.post('/api/v1/teacher/classes/:id/claim',(req,res)=>{z.object({}).strict().parse(req.body);ok(res,service.claim(u(res),id.parse(req.params.id)))});

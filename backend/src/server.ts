@@ -8,7 +8,7 @@ import { config } from './config.js';
 const settings = config();
 const store = new SqliteStore(settings.dbPath);
 const service = new Service(store), auth = new LocalAuth(store), ai = localCourseAi(service, auth, settings.dbPath);
-const server = createApp(service, auth, ai).listen(settings.port, settings.host, () => {
+const server = createApp(service, auth, ai, settings.appOrigin&&settings.staticDir?{appOrigin:settings.appOrigin,staticDir:settings.staticDir}:undefined).listen(settings.port, settings.host, () => {
   process.stdout.write(JSON.stringify({ event: 'local_server_started', host: settings.host, port: settings.port, productionReady: false }) + '\n');
 });
 server.requestTimeout = 30000;

@@ -7,7 +7,7 @@ import { ensure } from './errors.js';
 import { serverSettings } from './admin-settings.js';
 
 export interface Account { user: User; username: string; passwordHash: string; disabled?: boolean; version?: number; mustChangePassword?: boolean }
-interface Session { userId: string; expiresAt: string; epoch?: number }
+interface Session { userId: string; expiresAt: string | null; epoch?: number }
 const digest = (token: string) => createHash('sha256').update(token).digest('hex');
 export interface AuthProvider {
   login(input: unknown): Promise<AuthSession>;
@@ -46,7 +46,8 @@ export class LocalAuth implements AuthProvider {
     const valid = await bcrypt.compare(password, account?.passwordHash ?? this.dummyHash);
     ensure(valid && account && !account.disabled && Buffer.byteLength(password) <= 72, 401, 'UNAUTHENTICATED', '账号或口令错误');
     const accessToken = randomBytes(32).toString('base64url');
-    const expiresAt = new Date(this.now() + serverSettings(this.store).sessionHours * 60 * 60 * 1000).toISOString();
+    const hours=serverSettings(this.store).sessionHours;
+    const expiresAt = hours===0 ? null : new Date(this.now() + hours * 60 * 60 * 1000).toISOString();
     this.store.put<Session>('session', digest(accessToken), { userId: account.user.id, expiresAt, epoch: this.store.get<{version:number}>('session_epoch',account.user.id)?.version??0 });
     return { user: { ...account.user, ...(account.mustChangePassword ? {mustChangePassword:true} : {}) }, accessToken, expiresAt };
   }
@@ -55,7 +56,7 @@ export class LocalAuth implements AuthProvider {
     ensure(session, 401, 'UNAUTHENTICATED', '请登录');
     ensure((session.epoch??0)===(this.store.get<{version:number}>('session_epoch',session.userId)?.version??0),401,'SESSION_REVOKED','账号会话已失效，请重新登录');
     ensure(!this.store.all<Account>('account').find(a=>a.user.id===session.userId)?.disabled,401,'UNAUTHENTICATED','账号不可用');
-    if (Date.parse(session.expiresAt) <= this.now()) {
+    if (session.expiresAt !== null && Date.parse(session.expiresAt) <= this.now()) {
       this.logout(token); ensure(false, 401, 'SESSION_EXPIRED', '登录已过期');
     }
     const user = this.store.get<User>('user', session.userId);

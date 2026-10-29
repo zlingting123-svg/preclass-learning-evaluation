@@ -18,6 +18,10 @@ test('管理员分班建号、强制改密、多教师认领和重复导入闭�
  const rows=[{studentNumber:'000801',displayName:'模拟学生甲',className:'一班'},{studentNumber:'000802',displayName:'模拟学生乙',className:'一班'},{studentNumber:'000803',displayName:'模拟学生丙',className:'二班'}];let plan:any,receipt:any,student:any;
  try{
  const response=await call('/admin/rosters/preview','POST',{batchName:'模拟批次',rows});assert.equal(response.status,200,'管理员名单预览接口应已存在');plan=(await response.json()).data;
+ assert.equal((await call('/admin/rosters/pending','GET',undefined,a.accessToken)).status,403);
+ const pending=(await(await call('/admin/rosters/pending')).json()).data;assert.ok(pending.some((p:any)=>p.id===plan.id));
+ const selected=await call('/admin/rosters/pending/'+plan.id+'/select','POST',{});assert.equal(selected.status,200);plan=(await selected.json()).data;assert.equal(plan.rows.length,3);
+
  await t.test('仅管理员预览，预览不写账号；按班建号保留学号前导零',async()=>{
   assert.equal((await call('/admin/rosters/preview','POST',{batchName:'模拟批次',rows},a.accessToken)).status,403);
   assert.deepEqual(plan.errors,[]);assert.equal(plan.newAccounts,3);assert.equal(store.get('account','000801'),undefined);

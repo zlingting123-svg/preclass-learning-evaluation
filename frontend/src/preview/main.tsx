@@ -1,3 +1,6 @@
+import {getAccessToken} from '../services/authStore';
+import type {ChatDetail,ChatList} from '@shared/conversations';
+import { KnowledgePanel } from './KnowledgePanel';
 import { AdminRosterPanel } from './AdminRosterPanel';
 import { ClassPicker } from '../components/ClassPicker';
 import { PasswordChangePage } from '../pages/PasswordChangePage';
@@ -307,7 +310,7 @@ function Workspace({
         </div>
         <p className="pv-nav-label">WORKSPACE</p>
         <nav>
-          {(admin?[["/","grid","服务概览"],["/rosters","users","名单导入与分班"],["/accounts","users","账户管理"],["/api","spark","API 管理"],["/server","shield","服务器设置"],["/usage","book","用量查询"],["/audit","book","操作日志"]]:[
+          {(admin?[["/","grid","服务概览"],["/rosters","users","名单导入与分班"],["/classes","users","班级与成员"],["/accounts","users","账户管理"],["/knowledge","book","课程资料"],["/api","spark","API 管理"],["/server","shield","服务器设置"],["/usage","book","用量查询"],["/audit","book","操作日志"]]:[
             ["/", "grid", teacher ? "班级工作台" : "我的班级"],
             ["/questionnaires", "book", "问卷与统计"],
             ["/assistant", "spark", "AI 问答助手"],
@@ -327,7 +330,7 @@ function Workspace({
             </Link>
           ))}
         </nav>
-        {!admin&&<Link className="pv-service-entry" to="/service-login"><Icon name="shield"/>服务管理 <small>专用账号入口</small></Link>}
+        {teacher&&<Link className="pv-service-entry" to="/service-login"><Icon name="shield"/>服务管理 <small>专用账号入口</small></Link>}
         <div className="pv-sidebar-tip">
           <Icon name="spark" />
           <strong>{admin?"平台服务管理":"你的课程学习搭档"}</strong>
@@ -371,7 +374,7 @@ function Workspace({
           <div className="pv-breadcrumb">
             工作空间 <span>/</span>{" "}
             <strong>
-              {admin?({"/":"服务概览","/rosters":"名单导入与分班","/accounts":"账户管理","/api":"API 管理","/server":"服务器设置","/usage":"用量查询","/audit":"操作日志"} as Record<string,string>)[location.pathname]??'服务管理':chat
+              {admin?({"/":"服务概览","/rosters":"名单导入与分班","/classes":"班级与成员","/accounts":"账户管理","/knowledge":"课程资料","/api":"API 管理","/server":"服务器设置","/usage":"用量查询","/audit":"操作日志"} as Record<string,string>)[location.pathname]??'服务管理':chat
                 ? "AI 课程助手"
                 : location.pathname === "/"
                   ? "班级概览"
@@ -402,9 +405,11 @@ function Workspace({
         )}
         {admin?<div className="pv-page pv-service"><Routes>
           <Route path="/" element={<AdminConsole key="overview" embedded activeTab="overview" onTabChange={tab=>navigate(tab==='users'?'/accounts':'/')}/>}/>
+          <Route path="/classes" element={<AdminConsole key="classes" embedded activeTab="classes"/>}/>
           <Route path="/accounts" element={<AdminConsole key="users" embedded activeTab="users"/>}/>
           <Route path="/audit" element={<AdminConsole key="audit" embedded activeTab="audit"/>}/>
           <Route path="/rosters" element={<AdminRosterPanel/>}/>
+          <Route path="/knowledge" element={<KnowledgePanel/>}/>
           <Route path="/api" element={<><h1>API 管理</h1><ApiManager/></>}/>
           <Route path="/server" element={<><h1>服务器设置</h1><ServerManager/></>}/>
           <Route path="/usage" element={<><h1>用量查询</h1><Metadata kind="usage"/></>}/>
@@ -629,7 +634,7 @@ function Dashboard({
             "已发布问卷",
             "已开放的学习任务",
           ],
-        ].map(([icon, value, title, sub]) => (
+        ].filter(([, ,title])=>teacher||title!=="班级学生").map(([icon, value, title, sub]) => (
           <article key={title}>
             <span className={`pv-metric-icon pv-${icon}`}>
               <Icon name={icon as IconName} />
@@ -780,93 +785,24 @@ interface Message {
   role: "user" | "assistant";
   text: string;
   failed?: boolean;
+  sources?: {id:string;title:string;version:string;url?:string}[];
 }
 interface Thread {
+  title?:string;
   id: string;
   messages: Message[];
 }
 function Chat({ classId, className }: { classId: string; className: string }) {
-  const [threads, setThreads] = useState<Thread[]>([
-      { id: newId(), messages: [] },
-    ]),
-    [active, setActive] = useState(""),
-    [input, setInput] = useState(""),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState(""),
-    [history, setHistory] = useState(false),
-    [copied, setCopied] = useState("");
-  const current = threads.find((t) => t.id === active) ?? threads[0],
-    controller = useRef<AbortController | null>(null),
-    busyRef = useRef(false),
-    end = useRef<HTMLDivElement>(null),
-    textarea = useRef<HTMLTextAreaElement>(null);
-  useEffect(() => () => controller.current?.abort(), []);
-  useEffect(() => {
-    end.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  }, [current.messages.length, busy]);
-  function update(threadId: string, fn: (m: Message[]) => Message[]) {
-    setThreads((ts) =>
-      ts.map((t) =>
-        t.id === threadId ? { ...t, messages: fn(t.messages) } : t,
-      ),
-    );
-  }
-  async function send(text: string, retryId?: string) {
-    if (busyRef.current || !text.trim()) return;
-    busyRef.current = true;
-    setBusy(true);
-    setError("");
-    const threadId = current.id,
-      id = retryId ?? newId(),
-      message: Message = { id, role: "user", text: text.trim() };
-    const previous = retryId
-      ? current.messages.filter((m) => m.id !== retryId)
-      : current.messages;
-    update(threadId, (m) =>
-      retryId
-        ? m.map((x) => (x.id === id ? { ...x, failed: false } : x))
-        : [...m, message],
-    );
-    setInput("");
-    const abort = new AbortController();
-    controller.current = abort;
-    try {
-      const r = await request<{ reply: string }>("POST", "/core/ai/chat", {
-        body: {
-          classId,
-          messages: [...previous.filter((m) => !m.failed), message].map(
-            ({ role, text }) => ({ role, text }),
-          ),
-        },
-        signal: abort.signal,
-      });
-      update(threadId, (m) => [
-        ...m,
-        { id: newId(), role: "assistant", text: r.reply },
-      ]);
-    } catch (e) {
-      update(threadId, (m) =>
-        m.map((x) => (x.id === id ? { ...x, failed: true } : x)),
-      );
-      setError(
-        e instanceof Error && e.name === "AbortError"
-          ? "已停止发送，问题仍保留。"
-          : errorText(e),
-      );
-    } finally {
-      busyRef.current = false;
-      setBusy(false);
-      controller.current = null;
-    }
-  }
-  function newThread() {
-    const id = newId();
-    setThreads((t) => [{ id, messages: [] }, ...t]);
-    setActive(id);
-    setInput("");
-    setError("");
-    setHistory(false);
-  }
+  const [threads,setThreads]=useState<Thread[]>([{id:'',messages:[]}]),[active,setActive]=useState(''),[input,setInput]=useState(''),[busy,setBusy]=useState(false),[error,setError]=useState(''),[history,setHistory]=useState(false),[copied,setCopied]=useState('');
+  const current=threads.find(t=>t.id===active)??threads[0]??{id:'',messages:[]},controller=useRef<AbortController|null>(null),busyRef=useRef(false),end=useRef<HTMLDivElement>(null),textarea=useRef<HTMLTextAreaElement>(null),sequence=useRef(0);
+  const converted=(d:ChatDetail):Thread=>({id:d.id,title:d.title,messages:d.messages.map(m=>({...m,failed:m.role==='user'&&['error','cancelled','interrupted'].includes(m.outcome)}))});
+  async function load(selected?:string){const seq=++sequence.current;const list=await request<ChatList>('GET',`/core/ai/threads?classId=${encodeURIComponent(classId)}`);const id=selected&&list.items.some(t=>t.id===selected)?selected:list.activeId;const detail=id?await request<ChatDetail>('GET',`/core/ai/threads/${id}`):null;if(seq!==sequence.current)return;setThreads(list.items.length?list.items.map(t=>detail?.id===t.id?converted(detail):{id:t.id,title:t.title,messages:[]}):[{id:'',messages:[]}]);setActive(id??'');}
+  useEffect(()=>{void load().catch(e=>setError(errorText(e)));return()=>{sequence.current++;controller.current?.abort()}},[]);
+  useEffect(()=>{end.current?.scrollIntoView({behavior:'smooth',block:'nearest'})},[current.messages.length,busy]);
+  async function selectThread(id:string){if(busyRef.current)return;setBusy(true);try{const d=await request<ChatDetail>('POST',`/core/ai/threads/${id}/select`,{body:{}});setThreads(ts=>ts.map(t=>t.id===id?converted(d):t));setActive(id);setError('');setInput('');setHistory(false)}catch(e){setError(errorText(e))}finally{setBusy(false)}}
+  async function newThread(){if(busyRef.current)return;setBusy(true);try{const d=await request<ChatDetail>('POST','/core/ai/threads',{body:{classId}});await load(d.id);setInput('');setError('');setHistory(false)}catch(e){setError(errorText(e))}finally{setBusy(false)}}
+  async function deleteThread(id:string){if(!id||!window.confirm('删除这条对话及其中的消息？此操作无法撤销。'))return;controller.current?.abort();setBusy(true);try{await request('DELETE',`/core/ai/threads/${id}`);await load();setError('')}catch(e){setError(errorText(e))}finally{setBusy(false)}}
+  async function send(text:string,_retryId?:string){if(busyRef.current||!text.trim())return;busyRef.current=true;setBusy(true);setError('');const abort=new AbortController();controller.current=abort;let id=current.id;try{if(!id){const d=await request<ChatDetail>('POST','/core/ai/threads',{body:{classId}});id=d.id;setThreads([converted(d)]);setActive(id)}const question=text.trim();setThreads(ts=>ts.map(t=>t.id===id?{...t,messages:[...t.messages,{id:newId(),role:'user',text:question}]}:t));setInput('');const response=await fetch(`${API_BASE_URL}/api/v1/core/ai/threads/${id}/questions`,{method:'POST',headers:{Authorization:'Bearer '+getAccessToken(),'Content-Type':'application/json'},body:JSON.stringify({question,clientRequestId:newId()}),signal:abort.signal});if(!response.ok)await parseApiResponse(response,true);else await response.text();await load(id)}catch(e){setError(e instanceof Error&&e.name==='AbortError'?'已停止生成。':errorText(e));await load(id).catch(()=>{})}finally{busyRef.current=false;setBusy(false);controller.current=null}}
   async function copy(m: Message) {
     try {
       await navigator.clipboard.writeText(m.text);
@@ -879,34 +815,15 @@ function Chat({ classId, className }: { classId: string; className: string }) {
     <main className="pv-chat">
       <aside
         className={`pv-chat-history ${history ? "is-open" : ""}`}
-        aria-label="本页会话"
+        aria-label="我的会话"
       >
         <button className="pv-new-chat" disabled={busy} onClick={newThread}>
           <Icon name="plus" />
           开启新对话
         </button>
-        <p className="pv-nav-label">本页对话</p>
-        {threads.map((t) => (
-          <button
-            key={t.id}
-            disabled={busy}
-            className={`pv-thread ${current.id === t.id ? "is-active" : ""}`}
-            onClick={() => {
-              setActive(t.id);
-              setError("");
-              setInput("");
-              setHistory(false);
-            }}
-          >
-            <Icon name="chat" />
-            <span>{t.messages[0]?.text ?? "新的课程对话"}</span>
-          </button>
-        ))}
-        <p className="pv-history-note">
-          仅保存在当前页面
-          <br />
-          刷新后不保留会话
-        </p>
+        <p className="pv-nav-label">我的对话</p>
+        {threads.filter(t=>t.id).map(t=><div key={t.id} className="pv-thread-row"><button disabled={busy} className={`pv-thread ${current.id===t.id?'is-active':''}`} onClick={()=>void selectThread(t.id)}><Icon name="chat"/><span>{t.title??t.messages[0]?.text??'新的课程对话'}</span></button><button aria-label={`删除对话：${t.title??'新的课程对话'}`} onClick={()=>void deleteThread(t.id)}>删除</button></div>)}
+        <p className="pv-history-note">对话保存在本人账号下，可继续提问或删除。</p>
       </aside>
       <section
         className={`pv-chat-main ${!current.messages.length ? "is-welcome" : ""}`}
@@ -915,7 +832,7 @@ function Chat({ classId, className }: { classId: string; className: string }) {
           <div>
             <Icon name="spark" />
             <strong>AI 问答助手</strong>
-            <span className="pv-connection-state">待接入</span>
+            <span className="pv-connection-state">模拟服务</span>
           </div>
           <button
             className="pv-icon-button pv-history-toggle"
@@ -964,6 +881,7 @@ function Chat({ classId, className }: { classId: string; className: string }) {
                 </span>
                 <div className="pv-message-body">
                   <p>{m.text}</p>
+                  {!!m.sources?.length && <div aria-label="回答参考来源"><strong>参考来源：</strong>{m.sources.map((source)=><div key={source.id}>{source.url && /^https:\/\//i.test(source.url) ? <a href={source.url} target="_blank" rel="noopener noreferrer">{source.title}</a> : <span>{source.title}</span>} <small>{source.version}</small></div>)}</div>}
                   <div className="pv-message-actions">
                     <button onClick={() => copy(m)}>
                       {copied === m.id ? "已复制" : "复制"}

@@ -1,3 +1,5 @@
+import { searchOfficial, type WebPolicy } from './web-knowledge.js';
+import { importedEvidence } from './knowledge-import.js';
 import { randomUUID, randomBytes } from 'node:crypto';
 import { readFileSync, mkdirSync, existsSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
@@ -40,6 +42,8 @@ export function createCourseAi(core: Service, auth: AuthProvider, options: {
     } },
     knowledge: { async retrieve(input) {
       // Only already-published teacher material from this class. Text stays in request memory.
+      const imported = importedEvidence(core.store, input.courseId, input.question);
+      if (imported.length && imported[0].score >= 0.5) return {status: 'supported' as const, evidence: imported, scoreType: 'lexical_overlap'};
       const rule = config.courses.environment;
       const materials = core.store.all<CourseMaterial>('course_material').filter(m => m.classId === input.courseId && m.state === 'published');
       const sources = materials.flatMap(m => {
@@ -50,7 +54,16 @@ export function createCourseAi(core: Service, auth: AuthProvider, options: {
       });
       const followup=/^(那|那么)?(它|这个|这一步|上述内容|刚才的内容|前面的内容)(有什么(作用|意义|区别)|的(作用|意义|目的|步骤|流程)(是什么|有哪些|呢)?|为什么重要|怎么理解)[？?。！!]*$/.test(input.question.trim());
       const anchor=followup?[...(input.history??[])].reverse().find(m=>m.role==='user'&&rule.keywords.some(k=>m.text.includes(k)))?.text:undefined;
-      return new KeywordKnowledge(sources, { [input.courseId]: rule }).retrieve({...input,question:anchor?anchor+'\n'+input.question:input.question});
+      const local = await new KeywordKnowledge(sources, { [input.courseId]: rule }).retrieve({...input,question:anchor?anchor+'\n'+input.question:input.question});
+      if (local.status === 'supported') return local;
+      const p=core.store.get<WebPolicy>('ai_web_policy',input.courseId);
+      if (p?.enabled && process.env.BRAVE_SEARCH_API_KEY) {
+        try {const found=await searchOfficial(input.question,input.courseId,p.domains,process.env.BRAVE_SEARCH_API_KEY,input.signal);if(found.length)return {status:'supported' as const,evidence:found,scoreType:'web_search_snippet'};}
+        catch(e){input.signal.throwIfAborted(); throw e;}
+      }
+      if(imported.length)return {status:'supported' as const,evidence:imported,scoreType:'lexical_overlap'};
+      if(local.status==='out_of_scope'&&/环境影响评价|环境管理|这门课程|课前学习/.test(input.question))return {...local,status:'insufficient' as const};
+      return local;
     } },
   }, store, policy, config.deployments.map(d => ({ ...d, provider: new MockProvider('ok', options.delayMs ?? 800) })), options.fingerprintKey);
   return { gateway, store, mode: 'mock' as const, close: () => store.close(),

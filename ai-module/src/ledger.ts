@@ -169,15 +169,15 @@ export class Ledger {
       const mine = rows.filter(
         (r) => r.subjectId === input.subjectId && r.createdAt.startsWith(day),
       );
-      requireValue(mine.length < p.dailyRequests, 429, "DAILY_REQUEST_LIMIT");
+      requireValue(p.dailyRequests === 0 || mine.length < p.dailyRequests, 429, "DAILY_REQUEST_LIMIT");
       requireValue(
-        mine.reduce((n, r) => n + spent(r), 0) + p.reserveMicros <=
+        p.dailyUserBudgetMicros === 0 || mine.reduce((n, r) => n + spent(r), 0) + p.reserveMicros <=
           p.dailyUserBudgetMicros,
         429,
         "USER_BUDGET_LIMIT",
       );
       requireValue(
-        rows
+        p.monthlyBudgetMicros === 0 || rows
           .filter((r) => r.createdAt.startsWith(month))
           .reduce((n, r) => n + spent(r), 0) +
           p.reserveMicros <=

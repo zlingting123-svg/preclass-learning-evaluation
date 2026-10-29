@@ -42,6 +42,7 @@ test('AI接入现有会话、班级、发布资料、SSE和仅元数据统计', 
     await t.test('本班草稿及他班已发布资料不能支持回答',async()=>{
       const text=await (await ask('环境评价是什么？')).text();assert.match(text,/event: insufficient_evidence/);assert.doesNotMatch(text,/event: delta/);
       assert.equal(ai.store.summary(student.id).modelCalls,0);
+      for(const q of ['帮我梳理环境影响评价的基本流程','环境评价与环境管理之间有哪些联系？','我该如何准备这门课程的课前学习？']){const result=await(await ask(q)).text();assert.doesNotMatch(result,/event: refusal/);assert.match(result,/event: insufficient_evidence/)}
     });
     learning.publishMaterial(teacher, material.id, material.version);
     await t.test('SSE返回已发布来源与模拟回答，重复请求不再次调用',async()=>{

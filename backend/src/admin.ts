@@ -84,6 +84,7 @@ export class AdminService {
       id: c.id,
       name: c.name,
       teacherId: c.teacherId,
+      teacherIds: [...new Set([c.teacherId,...this.store.all<{classId:string;teacherId:string}>("class_teacher").filter(r=>r.classId===c.id).map(r=>r.teacherId)].filter(Boolean))],
       teacherName:
         this.store.get<User>("user", c.teacherId)?.displayName ?? (c.teacherId?"教师不存在":"待教师选择"),
       cohortId: c.cohortId ?? null,
@@ -235,34 +236,38 @@ export class AdminService {
       .object({
         name: z.string().trim().min(1).max(200),
         teacherId: z.string().min(1),
+        teacherIds: z.array(z.string().min(1)).min(1).max(50).optional(),
         cohortId: z.string().min(1).nullable().optional(),
         authorizeCohort: z.boolean().default(false),
+        managed: z.boolean().default(false),
         expectedVersion: version,
       })
       .strict()
       .parse(raw);
     return this.store.transaction(() => {
       this.require(u);
-      this.teacher(b.teacherId);
+      const teacherIds=[...new Set(b.teacherIds??[b.teacherId])];
+      ensure(teacherIds.includes(b.teacherId),400,"INVALID_TEACHER","主教师必须属于所选教师");
+      for(const teacher of teacherIds)this.teacher(teacher);
       const old = id ? this.store.get<ManagedClass>("class", id) : undefined;
       ensure(!id || old, 404, "NOT_FOUND", "班级不存在");
       this.core.checkVersion(old?.adminVersion ?? 0, b.expectedVersion);
       const cohortId = old?.cohortId ?? b.cohortId;
-      if (cohortId) {
+      for (const selectedTeacher of teacherIds) if (cohortId) {
         const cohort = requireCohort(this.store, cohortId);
-        if (!cohort.teacherIds.includes(b.teacherId)) {
+        if (!cohort.teacherIds.includes(selectedTeacher)) {
           ensure(
             b.authorizeCohort,
             400,
             "COHORT_FORBIDDEN",
             "该教师尚未获得此教学批次授权，请明确勾选授予批次资格",
           );
-          cohort.teacherIds.push(b.teacherId);
+          cohort.teacherIds.push(selectedTeacher);
           this.store.put("cohort", cohort.id, cohort);
           this.audit(
             u,
             "authorize_cohort_teacher",
-            cohort.id + ":" + b.teacherId,
+            cohort.id + ":" + selectedTeacher,
           );
         }
       }
@@ -283,7 +288,13 @@ export class AdminService {
         ...(cohortId ? { cohortId } : {}),
         adminVersion: (old?.adminVersion ?? 0) + 1,
       };
+      const previousTeachers=[...new Set([old?.teacherId,...this.store.all<{classId:string;teacherId:string}>("class_teacher").filter(r=>r.classId===c.id).map(r=>r.teacherId)].filter((v):v is string=>!!v))];
+      for(const teacherId of previousTeachers)if(!teacherIds.includes(teacherId))this.store.put("class_teacher_block",keyFor(c.id,teacherId),{classId:c.id,teacherId});
+      for(const teacherId of teacherIds)this.store.remove("class_teacher_block",keyFor(c.id,teacherId));
+      for(const link of this.store.all<{classId:string;teacherId:string}>("class_teacher").filter(r=>r.classId===c.id))this.store.remove("class_teacher",keyFor(c.id,link.teacherId));
+      for(const teacherId of teacherIds)this.store.put("class_teacher",keyFor(c.id,teacherId),{classId:c.id,teacherId});
       this.store.put("class", c.id, c);
+      if(!old&&b.managed)this.store.put("managed_class",c.id,{id:c.id,batchName:"管理员手工创建",sourceName:c.name,createdAt:this.core.iso()});
       this.audit(u, old ? "update_class" : "create_class", c.id);
       return this.classes(u).find((x) => x.id === c.id);
     });

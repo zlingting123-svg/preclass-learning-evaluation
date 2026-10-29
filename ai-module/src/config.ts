@@ -6,9 +6,9 @@ const text = z.string().min(1).max(128);
 export const policySchema = z
   .object({
     enabled: z.boolean(),
-    dailyRequests: positive,
-    dailyUserBudgetMicros: positive,
-    monthlyBudgetMicros: positive,
+    dailyRequests: z.number().int().nonnegative().safe(),
+    dailyUserBudgetMicros: z.number().int().nonnegative().safe(),
+    monthlyBudgetMicros: z.number().int().nonnegative().safe(),
     maxInputBytes: positive.max(32000),
     maxOutputTokens: positive.max(4096),
     reserveMicros: positive,
