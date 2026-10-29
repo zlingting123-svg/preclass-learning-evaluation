@@ -293,3 +293,5 @@ frontend：npm ci；npm run check/build；npm run test:config（3项通过）；
 ## 2026-10-29 云服务器适配
 
 正在收尾服务器方案：Caddy8MB/4MiB分块、默认学习空间、生产HTTP120秒、Python虚拟环境预检、资料目录权限、停服完整备份与校验工具，以及Ubuntu CI。原版本快照不改，后续新建v03。完整备份需要root受控脚本短暂停服，代码/current必须root管理。真实云资源未连接，详见云服务器版本适配日志和deployment/README末节。
+
+服务器适配功能已提交c499bc2，容量夹具跨平台同步修正提交e0836bf。干净提交发布包178文件哈希核验通过；v03-server-adapted快照406文件对应e0836bf（排除versions/），旧v01/v02不改。上次23b3b3f远端Windows容量测试实际失败，本轮已修复固定延迟假设并本地AI19通过；新头CI结果另查，不能沿用旧通过结论。

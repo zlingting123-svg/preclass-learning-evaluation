@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-29",
+  "afterRestart": true,
+  "contractVersion": "0.5.0",
+  "managedClasses": 2,
+  "teachersSharingOneClass": 2,
+  "newStudentMustChangePassword": true,
+  "businessBlockedUntilChanged": true,
+  "credentialsOrTranscriptsIncluded": false
+}

@@ -1,0 +1,86 @@
+{
+  "mode": "mock",
+  "policy": {
+    "enabled": true,
+    "dailyRequests": 20,
+    "dailyUserBudgetMicros": 1000000,
+    "monthlyBudgetMicros": 10000000,
+    "maxInputBytes": 12000,
+    "maxOutputTokens": 512,
+    "reserveMicros": 2000,
+    "maxQueue": 600,
+    "queueTimeoutMs": 30000,
+    "requestTimeoutMs": 60000,
+    "topicsMinCount": 3,
+    "rates": {
+      "inputPerMillion": 10000,
+      "cacheHitPerMillion": 1000,
+      "outputPerMillion": 20000,
+      "currency": "CNY",
+      "version": "synthetic-not-real-price"
+    }
+  },
+  "balance": {
+    "currency": "CNY",
+    "warningMicros": 10000000,
+    "stopMicros": 1000000,
+    "ttlMs": 15000
+  },
+  "deployments": [
+    {
+      "id": "mock-deployment",
+      "accountId": "mock-account",
+      "quotaGroup": "mock-account",
+      "purposes": [
+        "student_qa"
+      ],
+      "maxConcurrency": 350
+    }
+  ],
+  "courses": {
+    "environment": {
+      "keywords": [
+        "环境",
+        "环评"
+      ],
+      "threshold": 0.5
+    }
+  },
+  "sources": [
+    {
+      "id": "example-environment",
+      "scopeId": "environment-course",
+      "topicId": "assessment_basics",
+      "title": "虚构测试课程资料（非正式教学材料）",
+      "content": "环境评价的课程练习关注项目可能造成的影响，以及支持判断所需的资料与依据。",
+      "version": "sample-1",
+      "approved": true,
+      "keywords": [
+        "环境",
+        "评价"
+      ]
+    }
+  ],
+  "grants": {
+    "student-demo": {
+      "environment": {
+        "actions": [
+          "ask"
+        ],
+        "scopeIds": [
+          "environment-course"
+        ]
+      }
+    },
+    "teacher-demo": {
+      "environment": {
+        "actions": [
+          "topics"
+        ],
+        "scopeIds": [
+          "environment-course"
+        ]
+      }
+    }
+  }
+}

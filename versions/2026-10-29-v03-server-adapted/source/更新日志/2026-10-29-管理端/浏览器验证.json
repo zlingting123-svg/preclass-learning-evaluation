@@ -1,0 +1,26 @@
+{
+  "scope": "real isolated Express/SQLite, synthetic users, frontend API routed to fixture; not production or load test",
+  "checks": [
+    {
+      "name": "原登录入口进入独立管理员，全局概览真实读取",
+      "result": "pass"
+    },
+    {
+      "name": "管理页面创建教师及学生，搜索正确返回",
+      "result": "pass"
+    },
+    {
+      "name": "停用、恢复与密码重置，旧会话失效",
+      "result": "pass"
+    },
+    {
+      "name": "创建班级、添加与移出成员，日志可追踪",
+      "result": "pass"
+    },
+    {
+      "name": "移动宽度无整页溢出及前端预览管理员入口可用",
+      "result": "pass"
+    }
+  ],
+  "pageErrors": []
+}
