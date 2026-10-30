@@ -1,0 +1,29 @@
+{
+  "deployed": true,
+  "previous": "/opt/preclass/releases/20261030-strict-evidence",
+  "current": "/opt/preclass/releases/20261030-course-brand",
+  "title": "环境评价与管理",
+  "learningSpaceOccurrencesReplaced": 8,
+  "browserTitleUpdated": true,
+  "cacheBusting": true,
+  "changedExistingFiles": [
+    "frontend/dist/index.html"
+  ],
+  "addedAssets": [
+    "frontend/dist/assets/main-course-brand-20261030.js",
+    "frontend/dist/assets/main-entry-course-brand-20261030.js"
+  ],
+  "unchangedFiles": 3666,
+  "backendRestarted": false,
+  "databaseWritten": false,
+  "httpAssetHashesVerified": true,
+  "health": true,
+  "replacements": {
+    "\"学习空间\"": "\"环境评价与管理\"",
+    "欢迎回到学习空间": "欢迎来到环境评价与管理",
+    "进入学习空间": "进入环境评价与管理",
+    "学生学习空间": "学生课程空间",
+    "欢迎回到你的学习空间": "欢迎回到环境评价与管理",
+    "学习空间 · 外观方案预览": "环境评价与管理 · 外观方案预览"
+  }
+}
