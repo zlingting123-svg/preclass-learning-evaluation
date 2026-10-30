@@ -1,0 +1,8 @@
+{
+  "portableBuildPassed": true,
+  "jsSHA256": "42cdb72a526f36769a7c8ac4d244156cbbc818f3ad64e721a26ea508fbbc0df4",
+  "matchesDeployedComponent": true,
+  "frontendBundle": "existing server React external",
+  "serverModifiedThisSync": false,
+  "mainMerged": false
+}

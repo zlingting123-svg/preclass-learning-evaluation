@@ -1,0 +1,10 @@
+import {createRequire} from 'node:module';
+import {copyFileSync,mkdirSync} from 'node:fs';
+import {dirname,resolve} from 'node:path';
+import {fileURLToPath} from 'node:url';
+const here=dirname(fileURLToPath(import.meta.url));
+const frontendPackage=process.env.ATTENDANCE_FRONTEND_PACKAGE||resolve(here,'../../../frontend/package.json');
+const require=createRequire(frontendPackage),out=resolve(here,'work/build');mkdirSync(out,{recursive:true});
+await require('esbuild').build({entryPoints:[resolve(here,'AttendancePanel.tsx')],outfile:resolve(out,'attendance-20261030.js'),bundle:true,format:'esm',platform:'browser',external:['./react-DFdtPfhg.js'],jsxFactory:'React.createElement',jsxFragment:'React.Fragment',minify:true});
+copyFileSync(resolve(here,'attendance.css'),resolve(out,'attendance-20261030.css'));
+console.log('Built attendance module into '+out+'; no deployment performed.');
