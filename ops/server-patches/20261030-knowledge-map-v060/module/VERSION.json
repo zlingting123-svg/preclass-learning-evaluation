@@ -1,0 +1,9 @@
+{
+  "name": "knowledge-map",
+  "version": "0.6.0",
+  "date": "2026-10-30",
+  "host": "preclass-test-v04",
+  "entry": "/knowledge-map/",
+  "server_installed": false,
+  "integration": "preclass-v0.3-navigation-sso-editor"
+}

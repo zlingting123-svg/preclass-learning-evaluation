@@ -1,0 +1,15 @@
+from pathlib import Path
+p=Path('work/km-v060');s=(p/'main.before.js').read_text(encoding='utf-8');anchor='["/assistant","spark","AI 问答助手"]';assert s.count(anchor)==1;s=s.replace(anchor,anchor+',["/knowledge-maps","book","知识图谱"]')
+anchor='o.jsx(Ae,{path:"/assistant",element:l?';assert s.count(anchor)==1;s=s.replace(anchor,'o.jsx(Ae,{path:"/knowledge-maps",element:o.jsx(KnowledgeMapHost,{theme:t,role:e.role,classId:l})}),'+anchor)
+anchor='E?"AI 课程助手":';assert s.count(anchor)==1;s=s.replace(anchor,'x.pathname==="/knowledge-maps"?"知识图谱":'+anchor)
+component='''
+function KnowledgeMapHost({theme,role,classId}){
+ const frame=D.useRef(null),[ready,setReady]=D.useState(false),[error,setError]=D.useState("");
+ const send=()=>{const token=Un();if(!token||!frame.current?.contentWindow)return;const css=getComputedStyle(document.documentElement),get=(key,fallback)=>css.getPropertyValue(key).trim()||fallback;frame.current.contentWindow.postMessage({type:"km:session",token,classId,palette:{"--bg":get("--pv-bg","#f5f7f6"),"--ink":get("--pv-ink","#203d33"),"--green":get("--pv-accent","#286a53"),"--light":get("--pv-accent-soft","#e7f0eb"),"--panel":get("--pv-panel","#fff"),"--border":get("--pv-border","#dfe8e2"),"--muted":get("--pv-muted","#718176")}},location.origin)};
+ D.useEffect(()=>{const receive=event=>{if(event.origin!==location.origin||event.source!==frame.current?.contentWindow)return;if(event.data?.type==="km:ready")send();if(event.data?.type==="km:authenticated"){setReady(true);setError("")}if(event.data?.type==="km:expired")setError("登录状态已过期，请重新登录主站。")};window.addEventListener("message",receive);send();return()=>window.removeEventListener("message",receive)},[theme,classId]);
+ return o.jsxs("section",{className:"pv-page",style:{paddingBottom:16},children:[o.jsxs("div",{className:"pv-section-heading",children:[o.jsx("h1",{children:"知识图谱"}),o.jsx("p",{className:"pv-muted",children:role==="teacher"?"导入、编排并按班级发布课程图谱。":"查看本班已发布图谱和原始资料。"})]}),(!ready||error)&&o.jsx("p",{role:"status",className:error?"pv-error":"pv-muted",children:error||"正在读取课程图谱…"}),o.jsx("iframe",{ref:frame,src:"/knowledge-map/?embedded=1",title:"课程知识图谱",onLoad:send,style:{display:"block",width:"100%",height:"calc(100dvh - 210px)",minHeight:640,border:"1px solid var(--pv-border)",borderRadius:18,background:"var(--pv-bg)"}})]})
+}
+'''
+anchor='const F5=g5.createRoot(';assert s.count(anchor)==1;s=s.replace(anchor,component+anchor);(p/'main-knowledge-map-060.js').write_text(s,encoding='utf-8',newline='\n')
+s=(p/'entry.before.js').read_text(encoding='utf-8');assert s.count('main-course-brand-20261030.js')==2;s=s.replace('main-course-brand-20261030.js','main-knowledge-map-060.js');(p/'main-entry-knowledge-map-060.js').write_text(s,encoding='utf-8',newline='\n')
+s=(p/'index.before.html').read_text(encoding='utf-8');assert s.count('main-entry-course-brand-20261030.js')==1;s=s.replace('main-entry-course-brand-20261030.js','main-entry-knowledge-map-060.js');(p/'index.html').write_text(s,encoding='utf-8',newline='\n')

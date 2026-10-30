@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "checks": [
+    "提取XMind可编辑副本、修改节点/层级、草稿隔离，原件字节保持",
+    "发布后学生只读；跨班、其他教师、学生写入和旧版本覆盖被拒绝",
+    "编辑版PDF包含新节点且为矢量；原稿PDF与原XMind保留",
+    "723分支XMind完整提取；非法缩进/2001节点拒绝，撤回后学生不可读",
+    "11画布737节点编辑版完整导出11页PDF，末尾主题未截断"
+  ],
+  "teacherClasses": 31,
+  "originalSha256": "46b78ed45f69c4974d90553acaa38e8952cec91230395bf89811f2a0787d9d9d",
+  "realModelCalls": 0,
+  "productionWritten": false
+}

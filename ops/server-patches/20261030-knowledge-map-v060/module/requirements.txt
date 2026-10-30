@@ -1,0 +1,4 @@
+pypdf==6.21.4
+PyMuPDF==1.28.2
+rapidocr-onnxruntime==1.2.3; sys_platform == 'darwin'
+Pillow==13.0.0
