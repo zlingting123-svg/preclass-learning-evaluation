@@ -1,0 +1,24 @@
+[Unit]
+Description=Preclass single-host HTTP application
+After=network.target
+
+[Service]
+Type=simple
+User=preclass
+Group=preclass
+WorkingDirectory=/opt/preclass/current/backend
+EnvironmentFile=/etc/preclass.env
+ExecStartPre=/usr/local/bin/node ../deployment/preflight.mjs
+ExecStart=/usr/local/bin/node dist/backend/src/server.js
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/preclass /var/backups/preclass
+
+[Install]
+WantedBy=multi-user.target

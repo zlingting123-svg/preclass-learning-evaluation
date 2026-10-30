@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="课前问答与学习评价系统：双人推进、双工具协作的初版建设方案，含分工、工期、预算及验收。">
+<meta name="color-scheme" content="light">
+<title>课前问答与学习评价 · 项目初步方案</title>
+<style>
+/* Hallmark · macrostructure: Long Document · genre: editorial · theme: Almanac
+ * tone: 简洁项目简报 · anchor hue: cool blue · enrichment: none · nav: N9 · footer: Ft2
+ * pre-emit critique: P5 H4 E4 S5 R5 V4 · audience: 项目负责人及教师 · use: 讨论初版实施方案
+ * Self-contained token export is mirrored in work/plan/tokens.css. */
+:root {
+ --color-paper:oklch(97.5% .006 245); --color-surface:oklch(99% .004 245);
+ --color-band:oklch(94% .008 245); --color-rule:oklch(85% .012 245);
+ --color-ink:oklch(24% .025 245); --color-muted:oklch(46% .021 245);
+ --color-accent:oklch(38% .135 250); --color-accent-ink:oklch(99% .004 245);
+ --color-tint:oklch(93% .024 250); --color-focus:oklch(43% .14 250);
+ --color-transparent:oklch(97.5% .006 245 / 0); --color-rail:oklch(96% .009 245);
+ --font-body:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;
+ --font-display:"Noto Serif SC","Songti SC","STSong","SimSun",serif;
+ --space-xs:4px; --space-sm:8px; --space-md:12px; --space-lg:16px; --space-xl:24px;
+ --space-2xl:32px; --space-3xl:48px; --space-4xl:64px; --space-5xl:80px;
+ --text-small:.8125rem; --text-base:.9375rem; --text-large:1.125rem;
+ --text-heading:clamp(1.5rem,2.4vw,1.875rem); --text-display:clamp(2rem,4.3vw,3.55rem);
+ --radius:4px; --rule:1px; --ease-out:cubic-bezier(.16,1,.3,1); --dur-short:120ms;
+}
+*{box-sizing:border-box}
+html,body{margin:0;overflow-x:clip}
+html{scroll-padding-top:24px}
+body{background:var(--color-paper);color:var(--color-ink);font:var(--text-base)/1.8 var(--font-body)}
+button,input{font:inherit;color:inherit}
+a{color:var(--color-accent);text-underline-offset:4px}
+a:hover{text-decoration-thickness:2px}
+a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--color-focus);outline-offset:4px}
+button:active,a:active{opacity:.72}
+button:disabled{opacity:.55;cursor:not-allowed;background:var(--color-band);color:var(--color-muted)}
+button[aria-busy=true]{cursor:progress}
+button[data-state=error]{outline:2px solid var(--color-focus)}
+button[data-state=success]{border-color:var(--color-accent)}
+button{border:1px solid var(--color-rule);background:var(--color-surface);border-radius:var(--radius);padding:8px 16px;min-height:44px;cursor:pointer;white-space:nowrap;line-height:1.35}
+button:hover{background:var(--color-band)}
+p{margin:0 0 var(--space-lg);max-width:70ch}
+h1,h2,h3{min-width:0;overflow-wrap:anywhere;font-style:normal;margin:0}
+h1{font:500 var(--text-display)/1.38 var(--font-display);letter-spacing:-.035em;max-width:19ch;margin:16px 0 24px}
+h2{font-size:var(--text-heading);line-height:1.5;font-weight:650;letter-spacing:-.025em;margin-bottom:var(--space-lg)}
+h3{font-size:var(--text-large);font-weight:650;margin-bottom:var(--space-sm)}
+strong{font-weight:650}
+.muted,.note{color:var(--color-muted)}
+.note{font-size:var(--text-small);line-height:1.85}
+.shell{display:grid;grid-template-columns:216px minmax(0,1fr);max-width:1600px;margin:auto;min-height:100vh}
+.rail{background:var(--color-rail);border-right:1px solid var(--color-rule)}
+.rail-inner{position:sticky;top:0;padding:40px 24px;max-height:100vh;overflow-y:auto}
+.rail-title{font-size:1rem;font-weight:650;line-height:1.5;margin-bottom:var(--space-xs)}
+.rail-sub{font-size:var(--text-small);color:var(--color-muted);margin-bottom:var(--space-3xl)}
+.nav{display:flex;flex-direction:column;gap:8px}
+.nav a{display:block;min-height:44px;padding:10px 12px;border-radius:var(--radius);text-decoration:none;color:var(--color-muted);line-height:1.6;white-space:nowrap}
+.nav a:hover,.nav a[aria-current=true]{background:var(--color-tint);color:var(--color-accent)}
+.rail-foot{margin-top:var(--space-3xl);font-size:var(--text-small);color:var(--color-muted)}
+.main{min-width:0;padding:32px clamp(24px,5vw,80px) 48px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:1px solid var(--color-rule);padding-bottom:24px;font-size:var(--text-small)}
+.version{display:inline-flex;align-items:center;gap:8px;line-height:1;flex-wrap:wrap}
+.version span{background:var(--color-tint);padding:6px 8px;border-radius:var(--radius);color:var(--color-accent)}
+.cover{padding:var(--space-3xl) 0 0}
+.cover .intro{font-size:var(--text-large);line-height:1.9;max-width:48ch}
+.status{display:block;font-size:var(--text-small);color:var(--color-muted)}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--color-rule);border-bottom:1px solid var(--color-rule);margin:32px 0 24px;padding:24px 0;gap:16px}
+.metric{min-width:0}
+.metric b{display:block;font-size:clamp(1.5rem,2.8vw,2.3rem);font-weight:550;line-height:1.2;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.metric span{display:block;font-size:var(--text-small);color:var(--color-muted);margin-top:12px}
+.brief{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:32px;margin-top:32px}
+.brief p{margin:0}
+.section{padding-top:var(--space-4xl);scroll-margin-top:24px}
+.section>p{max-width:70ch}
+.section-title{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}
+.section-title h2{margin:0}
+.flow{margin:24px 0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border-top:1px solid var(--color-rule);border-bottom:1px solid var(--color-rule);padding:24px 0;gap:16px;list-style:none}
+.flow li{position:relative;padding-right:12px;min-width:0}
+.flow li:not(:last-child)::after{content:'→';position:absolute;right:0;top:0;color:var(--color-muted)}
+.flow b{display:block;font-weight:650;font-size:var(--text-base)}
+.flow small{display:block;color:var(--color-muted);font-size:var(--text-small);margin-top:8px}
+.scope{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:32px;margin:24px 0}
+ul{padding-left:20px;margin:8px 0 16px}
+li{padding-left:4px;margin:6px 0}
+.scope h3{border-bottom:1px solid var(--color-rule);padding-bottom:12px}
+.tabs{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:24px 0 0}
+.tab[aria-selected=true]{background:var(--color-accent);color:var(--color-accent-ink);border-color:var(--color-accent)}
+.role-panel{margin-top:16px;padding:24px;background:var(--color-surface);border:1px solid var(--color-rule);border-radius:var(--radius)}
+.role-head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.role-head h3{margin:0}
+.role-panel ul{margin:16px 0}
+.role-panel .delivery{margin:16px 0 0;padding-top:16px;border-top:1px solid var(--color-rule);font-size:var(--text-small)}
+[hidden]{display:none!important}
+.copy-status{min-height:1.85em;font-size:var(--text-small);color:var(--color-muted);margin:8px 0 0}
+.handoff{margin-top:24px}
+details{border-bottom:1px solid var(--color-rule);padding:16px 0}
+summary{cursor:pointer;font-weight:650;line-height:1.7;min-height:44px;padding:8px 0}
+details p{margin:12px 0 8px}
+.estimate{background:var(--color-band);padding:24px;margin:24px 0;border-radius:var(--radius)}
+.estimate-top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.estimate label{font-weight:650}
+.estimate label output{font-variant-numeric:tabular-nums;color:var(--color-accent)}
+input[type=range]{width:min(100%,280px);min-height:44px;accent-color:var(--color-accent);cursor:pointer;background:var(--color-transparent)}
+.estimate-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-top:16px}
+.estimate-results strong{display:block;font-size:1.75rem;line-height:1.4;font-weight:550;font-variant-numeric:tabular-nums}
+.estimate-results span{font-size:var(--text-small);color:var(--color-muted)}
+.estimate .note{margin-top:16px;margin-bottom:0}
+.table-wrap{width:100%;margin:24px 0}
+table{border-collapse:collapse;width:100%;text-align:left;font-size:var(--text-small);line-height:1.8}
+caption{text-align:left;font-size:var(--text-base);font-weight:650;padding-bottom:12px}
+th,td{border-bottom:1px solid var(--color-rule);padding:14px 12px 14px 0;vertical-align:top}
+th{font-weight:650;color:var(--color-muted)}
+th:first-child,td:first-child{width:23%}
+td:last-child,th:last-child{padding-right:0}
+.hours,.money{white-space:nowrap;font-variant-numeric:tabular-nums}
+.total td{font-weight:650;border-top:2px solid var(--color-ink)}
+.architecture{display:grid;grid-template-columns:minmax(0,1fr) 32px minmax(0,1fr) 32px minmax(0,1fr);gap:12px;align-items:center;margin:24px 0}
+.layer{border-top:2px solid var(--color-rule);padding:16px 0;min-width:0}
+.layer b{display:block}
+.layer p{font-size:var(--text-small);color:var(--color-muted);margin:8px 0 0}
+.arrow{text-align:center;color:var(--color-muted)}
+.budget-bars{height:12px;display:flex;gap:3px;width:100%;margin:24px 0 16px;overflow:clip;border-radius:2px}
+.budget-bars span{background:var(--color-accent);opacity:var(--bar-opacity,1)}
+.bar-cloud{flex:2400;--bar-opacity:1}.bar-domain{flex:100;--bar-opacity:.55}.bar-ai{flex:1000;--bar-opacity:.75}.bar-resource{flex:500;--bar-opacity:.4}.bar-reserve{flex:1000;--bar-opacity:.22}
+.checks{list-style:none;padding:0;margin:24px 0}
+.checks li{display:grid;grid-template-columns:24px minmax(0,1fr);gap:12px;margin:0;padding:16px 0;border-bottom:1px solid var(--color-rule)}
+.check-box{display:inline-block;width:15px;height:15px;border:1px solid var(--color-muted);margin-top:6px}
+.checks p{font-size:var(--text-small);color:var(--color-muted);margin:4px 0 0}
+.pending{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;margin:24px 0}
+.pending h3{font-size:var(--text-base)}
+.closing{margin-top:48px;padding:24px;background:var(--color-band);border-radius:var(--radius)}
+.closing p:last-child{margin-bottom:0}
+.sources{margin-top:32px}
+.sources a{display:inline-block;min-height:44px;padding:8px 0;margin-right:20px;white-space:nowrap;font-size:var(--text-small)}
+.footer{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:48px;padding-top:24px;border-top:1px solid var(--color-rule);font-size:var(--text-small);color:var(--color-muted)}
+.footer a{white-space:nowrap}
+.skip{position:absolute;left:16px;top:-100px;background:var(--color-surface);padding:12px;z-index:10;white-space:nowrap}
+.skip:focus{top:16px}
+.no-js{padding:12px;background:var(--color-band)}
+.copy-manual{display:block;width:100%;min-height:210px;margin:12px 0;padding:12px;border:1px solid var(--color-rule);background:var(--color-paper);color:var(--color-ink);font:var(--text-small)/1.8 var(--font-body);resize:vertical}
+@media(max-width:1050px){.shell{grid-template-columns:180px minmax(0,1fr)}.rail-inner{padding:32px 16px}.main{padding:24px 32px 40px}.flow{grid-template-columns:repeat(3,minmax(0,1fr))}.flow li::after{display:none}.flow li:nth-child(4),.flow li:nth-child(5){padding-top:12px}.brief{gap:24px}}
+@media(max-width:768px){.shell{display:block}.rail{border-right:0;border-bottom:1px solid var(--color-rule)}.rail-inner{position:static;max-height:none;padding:16px 24px}.rail-title{font-size:.9375rem}.rail-sub,.rail-foot{display:none}.nav{display:flex;flex-direction:row;align-items:center;gap:4px;flex-wrap:wrap;margin-top:12px}.nav a{padding:8px 12px;font-size:var(--text-small);min-height:40px}.main{padding:24px}.topbar{padding-bottom:16px}.cover{padding-top:32px}.section{padding-top:48px}.brief,.scope,.pending{grid-template-columns:minmax(0,1fr);gap:24px}.metrics{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:24px}.metric b{font-size:1.875rem}.architecture{grid-template-columns:minmax(0,1fr)}.arrow{text-align:left;transform:rotate(90deg);width:24px;height:24px;margin-left:4px}.layer{padding:12px 0}.section-title{display:block}.role-panel{padding:20px}.flow{grid-template-columns:repeat(2,minmax(0,1fr))}.flow li:nth-child(3){padding-top:12px}h1{max-width:none}.role-head{display:block}.role-head button{margin-top:16px}}
+@media(max-width:520px){.main{padding:20px}.rail-inner{padding:16px 20px}.nav a{padding:8px}.topbar{align-items:center}.topbar .date{display:none}.version{font-size:.75rem}.topbar button{font-size:.75rem;padding:8px 12px}.cover .intro{font-size:1rem}.estimate{padding:20px}.estimate-results{gap:12px}.estimate-results strong{font-size:1.5rem}.estimate-top{display:block}input[type=range]{width:100%;margin:8px 0 0}.tabs{gap:8px}.tab{padding:8px 12px;font-size:.8125rem}.role-panel{padding:16px}.section h2{font-size:1.5rem}.flow{gap:16px}.table-wrap table,.table-wrap tbody,.table-wrap tr,.table-wrap td{display:block;width:100%}.table-wrap caption{display:block}.table-wrap thead{display:none}.table-wrap tr{padding:16px 0;border-bottom:1px solid var(--color-rule)}.table-wrap td{border:0;padding:4px 0;display:grid;grid-template-columns:72px minmax(0,1fr);gap:12px}.table-wrap td:first-child{width:100%;font-weight:650}.table-wrap td:before{content:attr(data-label);font-weight:400;color:var(--color-muted)}.table-wrap .total td{border:0}.table-wrap .total{border-top:2px solid var(--color-ink)}.pending{gap:16px}.closing{padding:20px}.sources a{display:block;margin:0}.section{scroll-margin-top:16px}}
+@media(max-width:520px){.estimate-results{grid-template-columns:minmax(0,1fr);gap:16px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}.arrow{transform:none}}
+@media print{
+ @page{size:A4;margin:16mm}
+ body{background:var(--color-surface);font-size:10pt;line-height:1.7}
+ .shell{display:block}.rail,.topbar button,.copy-button,.copy-status,.copy-manual,.tabs,.estimate-top input,.footer a,.skip{display:none!important}
+ .main{padding:0}.topbar{padding-bottom:12px}.cover{padding-top:24px}h1{font-size:28pt;margin:12px 0 16px}h2{font-size:17pt}
+ .section{padding-top:28px}.metrics{margin:20px 0;padding:16px 0}.metric b{font-size:21pt}
+ .brief,.scope,.pending{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.flow{grid-template-columns:repeat(5,minmax(0,1fr))}
+ .role-panel[hidden]{display:block!important}.role-panel{break-inside:avoid;padding:16px}.role-head{display:block}.role-head h3{font-size:12pt}
+ .estimate{padding:16px}h2,h3{break-after:avoid}tr,.checks li,.closing{break-inside:avoid}.sources a{font-size:9pt}
+ .footer{margin-top:24px}.no-js{display:none}a{color:inherit;text-decoration:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">跳转到正文</a>
+<div class="shell">
+ <aside class="rail" aria-label="方案目录">
+  <div class="rail-inner">
+   <div class="rail-title">课前问答<br>与学习评价</div>
+   <div class="rail-sub">初版建设方案 · V0.1</div>
+   <nav class="nav">
+    <a href="#overview" aria-current="true">项目框架</a><a href="#division">开发分工</a><a href="#schedule">工期评估</a><a href="#technology">联网架构</a><a href="#budget">经费安排</a><a href="#acceptance">验收与下一步</a>
+   </nav>
+   <div class="rail-foot">本机负责人统一推进<br>两套工具协作开发<br><br>目标：先跑通教学流程<br>再根据试用反馈迭代</div>
+  </div>
+ </aside>
+ <main class="main" id="main">
+  <header class="topbar">
+   <div class="version"><span>方案讨论稿</span><span class="date">2026.10.27</span></div>
+   <button type="button" id="print">打印简报</button>
+  </header>
+  <section class="cover" aria-labelledby="project-title">
+   <span class="status">双人协作 · 两个 Codex · GitHub 同步</span>
+   <h1 id="project-title">先把一条教学流程<br>跑通。</h1>
+   <p class="intro">老师发布课前问题，学生在线作答，系统根据评价标准生成反馈。本机 Codex 负责后台与集成，同事 Codex 负责前端，通过 GitHub 分支和合并请求协作。</p>
+   <div class="metrics" aria-label="项目约束与初步估算">
+    <div class="metric"><b>300 人</b><span>同时使用与集中提交的设计目标</span></div>
+    <div class="metric"><b>1 年</b><span>计划运行周期</span></div>
+    <div class="metric"><b>¥5,000</b><span>项目总经费约数</span></div>
+    <div class="metric"><b>60–90 h</b><span>初版有效项目工时估计</span></div>
+   </div>
+   <div class="brief">
+    <p><strong>建设方式</strong><br>采用适配手机和电脑的联网网页，共用一套云端后台和数据库。学校无需提供服务器，由项目自行购买托管云服务。</p>
+    <p class="note"><strong>当前状态</strong><br>本文件用于讨论方案。当前源码已完成本地 HTTP 集成，正式评分、云部署、300 人压测和真机验收仍待完成；最新状态以仓库 README 和接续文件为准。</p>
+   </div>
+  </section>
+  <noscript><style>.role-panel[hidden]{display:block!important}.tabs,.copy-button,#print{display:none!important}</style><p class="no-js">当前浏览器未启用 JavaScript，可阅读全部静态方案；角色切换和工期计算需要启用 JavaScript。</p></noscript>
+
+  <section class="section" id="overview" aria-labelledby="overview-title">
+   <h2 id="overview-title">第一版做什么</h2>
+   <p>第一版重点是稳定完成教学流程。以文字题目、文字回答、基础图表和教师复核为范围，界面清楚、手机可用即可。</p>
+   <ol class="flow" aria-label="教学使用流程">
+    <li><b>教师发布</b><small>选择班级、题目及截止时间</small></li>
+    <li><b>学生作答</b><small>账号登录、保存草稿</small></li>
+    <li><b>保存提交</b><small>云端留存并返回回执</small></li>
+    <li><b>系统评价</b><small>规则评分或 AI 辅助评价</small></li>
+    <li><b>查看与复核</b><small>个人报告、班级汇总</small></li>
+   </ol>
+   <div class="scope">
+    <div><h3>纳入首版</h3><ul><li>教师、学生两类账号及班级关系。</li><li>发布问题、截止时间、草稿和提交记录。</li><li>可配置的评价规则与评分任务。</li><li>个人维度图表、文字建议、教师复核。</li><li>班级提交情况和结果导出。</li><li>基础权限、备份及异常记录。</li></ul></div>
+    <div><h3>后续按需扩展</h3><ul><li>音视频、拍照识别和复杂附件。</li><li>微信小程序、学校统一身份认证。</li><li>复杂题库、考试监考、社交互动。</li><li>精细视觉设计和高级学习画像。</li></ul><p class="note">题目与评价体系尚待提供。雷达图需有清晰、可比较的维度；单项指标可先用条形图。</p></div>
+   </div>
+  </section>
+
+  <section class="section" id="division" aria-labelledby="division-title">
+   <h2 id="division-title">两位开发者，按模块分工</h2>
+   <p><strong>建议由 Codex 统一集成，同事 Codex 开发界面，你把握教学要求和最终验收。</strong>两套工具先按同一份数据约定开发，减少互相覆盖和反复返工。</p>
+   <div class="tabs" role="tablist" aria-label="选择查看分工">
+    <button type="button" role="tab" class="tab" id="tab-codex" aria-controls="panel-codex" aria-selected="true" tabindex="0" data-role="codex">Codex</button>
+    <button type="button" role="tab" class="tab" id="tab-deepseek" aria-controls="panel-deepseek" aria-selected="false" tabindex="-1" data-role="deepseek">同事 Codex</button>
+    <button type="button" role="tab" class="tab" id="tab-owner" aria-controls="panel-owner" aria-selected="false" tabindex="-1" data-role="owner">你</button>
+   </div>
+   <div class="role-panel" role="tabpanel" id="panel-codex" aria-labelledby="tab-codex" tabindex="0">
+    <div class="role-head"><h3>Codex：后台与统一集成</h3><button type="button" class="copy-button" data-copy="codex">复制任务说明</button></div>
+    <ul><li>确定项目结构、数据字段、接口及模块边界。</li><li>实现账号权限、班级、发布、提交与云数据库。</li><li>实现评分任务队列、规则版本、模型调用和教师复核。</li><li>接入 同事 Codex 交付的页面，处理数据和状态。</li><li>完成关键验证、集中提交压测、部署和备份恢复说明。</li></ul>
+    <p class="delivery"><strong>交付：</strong>数据与接口约定、后台模块、集成版本、测试记录和部署说明。</p>
+   </div>
+   <div class="role-panel" role="tabpanel" id="panel-deepseek" aria-labelledby="tab-deepseek" tabindex="0" hidden>
+    <div class="role-head"><h3>同事 Codex：页面与图表</h3><button type="button" class="copy-button" data-copy="deepseek">复制任务说明</button></div>
+    <ul><li>按约定开发教师发布页、班级概览和评分复核页。</li><li>开发学生任务列表、文字答题和个人报告页。</li><li>完成手机、电脑布局及雷达图或条形图展示。</li><li>先使用标明为演示的数据，实现加载、空白、失败等状态。</li><li>通过统一的数据访问层调用接口，交付给 Codex 集成。</li></ul>
+    <p class="delivery"><strong>交付：</strong>前端页面、图表组件、演示数据、界面状态清单；不自行更改后台字段或接入真实密钥。</p>
+   </div>
+   <div class="role-panel" role="tabpanel" id="panel-owner" aria-labelledby="tab-owner" tabindex="0" hidden>
+    <div class="role-head"><h3>你：项目负责人和教学验收人</h3><button type="button" class="copy-button" data-copy="owner">复制任务说明</button></div>
+    <ul><li>提供题目、参考答案、评价维度、分值及教师评分样本。</li><li>决定首版范围、评价结果对谁可见、何时允许教师修订。</li><li>开通并管理云账号、域名、付费账号，确认报销和上线主体。</li><li>在两个工具之间交接任务和版本，组织老师、学生小范围试用。</li><li>使用真实 Windows、Android、MagicOS、iOS 设备验收并反馈。</li></ul>
+    <p class="delivery"><strong>交付：</strong>确认的需求与评分标准、可用账号、小样本试用反馈、最终验收意见。</p>
+   </div>
+   <p class="copy-status" id="copy-status" role="status" aria-live="polite">可复制各角色任务说明，再由你交给对应工具；本页未连接两个开发工具。</p>
+   <textarea class="copy-manual" id="copy-manual" readonly aria-label="待手动复制的任务说明" hidden></textarea>
+   <div class="handoff">
+    <details><summary>怎样减少两套工具协作时的返工？</summary><p>先固定一份《数据与接口约定》，包括题目、答卷、维度分数、评价规则版本，以及“草稿／已提交／待评分／已评分／评分失败”的状态含义。界面端只使用约定的字段。</p><p>两套工具分别在独立分支或目录中工作，不同时编辑同一文件。每次交接包含：修改文件、使用方法、已做验证、已知问题。由 Codex 审查并合并到主版本；变更字段时同步更新页面与演示数据。</p></details>
+    <details><summary>AI 开发工具与正式系统中的 AI 评分有什么区别？</summary><p>Codex 和 同事 Codex 用来协助你写代码。上线后的自动评分，需要系统后台单独调用模型 API，并单独计费；开发工具的订阅不等于学生评分的调用额度。模型供应商和版本在样本评估后确定。</p></details>
+   </div>
+  </section>
+
+  <section class="section" id="schedule" aria-labelledby="schedule-title">
+   <h2 id="schedule-title">工期按你的投入时间计算</h2>
+   <p>初版估计 <strong>60–90 个有效项目工时</strong>，包含理解需求、操作工具、调试、集成和验收。两套工具可以并行产出代码，但你的管理与验收时间不会自动减半。</p>
+   <div class="estimate">
+    <div class="estimate-top"><label for="daily-hours">每天有效投入 <output id="hours-value" for="daily-hours">4</output> 小时</label><input id="daily-hours" type="range" min="2" max="8" step="1" value="4" aria-describedby="estimate-note"></div>
+    <div class="estimate-results" aria-live="polite"><div><strong id="days-result">15–23 个工作日</strong><span>60–90 小时 ÷ 每天投入</span></div><div><strong id="weeks-result">约 3–5 周</strong><span>按每周推进 5 天估算</span></div></div>
+    <p class="note" id="estimate-note">估算前提：文字答题、基础页面、单一评分流程；题目与标准能及时确认。备案、账号审核、等待老师反馈等时间另计。跑通首条联网流程后重新估算。</p>
+   </div>
+   <div class="table-wrap"><table><caption>阶段工时与交付物</caption><thead><tr><th>阶段</th><th>主要负责人</th><th>工时估计</th><th>阶段成果</th></tr></thead><tbody>
+    <tr><td data-label="阶段">需求与约定</td><td data-label="负责">你＋Codex</td><td data-label="工时" class="hours">5–8 h</td><td data-label="成果">确定范围、评分样本、字段和页面列表。</td></tr>
+    <tr><td data-label="阶段">界面开发</td><td data-label="负责">同事 Codex</td><td data-label="工时" class="hours">10–15 h</td><td data-label="成果">教师、学生、报告页面；使用演示数据。</td></tr>
+    <tr><td data-label="阶段">联网基础</td><td data-label="负责">Codex</td><td data-label="工时" class="hours">12–18 h</td><td data-label="成果">不同设备完成登录、发布、提交和查询。</td></tr>
+    <tr><td data-label="阶段">评分接入</td><td data-label="负责">Codex＋你</td><td data-label="工时" class="hours">12–18 h</td><td data-label="成果">队列、评分结果、图表数据、教师复核。</td></tr>
+    <tr><td data-label="阶段">集成与验证</td><td data-label="负责">Codex；你试用</td><td data-label="工时" class="hours">12–18 h</td><td data-label="成果">权限与异常验证、集中提交压测、评分对照。</td></tr>
+    <tr><td data-label="阶段">上线与交接</td><td data-label="负责">你＋Codex</td><td data-label="工时" class="hours">9–13 h</td><td data-label="成果">正式网址、设备试用、操作和备份说明。</td></tr>
+    <tr class="total"><td data-label="阶段">初版合计</td><td data-label="负责">本机负责人统一集成</td><td data-label="工时" class="hours">60–90 h</td><td data-label="成果">具备小范围教学试运行条件。</td></tr>
+   </tbody></table></div>
+   <p class="note">可并行：界面开发与联网基础。需要顺序确认：评分体系 → 评分实现 → 真实样本对照。以上是项目规划估计，不是完成日期承诺；新增功能或评分体系反复修改会延长工期。</p>
+  </section>
+
+  <section class="section" id="technology" aria-labelledby="technology-title">
+   <h2 id="technology-title">共享数据，让不同设备看到同一结果</h2>
+   <p>采用轻量网页和托管云后台，首选评估腾讯云 CloudBase。前端技术由 Codex 先统一，同事 Codex 遵循同一项目结构；图表可采用 ECharts 等成熟组件。</p>
+   <div class="architecture" aria-label="系统三层结构">
+    <div class="layer"><b>浏览器页面</b><p>教师、学生入口<br>Windows / Android<br>MagicOS / iOS</p></div><span class="arrow" aria-hidden="true">→</span>
+    <div class="layer"><b>云端后台</b><p>身份与权限、提交回执<br>评分队列、模型 API<br>复核与异常重试</p></div><span class="arrow" aria-hidden="true">→</span>
+    <div class="layer"><b>云端数据库</b><p>班级、题目、答案<br>规则版本、得分与评语<br>备份和数据导出</p></div>
+   </div>
+   <h3>300 人集中提交：先收答卷，再排队评分</h3>
+   <p>学生提交后，后台先可靠保存答案并返回成功回执，再分批调用评分模型。关闭页面后，评分任务仍在云端继续执行，学生之后可以回来查看。</p>
+   <p class="note">“已提交”必须以云端保存成功为准。实现重复提交防护、任务重试和失败记录；控制评分并发，避免集中调用超过模型额度。300 人支持能力须通过正式环境压测验证。</p>
+   <details><summary>账号、数据与上线安排</summary><p>首版可采用分配账号与初始密码、首次登录改密、班级加入码，避免依赖学校统一登录。学生访问自己的答卷，教师按班级查看；权限由后台执行。</p><p>AI 调用密钥保存在云端，评分时尽量使用匿名答案。云账号、域名、部署地区及备案可行性在小样例阶段核实；开发阶段可先验证测试入口，正式教学使用前确认稳定网址和上线条件。</p><p>运行一年期间设置费用与错误提醒、定期导出和备份；实际做一次恢复验证。项目结束前导出数据并决定续费、迁移或停止服务。维护时间另行预留，不包含在初版 60–90 小时内。</p></details>
+  </section>
+
+  <section class="section" id="budget" aria-labelledby="budget-title">
+   <h2 id="budget-title">把经费用在联网运行和评价验证</h2>
+   <p>按自主开发规划，将约 5000 元作为云服务、评分调用和机动费用的总盘子。先验证再采购，避免提前锁定一年套餐。</p>
+   <div class="budget-bars" role="img" aria-label="预算规划：云服务2400元，域名100元，AI评分1000元，超额资源与备份500元，机动1000元"><span class="bar-cloud"></span><span class="bar-domain"></span><span class="bar-ai"></span><span class="bar-resource"></span><span class="bar-reserve"></span></div>
+   <div class="table-wrap"><table><caption>一年预算分配建议</caption><thead><tr><th>项目</th><th>预留金额</th><th>预算依据</th></tr></thead><tbody>
+    <tr><td data-label="项目">云端基础服务</td><td data-label="预留" class="money">¥2,400</td><td data-label="说明">暂按约 200 元/月规划，套餐以能力和压测结果决定。</td></tr>
+    <tr><td data-label="项目">域名</td><td data-label="预留" class="money">¥100</td><td data-label="说明">估算额度，核对注册和续费价格。</td></tr>
+    <tr><td data-label="项目">AI 评分调用</td><td data-label="预留" class="money">¥1,000</td><td data-label="说明">按真实题量、答案长度和模型测算；这不是已确定费用。</td></tr>
+    <tr><td data-label="项目">超额资源与备份</td><td data-label="预留" class="money">¥500</td><td data-label="说明">流量、日志、备份及压测等按需支出。</td></tr>
+    <tr><td data-label="项目">机动经费</td><td data-label="预留" class="money">¥1,000</td><td data-label="说明">覆盖新增工具费、升级和不可预见用量。</td></tr>
+    <tr class="total"><td data-label="项目">合计</td><td data-label="预留" class="money">¥5,000</td><td data-label="说明">预算分配，不代表已采购或保证实际费用。</td></tr>
+   </tbody></table></div>
+   <p class="note">价格核对：截至 2026-10-27 查看的官方文档中，CloudBase 配额制标准版为 199 元/月，12 个月为 2388 元；资源点计费另有规则，购买前核实适用方案。其连接数或请求额度不能直接等同于 300 人业务并发能力。</p>
+   <p class="note">本预算不计你的人工报酬；若现有 Codex、同事 Codex 使用条件不足，新增订阅或开发调用费也需计入总经费。运行中的 AI 评分额度与开发工具费用分开计算。全年总用户数和作业总量尚待确认。</p>
+  </section>
+
+  <section class="section" id="acceptance" aria-labelledby="acceptance-title">
+   <h2 id="acceptance-title">用实际结果验收初版</h2>
+   <p>界面朴素可以接受，数据保存、访问权限和评价可追溯需要从首版做好。以下均为待验证项。</p>
+   <ul class="checks">
+    <li><span class="check-box" aria-hidden="true"></span><div><strong>跨设备完成一轮教学流程</strong><p>教师在电脑发布，学生在手机作答，双方按权限看到云端结果。</p></div></li>
+    <li><span class="check-box" aria-hidden="true"></span><div><strong>300 个独立账号集中提交测试</strong><p>核对提交记录完整性、失败重试和重复防护；页面请求和评分队列都需记录结果。</p></div></li>
+    <li><span class="check-box" aria-hidden="true"></span><div><strong>评分与教师判断对照</strong><p>使用真实答案样本；保留规则版本、模型版本、得分依据和人工修订记录。</p></div></li>
+    <li><span class="check-box" aria-hidden="true"></span><div><strong>代表性设备和数据恢复测试</strong><p>实际检查 Windows、Android、MagicOS、iOS；验证越权访问被阻止、备份能恢复、数据能导出。</p></div></li>
+   </ul>
+   <div class="pending">
+    <div><h3>开工前由你补充</h3><p class="note">一组真实课前问题、参考答案、评价维度和评分样本；确认结果可见范围，以及全年预计学生总数和作业次数。</p></div>
+    <div><h3>首个开发里程碑</h3><p class="note">只用一道题，让两个设备完成“发布 → 提交 → 固定规则评分 → 查看结果”。先验证联网基础，再接入正式评价体系。</p></div>
+   </div>
+   <div class="closing"><h3>本轮工作总结</h3><p>已整理初版范围、双工具职责、60–90 小时工期估算、5000 元预算和验收路径，并制作本方案展示页。下一步是确认教学评价要求，建立数据约定与首条联网流程。</p><p class="note">当前没有启动正式教学系统开发、调用评分模型或购买云服务。本页可调整工期、切换分工并复制任务说明，便于下一轮交接。</p></div>
+   <div class="sources"><p class="note">价格与平台能力参考（点击时需联网；方案正文可离线阅读）</p><a href="https://cloud.tencent.com/document/product/876/75213" target="_blank" rel="noopener noreferrer">CloudBase 官方计费说明 ↗</a><a href="https://cloud.tencent.cn/document/product/876/40406" target="_blank" rel="noopener noreferrer">CloudBase 官方能力说明 ↗</a><a href="https://help.aliyun.com/zh/model-studio/qwen-plus" target="_blank" rel="noopener noreferrer">模型调用计费示例 ↗</a></div>
+  </section>
+  <footer class="footer"><span>课前问答与学习评价系统 · 初步方案 V0.1 · 2026.10.27</span><a href="#main">回到开头 ↑</a></footer>
+ </main>
+</div>
+<script>
+(() => {
+ 'use strict';
+ const tabs = [...document.querySelectorAll('[role=tab]')];
+ function selectRole(tab, focus = false) {
+  const manualField = document.getElementById('copy-manual');
+  if (manualField) manualField.hidden = true;
+  tabs.forEach(t => {
+   const selected = t === tab;
+   t.setAttribute('aria-selected', String(selected));
+   t.tabIndex = selected ? 0 : -1;
+   document.getElementById(t.getAttribute('aria-controls')).hidden = !selected;
+  });
+  if (focus) tab.focus({preventScroll:true});
+ }
+ tabs.forEach((tab,i) => {
+  tab.addEventListener('click', () => selectRole(tab));
+  tab.addEventListener('keydown', event => {
+   let next;
+   if (event.key === 'ArrowRight') next = tabs[(i+1)%tabs.length];
+   if (event.key === 'ArrowLeft') next = tabs[(i+tabs.length-1)%tabs.length];
+   if (event.key === 'Home') next = tabs[0];
+   if (event.key === 'End') next = tabs[tabs.length-1];
+   if (next) { event.preventDefault(); selectRole(next,true); }
+  });
+ });
+ const hours = document.getElementById('daily-hours');
+ function estimate() {
+  const h = Number(hours.value), low = Math.ceil(60/h), high = Math.ceil(90/h);
+  document.getElementById('hours-value').textContent = String(h);
+  document.getElementById('days-result').textContent = `${low}–${high} 个工作日`;
+  document.getElementById('weeks-result').textContent = `约 ${Math.ceil(low/5)}–${Math.ceil(high/5)} 周`;
+ }
+ hours.addEventListener('input',estimate);
+ document.getElementById('print').addEventListener('click', () => window.print());
+ let printDetails = [];
+ window.addEventListener('beforeprint', () => {
+  printDetails = [...document.querySelectorAll('details')].map(detail => ({detail,open:detail.open}));
+  printDetails.forEach(({detail}) => {detail.open=true;});
+ });
+ window.addEventListener('afterprint', () => {printDetails.forEach(({detail,open}) => {detail.open=open;});});
+ const shared = '项目：跨设备课前问答与学习评价网页版。双人推进，最多300人同时在线并集中提交，运行一年，总经费约5000元。首版文字题目与回答、基础图表、教师复核。题目及评分体系由项目负责人后续提供，不自行发明正式评价标准。\n协作规则：先遵守Codex维护的数据与接口约定，独立分支或目录工作，不覆盖另一工具负责的文件。交接需列出修改文件、使用方法、已做验证和已知问题。密钥保存在云端，不写入页面。\n';
+ const tasks = {
+  codex: shared + '你的角色：后台与统一集成。先交付项目结构、字段与接口约定，再实现账号权限、班级、发布和提交、持久评分队列、规则版本、模型调用与人工复核。集成同事 Codex前端，验证重复提交、异常重试和跨班级权限；在实际云配置下测试300个独立账号集中提交，并核对答卷及评分任务。交付代码、测试记录、部署及备份恢复说明。先跑通一道题的两设备联网流程，再接正式评分体系。只在约定范围内实现，不把原型或模拟数据宣称为已上线。',
+  deepseek: shared + '你的角色：教师端、学生端与报告页面。先读取Codex给定的项目结构、字段及接口约定。完成教师发布、班级概览、评分复核，学生任务列表、文字答题、个人报告，手机和电脑布局，以及加载、空白、失败、提交成功和待评分状态。先用明确标注的演示数据，通过统一数据访问层对接；评价维度未确认时仅做可配置占位，不发明正式标准。不修改数据库规则、后台接口或真实密钥。交付前端文件、图表、演示数据和状态清单，由Codex统一集成。',
+  owner: shared + '你的角色：项目负责人。准备真实问题、参考答案、评价维度、分值和教师评分样本；确认首版范围、结果可见权限及修订规则。管理云账号、域名、付费与报销，核实上线主体和备案条件。在两个工具之间交接约定和版本，小范围组织试用。在真实Windows、Android、MagicOS和iOS设备上检查操作。按阶段验收，不因页面能打开就认定联网、评分可靠性或300人并发已通过。'
+ };
+ const status = document.getElementById('copy-status');
+ const manual = document.getElementById('copy-manual');
+ document.querySelectorAll('[data-copy]').forEach(button => button.addEventListener('click', async () => {
+  const content = tasks[button.dataset.copy];
+  button.disabled = true; button.setAttribute('aria-busy','true');
+  let copied = false;
+  try {
+   if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(content); copied = true; }
+  } catch (_) { /* Local-file clipboard permissions vary by browser. */ }
+  if (!copied) {
+   manual.hidden = false; manual.value = content; manual.focus({preventScroll:true}); manual.select();
+   try { copied = document.execCommand('copy'); } catch (_) { copied = false; }
+  }
+  if (copied) {
+   manual.hidden = true; status.textContent = '任务说明已复制，可交给对应工具。'; button.dataset.state = 'success';
+  } else { status.textContent = '浏览器未允许自动复制。请在下方文本框中手动复制。'; button.dataset.state = 'error'; }
+  button.disabled = false; button.removeAttribute('aria-busy');
+ }));
+ const links = [...document.querySelectorAll('.nav a')];
+ if ('IntersectionObserver' in window) {
+  const observer = new IntersectionObserver(entries => {
+   const hit = entries.find(entry => entry.isIntersecting);
+   if (hit) links.forEach(link => link.setAttribute('aria-current',String(link.hash === '#'+hit.target.id)));
+  },{rootMargin:'-10% 0px -65% 0px',threshold:0});
+  document.querySelectorAll('main .section').forEach(section => observer.observe(section));
+ }
+})();
+</script>
+</body>
+</html>

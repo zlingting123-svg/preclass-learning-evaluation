@@ -25,3 +25,13 @@ Thumbs.db
 **/*.key
 **/*.p12
 **/*.pfx
+
+**/__pycache__/
+**/*.pyc
+
+# Locally installed/built standalone companion module
+frontend/public/ai-companion/
+# Private local module install receipts/backups (keep for rollback, never publish)
+frontend/.ai-companion-backups/
+frontend/.ai-companion-state-*.json
+frontend/.companion-update.lock/

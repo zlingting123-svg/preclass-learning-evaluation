@@ -1,11 +1,10 @@
+import { ClassPicker } from '../components/ClassPicker';
 import {newId} from '../lib/newId';
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import type { ClassInfo, Page } from "@shared/contracts";
 import type {
   FilePreview,
-  RosterPlan,
-  RosterRow,
   Survey,
   SurveyQuestion,
   SurveyResponse,
@@ -66,9 +65,7 @@ export function CoreHome() {
   const [classes, setClasses] = useState<ClassInfo[]>([]),
     [selected, setSelected] = useState(""),
     [surveys, setSurveys] = useState<Survey[]>([]),
-    [name, setName] = useState(""),
     [error, setError] = useState(""),
-    [busy, setBusy] = useState(false),
     [loading, setLoading] = useState(true);
   async function load() {
     try {
@@ -99,23 +96,6 @@ export function CoreHome() {
       active = false;
     };
   }, [selected]);
-  async function create(e: React.FormEvent) {
-    e.preventDefault();
-    setBusy(true);
-    setError("");
-    try {
-      const c = await request<ClassInfo>("POST", "/teacher/classes", {
-        body: { name },
-      });
-      setClasses((v) => [...v, c]);
-      setSelected(c.id);
-      setName("");
-    } catch (e) {
-      setError(message(e));
-    } finally {
-      setBusy(false);
-    }
-  }
   return (
     <section className="core">
       <h1>{teacher ? "教师工作台" : "我的班级"}</h1>
@@ -147,31 +127,19 @@ export function CoreHome() {
           {!classes.length && (
             <p>
               暂无所属班级。
-              {teacher ? "请先创建班级。" : "请联系教师导入名单。"}
+              {teacher ? "请选择管理员已建好的班级。" : "请联系管理员导入名单。"}
             </p>
           )}
         </>
       )}
-      {teacher && (
-        <form className="core-inline" onSubmit={create}>
-          <input
-            aria-label="新班级名称"
-            placeholder="新班级名称"
-            required
-            maxLength={200}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <button disabled={busy || !name.trim()}>创建班级</button>
-        </form>
-      )}
+      {teacher&&<ClassPicker onClaimed={id=>{void load();setSelected(id)}}/>}
       {selected && (
         <>
           <div className="core-actions">
             {teacher ? (
               <>
                 <Link to={`/core/classes/${selected}/roster`}>
-                  学生名单与导入
+                  班级学生名单
                 </Link>
                 <Link to={`/core/classes/${selected}/new`}>布置问卷</Link>
               </>
@@ -220,305 +188,10 @@ export function CoreHome() {
   );
 }
 
-export function RosterPage() {
-  const { classId = "" } = useParams();
-  const [file, setFile] = useState<FilePreview | null>(null),
-    [sheet, setSheet] = useState(0),
-    [header, setHeader] = useState(0),
-    [numberCol, setNumberCol] = useState(0),
-    [nameCol, setNameCol] = useState(1),
-    [rows, setRows] = useState<RosterRow[]>([]),
-    [plan, setPlan] = useState<RosterPlan | null>(null),
-    [members, setMembers] = useState<
-      Array<{ studentId: string; studentNumber: string; studentName: string }>
-    >([]),
-    [error, setError] = useState(""),
-    [status, setStatus] = useState(""),
-    [busy, setBusy] = useState(false);
-  const load = () =>
-    request<typeof members>("GET", `/core/classes/${classId}/members`).then(
-      setMembers,
-    );
-  useEffect(() => {
-    load().catch((e) => setError(message(e)));
-  }, [classId]);
-  function detect(f: FilePreview, i: number) {
-    setSheet(i);
-    const grid = f.sheets[i]?.rows ?? [];
-    const h = grid.findIndex(
-      (r) =>
-        r.some((x) => /^(学号|学生学号|编号|studentnumber)$/i.test(x.trim())) &&
-        r.some((x) => /^(姓名|学生姓名|名字|displayname)$/i.test(x.trim())),
-    );
-    setHeader(Math.max(0, h));
-    if (h >= 0) {
-      setNumberCol(
-        grid[h].findIndex((x) =>
-          /^(学号|学生学号|编号|studentnumber)$/i.test(x.trim()),
-        ),
-      );
-      setNameCol(
-        grid[h].findIndex((x) =>
-          /^(姓名|学生姓名|名字|displayname)$/i.test(x.trim()),
-        ),
-      );
-    } else setStatus("未识别到标准表头，请选择表头行和列映射。");
-    setRows([]);
-    setPlan(null);
-  }
-  async function upload(f: File) {
-    setBusy(true);
-    setError("");
-    setStatus("");
-    setRows([]);
-    setPlan(null);
-    setFile(null);
-    try {
-      const preview = await filePreview(f);
-      setFile(preview);
-      detect(preview, 0);
-    } catch (e) {
-      setError(message(e));
-    } finally {
-      setBusy(false);
-    }
-  }
-  function map() {
-    if (numberCol === nameCol) {
-      setError("姓名与学号不能选择同一列");
-      return;
-    }
-    setError("");
-    setPlan(null);
-    setRows(
-      (file?.sheets[sheet]?.rows ?? [])
-        .slice(header + 1)
-        .filter((r) => r.some((x) => x.trim()))
-        .map((r) => ({
-          studentNumber: (r[numberCol] ?? "").trim(),
-          displayName: (r[nameCol] ?? "").trim(),
-        })),
-    );
-  }
-  async function preview() {
-    setBusy(true);
-    setError("");
-    try {
-      setPlan(
-        await request("POST", `/core/classes/${classId}/roster/preview`, {
-          body: { rows },
-        }),
-      );
-    } catch (e) {
-      setError(message(e));
-    } finally {
-      setBusy(false);
-    }
-  }
-  async function commit() {
-    if (!plan) return;
-    setBusy(true);
-    setError("");
-    try {
-      const r = await request<{ imported: number }>(
-        "POST",
-        `/core/classes/${classId}/roster/commit`,
-        { body: { planId: plan.id, fingerprint: plan.fingerprint } },
-      );
-      setStatus(
-        `已确认导入 ${r.imported} 名学生。新账号初始密码为 12345，已有账号密码保持原样。`,
-      );
-      setPlan(null);
-      setRows([]);
-      await load();
-    } catch (e) {
-      setError(message(e));
-    } finally {
-      setBusy(false);
-    }
-  }
-  const grid = file?.sheets[sheet]?.rows ?? [];
-  return (
-    <section className="core">
-      <Link to="/">返回班级</Link>
-      <h1>学生名单与导入</h1>
-      <Alert error={error} />
-      <p role="status">{status}</p>
-      <label>
-        上传名单（Word / Excel / CSV，最多 1MB）
-        <input
-          type="file"
-          accept=".csv,.xlsx,.xls,.doc,.docx"
-          disabled={busy}
-          onChange={(e) => {
-            const f = e.target.files?.[0];
-            if (f) void upload(f);
-          }}
-        />
-      </label>
-      {file && (
-        <div className="card">
-          <p>识别格式：{file.format}</p>
-          {file.warnings.map((w) => (
-            <p key={w}>{w}</p>
-          ))}
-          <label>
-            工作表
-            <select
-              value={sheet}
-              onChange={(e) => detect(file, Number(e.target.value))}
-            >
-              {file.sheets.map((s, i) => (
-                <option value={i} key={i}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            表头所在行
-            <input
-              type="number"
-              min={1}
-              max={grid.length}
-              value={header + 1}
-              onChange={(e) => {
-                setHeader(Number(e.target.value) - 1);
-                setPlan(null);
-              }}
-            />
-          </label>
-          {[
-            ["学号列", numberCol, setNumberCol],
-            ["姓名列", nameCol, setNameCol],
-          ].map(([label, value, setter]) => (
-            <label key={String(label)}>
-              {String(label)}
-              <select
-                value={value as number}
-                onChange={(e) => {
-                  (setter as (n: number) => void)(Number(e.target.value));
-                  setPlan(null);
-                }}
-              >
-                {(grid[header] ?? []).map((v, i) => (
-                  <option key={i} value={i}>
-                    {i + 1}：{v}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ))}
-          <button disabled={busy} onClick={map}>
-            应用映射，编辑预览
-          </button>
-        </div>
-      )}
-      {rows.length > 0 && (
-        <>
-          <h2>确认前编辑（{rows.length} 行）</h2>
-          <div className="core-table">
-            <table>
-              <thead>
-                <tr>
-                  <th>学号</th>
-                  <th>姓名</th>
-                  <th>操作</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r, i) => (
-                  <tr key={i}>
-                    <td>
-                      <input
-                        aria-label={`第${i + 1}行学号`}
-                        value={r.studentNumber}
-                        onChange={(e) => {
-                          setPlan(null);
-                          setRows((v) =>
-                            v.map((x, j) =>
-                              j === i
-                                ? { ...x, studentNumber: e.target.value }
-                                : x,
-                            ),
-                          );
-                        }}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        aria-label={`第${i + 1}行姓名`}
-                        value={r.displayName}
-                        onChange={(e) => {
-                          setPlan(null);
-                          setRows((v) =>
-                            v.map((x, j) =>
-                              j === i
-                                ? { ...x, displayName: e.target.value }
-                                : x,
-                            ),
-                          );
-                        }}
-                      />
-                    </td>
-                    <td>
-                      <button
-                        onClick={() => {
-                          setPlan(null);
-                          setRows((v) => v.filter((_, j) => i !== j));
-                        }}
-                      >
-                        移除行
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <button disabled={busy} onClick={preview}>
-            校验名单并生成确认预览
-          </button>
-        </>
-      )}
-      {plan && (
-        <div className="card">
-          <p>待导入 {plan.rows.length} 人；重复学号和身份冲突必须先修正。</p>
-          {plan.errors.map((e, i) => (
-            <p role="alert" key={i}>
-              {e}
-            </p>
-          ))}
-          <button
-            className="primary"
-            disabled={busy || !!plan.errors.length}
-            onClick={commit}
-          >
-            确认正式导入
-          </button>
-        </div>
-      )}
-      <h2>当前学生（{members.length}）</h2>
-      <div className="core-table">
-        <table>
-          <thead>
-            <tr>
-              <th>学号</th>
-              <th>姓名</th>
-            </tr>
-          </thead>
-          <tbody>
-            {members.map((m) => (
-              <tr key={m.studentId}>
-                <td>{m.studentNumber}</td>
-                <td>{m.studentName}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </section>
-  );
+export function RosterPage(){
+ const {classId=''}=useParams();const [members,setMembers]=useState<Array<{studentId:string;studentNumber:string;studentName:string}>>([]),[error,setError]=useState('');
+ useEffect(()=>{let active=true;request<typeof members>('GET',`/core/classes/${classId}/members`).then(v=>{if(active)setMembers(v)}).catch(e=>{if(active)setError(message(e))});return()=>{active=false}},[classId]);
+ return <section className="core"><Link to="/">返回班级</Link><h1>班级学生名单</h1><p className="muted">名单和账号由管理员统一导入；教师在工作台选择班级后查看。</p><Alert error={error}/><div className="core-table"><table><thead><tr><th>学号</th><th>真实姓名</th></tr></thead><tbody>{members.map(m=><tr key={m.studentId}><td>{m.studentNumber}</td><td>{m.studentName}</td></tr>)}</tbody></table></div></section>;
 }
 
 export function SurveyEditor() {

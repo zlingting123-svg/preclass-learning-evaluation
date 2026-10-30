@@ -1,0 +1,16 @@
+{
+  "results": [
+    {
+      "name": "生产构建拒绝VITE_API_MODE=mock",
+      "result": "pass"
+    },
+    {
+      "name": "生产构建拒绝VITE_API_MODE=invalid",
+      "result": "pass"
+    },
+    {
+      "name": "生产包无演示口令、模拟用户与班级标记",
+      "result": "pass"
+    }
+  ]
+}

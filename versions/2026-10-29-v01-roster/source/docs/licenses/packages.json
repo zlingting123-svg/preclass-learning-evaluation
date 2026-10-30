@@ -1,0 +1,57 @@
+{
+  "checkedOn": "2026-10-27",
+  "packages": [
+    {
+      "name": "bcryptjs",
+      "version": "3.0.3",
+      "license": "BSD-3-Clause",
+      "source": {
+        "type": "url",
+        "url": "https://github.com/dcodeIO/bcrypt.js.git"
+      },
+      "licenseCopy": "docs/licenses/bcryptjs-LICENSE.txt"
+    },
+    {
+      "name": "helmet",
+      "version": "8.3.0",
+      "license": "MIT",
+      "source": {
+        "type": "git",
+        "url": "git://github.com/helmetjs/helmet.git"
+      },
+      "licenseCopy": "docs/licenses/helmet-LICENSE.txt"
+    },
+    {
+      "name": "express-rate-limit",
+      "version": "8.7.1",
+      "license": "MIT",
+      "source": {
+        "type": "git",
+        "url": "git+https://github.com/express-rate-limit/express-rate-limit.git"
+      },
+      "licenseCopy": "docs/licenses/express-rate-limit-LICENSE.txt"
+    },
+    {
+      "name": "csv-parse",
+      "version": "7.0.3",
+      "license": "MIT",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/adaltas/node-csv.git",
+        "directory": "packages/csv-parse"
+      },
+      "licenseCopy": "docs/licenses/csv-parse-LICENSE.txt"
+    },
+    {
+      "name": "csv-stringify",
+      "version": "6.9.0",
+      "license": "MIT",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/adaltas/node-csv.git",
+        "directory": "packages/csv-stringify"
+      },
+      "licenseCopy": "docs/licenses/csv-stringify-LICENSE.txt"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
-/** Shared contract v0.4.0 — core questionnaires and teacher roster. */
-export const CONTRACT_VERSION = '0.4.0' as const;
+/** Shared contract v0.5.0 — admin provisioning, first-login password change and shared teaching. */
+export const CONTRACT_VERSION = '0.5.0' as const;
 export type ID = string;
 /** UTC ISO 8601; display in Asia/Shanghai. */
 export type ISODateTime = string;
@@ -9,15 +9,18 @@ export type ApiResponse<T> =
   | { ok: true; data: T; requestId: string }
   | { ok: false; error: { code: string; message: string; details?: Record<string, unknown> }; requestId: string };
 export interface Page<T> { items: T[]; nextCursor: string | null }
-export interface User { id: ID; displayName: string; role: Role }
+export interface User { id: ID; displayName: string; role: Role; mustChangePassword?: boolean }
 export interface LoginRequest { username: string; password: string }
-export interface AuthSession { user: User; accessToken: string; expiresAt: ISODateTime }
+export interface AuthSession { user: User; accessToken: string; expiresAt: ISODateTime | null }
 export interface ClassInfo {
   id: ID; name: string; teacherId: ID; memberCount: number;
   /** Present only for the owning teacher, omitted from student responses. */
   joinCode?: string;
   /** Legacy classes omit this field; new controlled cohorts use an opaque ID. */
   cohortId?: ID | null;
+  teacherIds?: ID[];
+  teacherNames?: string[];
+  batchName?: string;
 }
 export interface CohortInfo {
   id: ID;

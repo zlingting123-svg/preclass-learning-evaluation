@@ -1,0 +1,108 @@
+/* Hallmark · pre-emit critique: P4 H4 E4 S4 R4 V3; existing project tokens retained. */
+.core {
+  max-width: 960px;
+  margin: 0 auto;
+  min-width: 0;
+}
+.core label {
+  display: block;
+  margin: 12px 0;
+}
+.core input:not([type="checkbox"]):not([type="radio"]),
+.core select,
+.core textarea {
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+.core fieldset {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+.core-actions,
+.core-inline {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 18px 0;
+}
+.core-inline input {
+  flex: 1;
+  min-width: 140px;
+}
+.core-inline button {
+  flex: none;
+}
+.core button,
+.core a {
+  white-space: nowrap;
+}
+.core h1,
+.core h2,
+.core h3 {
+  overflow-wrap: anywhere;
+  min-width: 0;
+  font-style: normal;
+}
+.core-table {
+  overflow: auto;
+  max-width: 100%;
+}
+.core-table table {
+  width: 100%;
+}
+.core-table td,
+.core-table th {
+  padding: 10px;
+  text-align: left;
+}
+.core .core-option {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.core-chart {
+  height: 300px;
+  width: 100%;
+  min-width: 0;
+}
+.core-pre,
+.core blockquote {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.core .card {
+  min-width: 0;
+}
+.core textarea {
+  min-height: 90px;
+}
+.core button:focus-visible,
+.core a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+.core button:active {
+  transform: translateY(1px);
+}
+.core button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+@media (max-width: 414px) {
+  .core-actions {
+    gap: 16px;
+  }
+  .core-chart {
+    height: 260px;
+  }
+  .core-table td,
+  .core-table th {
+    padding: 6px;
+  }
+  .core fieldset .card {
+    padding: 12px;
+  }
+}

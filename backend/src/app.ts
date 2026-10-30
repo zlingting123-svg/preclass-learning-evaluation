@@ -1,3 +1,12 @@
+import { referenceFileRoutes } from './reference-files.js';
+import { staticSite } from './static-site.js';
+import { webKnowledgeRoutes } from './web-knowledge.js';
+import { knowledgeImportRoutes } from './knowledge-import.js';
+import { provisioningRoutes } from './provisioning.js';
+import { serviceAdminRoutes } from './service-admin.js';
+import { serverSettings } from './admin-settings.js';
+import { aiRoutes, type CourseAi } from './ai.js';
+import { conversationRoutes } from './conversation-routes.js';
 import express, { type ErrorRequestHandler, type Request, type Response } from 'express';
 import helmet from 'helmet';
 import { randomUUID } from 'node:crypto';
@@ -13,8 +22,11 @@ import { loginLimiters } from './security.js';
 import { questionnaireRoutes } from './questionnaire-routes.js';
 import { adminRoutes } from './admin.js';
 
-export function createApp(service: Service, auth: AuthProvider) {
+export function createApp(service: Service, auth: AuthProvider, ai?: CourseAi, deployment?:{appOrigin:string;staticDir:string}) {
   const app = express();
+  if(deployment)app.set("trust proxy","loopback");
+  const extraOrigin=process.env.DEV_FRONTEND_ORIGIN;
+  ensure(!extraOrigin || /^http:\/\/(127\.0\.0\.1|localhost):[0-9]{1,5}$/.test(extraOrigin),503,'LOCAL_ONLY','本机前端来源无效');
   app.disable('x-powered-by');
   app.use(helmet({ strictTransportSecurity: false, contentSecurityPolicy: { directives: { upgradeInsecureRequests: null } } }));
   app.use((_req, res, next) => {
@@ -25,17 +37,29 @@ export function createApp(service: Service, auth: AuthProvider) {
   app.use((req, _res, next) => {
     // Intended for Vite's same-origin proxy, not arbitrary CORS clients.
     const origin = req.get('origin');
-    ensure(!origin || ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3001', 'http://127.0.0.1:3001'].includes(origin), 403, 'FORBIDDEN', '请求来源不允许');
+    ensure(!origin || (deployment?[deployment.appOrigin]:['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3001', 'http://127.0.0.1:3001',...(extraOrigin?[extraOrigin]:[])]).includes(origin), 403, 'FORBIDDEN', '请求来源不允许');
+    if(deployment)ensure(req.get("host")===new URL(deployment.appOrigin).host,400,"INVALID_HOST","请求主机不匹配");
     next();
   });
   app.use(express.json({ limit: '2mb', strict: true }));
   const ok = (res: Response, data: unknown) => res.json({ ok: true, data, requestId: res.locals.requestId });
   app.get('/api/v1/health', (_req, res) => ok(res, { contractVersion: CONTRACT_VERSION, storage: 'local-sqlite', auth: 'local-bcrypt', productionReady: false }));
-  app.post('/api/v1/auth/login', ...loginLimiters(), async (req, res) => ok(res, await auth.login(req.body)));
+  app.post('/api/v1/auth/admin-login', ...loginLimiters(), async (req,res)=>{
+    const session=await auth.login(req.body);
+    if(session.user.role!=='admin'){auth.logout(session.accessToken);ensure(false,403,'ADMIN_REQUIRED','请使用专用管理员账户');}
+    ok(res,session);
+  });
+  app.post('/api/v1/auth/login', ...loginLimiters(), async (req,res)=>{
+    const session=await auth.login(req.body);
+    if(serverSettings(service.store).maintenance&&session.user.role!=='admin'){auth.logout(session.accessToken);ensure(false,503,'MAINTENANCE','服务维护中，请稍后再试');}
+    ok(res,session);
+  });
   app.use('/api/v1', (req, res, next) => {
     const header = req.get('authorization');
     ensure(header && header.startsWith('Bearer ') && header.length <= 200, 401, 'UNAUTHENTICATED', '请登录');
-    res.locals.token = header.slice(7); res.locals.user = auth.authenticate(res.locals.token); next();
+    res.locals.token = header.slice(7); res.locals.user = auth.authenticate(res.locals.token);
+    ensure(!res.locals.user.mustChangePassword||['/auth/me','/auth/logout','/auth/password'].includes(req.path),403,'PASSWORD_CHANGE_REQUIRED','首次登录或密码重置后，请先修改初始密码');
+    ensure(!serverSettings(service.store).maintenance||res.locals.user.role==='admin'||['/auth/logout','/auth/me'].includes(req.path),503,'MAINTENANCE','服务维护中，请稍后再试'); next();
   });
   const user = (res: Response): User => res.locals.user;
   const param = (req: Request) => id.parse(req.params.id);
@@ -44,16 +68,21 @@ export function createApp(service: Service, auth: AuthProvider) {
     const { limit, cursor } = pagination(req); return ok(res, page(items, limit, cursor));
   };
   app.get('/api/v1/auth/me', (_req, res) => ok(res, user(res)));
+  app.put('/api/v1/auth/password',async(req,res)=>{ensure(auth.changePassword,503,'PASSWORD_CHANGE_UNAVAILABLE','当前认证提供方暂不支持改密');await auth.changePassword(res.locals.token,req.body);ok(res,{changed:true});});
+  provisioningRoutes(app,service,auth);
+  serviceAdminRoutes(app,service,ai);
+  referenceFileRoutes(app,service);
+  knowledgeImportRoutes(app,service);
+  webKnowledgeRoutes(app,service);
+  conversationRoutes(app,service,ai);
+  aiRoutes(app,service,ai);
   questionnaireRoutes(app,service,ok);
   adminRoutes(app,service,ok);
   app.post('/api/v1/auth/logout', (_req, res) => { auth.logout(res.locals.token); ok(res, { success: true }); });
   app.get('/api/v1/classes', (req, res) => list(req, res, service.classes(user(res), id.optional().parse(req.query.cohortId))));
   app.get('/api/v1/cohorts', (req, res) => list(req, res, service.cohorts(user(res))));
   app.get('/api/v1/cohorts/:id', (req, res) => ok(res, service.cohort(user(res), param(req))));
-  app.post('/api/v1/teacher/classes', (req, res) => {
-    const body = z.object({ name: z.string().trim().min(1).max(200), cohortId: id.optional() }).strict().parse(req.body);
-    ok(res, service.createClass(user(res), body.name, body.cohortId));
-  });
+  app.post('/api/v1/teacher/classes',(_req,_res)=>{ensure(false,403,'ADMIN_CLASS_CREATION_REQUIRED','班级由管理员导入，请在教师端选择已有班级');});
   app.post('/api/v1/classes/join', (req, res) => {
     const body = z.object({ joinCode: z.string().trim().min(1).max(100).transform(v => v.toUpperCase()) }).strict().parse(req.body);
     ok(res, service.join(user(res), body.joinCode));
@@ -105,6 +134,7 @@ export function createApp(service: Service, auth: AuthProvider) {
     const csv = service.export(user(res), param(req));
     res.type('text/csv; charset=utf-8').setHeader('Content-Disposition', 'attachment; filename="assignment.csv"'); res.send(csv);
   });
+  if(deployment)staticSite(app,deployment.staticDir);
   app.use((_req, _res, next) => next(new AppError(404, 'NOT_FOUND', '接口不存在')));
   const errors: ErrorRequestHandler = (error: unknown, _req, res, _next) => {
     const bodyError = error as { type?: string };

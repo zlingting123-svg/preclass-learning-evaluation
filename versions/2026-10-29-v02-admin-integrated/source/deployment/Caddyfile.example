@@ -1,0 +1,9 @@
+# Replace the example host after domain/filing/DNS are ready. One local Node process only.
+classroom.example.com {
+    encode zstd gzip
+    header Strict-Transport-Security "max-age=31536000"
+    request_body {
+        max_size 2MB
+    }
+    reverse_proxy 127.0.0.1:3001
+}

@@ -1,0 +1,65 @@
+{
+  "version": "requirements-draft-1",
+  "providedOn": "2026-10-27",
+  "implementationStatus": "requirements_only",
+  "course": {
+    "name": "环境评价与管理",
+    "sampleQuestion": {
+      "prompt": "“三同时”竣工验收表中都有哪些内容？",
+      "referenceAnswer": "“三同时”竣工验收表主要涵盖项目概况、环保设施“三同时”落实情况、污染物达标监测、环境管理检查及最终验收结论，是证明项目环保合规的核心文件。",
+      "referenceSource": "用户提供，尚未作为正式法规或评分标准核验",
+      "rubric": null
+    }
+  },
+  "cohorts": [
+    {
+      "label": "春季",
+      "months": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "crossesCalendarYear": false,
+      "studentCount": 500,
+      "teacherCount": 7,
+      "assignmentsPerStudent": 4
+    },
+    {
+      "label": "秋季",
+      "months": [
+        11,
+        12,
+        1
+      ],
+      "crossesCalendarYear": true,
+      "studentCount": 500,
+      "teacherCount": 7,
+      "assignmentsPerStudent": 4
+    }
+  ],
+  "annualPlanning": {
+    "studentParticipations": 1000,
+    "assignmentSubmissions": 4000,
+    "uniqueStudents": null,
+    "uniqueTeachers": null,
+    "existingConcurrentSubmissionTarget": 300,
+    "targetFor500SimultaneousSubmissions": null
+  },
+  "rosterImport": {
+    "businessIdentity": "studentNumber",
+    "preserveAsString": true,
+    "preserveLeadingZeros": true,
+    "teacherScope": "own_classes_only",
+    "classCountPerCohort": null,
+    "actualRosterProvided": false
+  },
+  "profileQuestionnaire": {
+    "questionCount": 18,
+    "sectionCount": 6,
+    "countsTowardFourAssignments": null,
+    "graded": false,
+    "gradingPolicy": "画像中的兴趣/动机/偏好不作对错评分；知识项目若需评分须另给明确标准",
+    "source": "学生画像问卷_来源数据.json"
+  }
+}

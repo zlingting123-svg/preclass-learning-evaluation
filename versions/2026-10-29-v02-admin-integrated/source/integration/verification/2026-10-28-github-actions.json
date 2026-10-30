@@ -1,0 +1,148 @@
+{
+  "date": "2026-10-28",
+  "timezone": "Asia/Shanghai",
+  "commit": "39503bb314331c5bda17fc11e2784a535327132f",
+  "workflow": "Verify React and Node",
+  "runId": 40648068561,
+  "url": "https://github.com/zlingting123-svg/preclass-learning-evaluation/actions/runs/40648068561",
+  "jobs": [
+    {
+      "id": 122681424727,
+      "name": "local-http",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 40648068561,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Install backend from lockfile",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Check backend",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Build backend and shared contract",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Test backend permissions and persistence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Smoke test built backend and backup",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Install frontend from lockfile",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Check frontend",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Build production frontend",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Verify production restrictions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Find runner browser",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        },
+        {
+          "name": "Verify real loopback HTTP flow with synthetic data",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "Verify explicit mock mode",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        },
+        {
+          "name": "Print synthetic HTTP failure evidence",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 16
+        },
+        {
+          "name": "Post Run actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 31
+        },
+        {
+          "name": "Post Run actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 32
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 33
+        }
+      ]
+    }
+  ],
+  "verifiedLogCounts": {
+    "backendTests": 22,
+    "httpChecks": 21,
+    "productionConfigChecks": 3,
+    "mockSmoke": "pass"
+  },
+  "earlierRun": {
+    "commit": "d24aa96bdf7d4bce94efae7b762c915526f1aba7",
+    "runId": 40647464343,
+    "conclusion": "failure",
+    "stage": "HTTP flow after seventh passed check; no diagnostic assertion in original log"
+  },
+  "changesAfterEarlierRun": "Added RUN/FAIL stdout diagnostics and synthetic JSON failure printing; no business assertions removed, no automatic test retry added.",
+  "limitations": "The earlier one-off failure has not been reproduced or explained. All tests use synthetic accounts and loopback HTTP; not deployment, formal model evaluation, physical devices, or load acceptance."
+}

@@ -30,7 +30,7 @@ export class Service {
     ensure(c, 404, 'NOT_FOUND', '班级不存在或不可访问'); return c;
   }
   private ownsClass(user: User, c: ClassRecord): boolean {
-    return user.role === 'teacher' && c.teacherId === user.id &&
+    return user.role === 'teacher' && (c.teacherId === user.id || !!this.store.get('class_teacher',keyFor(c.id,user.id))) &&
       (!c.cohortId || !!this.store.get<CohortRecord>('cohort', c.cohortId)?.teacherIds.includes(user.id));
   }
   classAccess(user: User, classId: string): ClassRecord {
@@ -40,10 +40,12 @@ export class Service {
     return c;
   }
   private info(user: User, c: ClassRecord): ClassInfo {
-    return { id: c.id, name: c.name, teacherId: c.teacherId,
+    const teacherIds=[...new Set([c.teacherId,...this.store.all<{classId:string;teacherId:string}>('class_teacher').filter(t=>t.classId===c.id).map(t=>t.teacherId)].filter(Boolean))];
+    const managed=this.store.get<{batchName:string}>('managed_class',c.id);
+    return { id: c.id, name: c.name, teacherId: c.teacherId,teacherIds,teacherNames:teacherIds.map(id=>this.store.get<User>('user',id)?.displayName??'教师'),...(managed?{batchName:managed.batchName}:{}),
       memberCount: this.store.all<Member>('member').filter(m => m.classId === c.id).length,
       ...(c.cohortId ? { cohortId: c.cohortId } : {}),
-      ...(user.role === 'teacher' && user.id === c.teacherId ? { joinCode: c.joinCode } : {}) };
+      ...(user.role === 'teacher' && user.id === c.teacherId && !managed ? { joinCode: c.joinCode } : {}) };
   }
   classes(user: User, cohortId?: string): ClassInfo[] {
     return this.store.all<ClassRecord>('class').filter(c => user.role === 'teacher' ? this.ownsClass(user, c) :
@@ -74,6 +76,7 @@ export class Service {
     return this.store.transaction(() => {
       const c = this.store.all<ClassRecord>('class').find(c => c.joinCode === joinCode);
       ensure(c, 404, 'NOT_FOUND', '加入码无效');
+      ensure(!this.store.get('managed_class',c.id),403,'ADMIN_ENROLLMENT_REQUIRED','本班名单由管理员维护，请联系管理员');
       const id = keyFor(c.id, user.id);
       this.store.put<Member>('member', id, { id, classId: c.id, studentId: user.id });
       return this.info(user, c);

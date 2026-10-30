@@ -1,0 +1,44 @@
+{
+  "name": "preclass-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.15.0 <25"
+  },
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "start": "node dist/backend/src/server.js",
+    "test": "tsx --test test/*.test.ts",
+    "smoke": "node test/startup-smoke.mjs",
+    "user:create": "tsx src/manage.ts user",
+    "cohort:create": "tsx src/roster-cli.ts cohort",
+    "class:create": "tsx src/roster-cli.ts class",
+    "roster:preview": "tsx src/roster-cli.ts preview",
+    "roster:commit": "tsx src/roster-cli.ts commit",
+    "backup": "tsx src/manage.ts backup",
+    "worker": "tsx src/worker-main.ts",
+    "sample:seed": "node dist/backend/src/sample-seed.js",
+    "admin:bootstrap": "node dist/backend/src/admin-bootstrap.js"
+  },
+  "dependencies": {
+    "bcryptjs": "3.0.3",
+    "csv-parse": "7.0.3",
+    "csv-stringify": "6.9.0",
+    "express": "5.3.0",
+    "express-rate-limit": "8.7.1",
+    "helmet": "8.3.0",
+    "word-extractor": "1.0.4",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
+    "zod": "4.6.7",
+    "course-ai-module": "file:../ai-module"
+  },
+  "devDependencies": {
+    "@types/express": "5.0.6",
+    "@types/node": "24.19.2",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2"
+  }
+}

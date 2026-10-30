@@ -6,10 +6,11 @@ import { resolve } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import type { AddressInfo } from 'node:net';
 import type { Server } from 'node:http';
-import type { Assignment, ClassInfo, RubricInfo, Submission, User } from '../../shared/contracts.js';
+import type { Assignment, RubricInfo, Submission, User } from '../../shared/contracts.js';
 import { SqliteStore, type Store } from '../src/store.js';
 import { LocalAuth } from '../src/auth.js';
 import { Service, type Job } from '../src/service.js';
+import { AdminService } from '../src/admin.js';
 import { createApp } from '../src/app.js';
 import { Worker, type Scorer } from '../src/worker.js';
 import { config } from '../src/config.js';
@@ -62,10 +63,12 @@ function fixture(svc = service, withRubric = false) {
 const input = (text = '模拟答案', expectedVersion = 0) => ({ answers: [{ questionId: 'q1', text }], expectedVersion });
 const rejected = (fn: () => unknown, code: string) => assert.throws(fn, (error: unknown) => (error as { code: string }).code === code);
 
-test('HTTP发布→加入→草稿版本冲突→完整提交→awaiting_rubric；幂等且不伪造报告', async () => {
-  const created = await request('/teacher/classes', teacherToken, 'POST', { name: '模拟HTTP班级' });
-  assert.equal(created.status, 200); const c = created.body.data as ClassInfo; assert.ok(c.joinCode);
-  const joined = await request('/classes/join', studentToken, 'POST', { joinCode: c.joinCode });
+test('HTTP管理员建班→发布→加入→草稿版本冲突→完整提交→awaiting_rubric；幂等且不伪造报告', async () => {
+  assert.equal((await request('/teacher/classes', teacherToken, 'POST', { name: '模拟HTTP班级' })).status,403);
+  const admin=await auth.createUser('legacy-http-admin',password,'模拟管理人员','admin');
+  const c=new AdminService(service).saveClass(admin,{name:'模拟HTTP班级',teacherId:teacher.id,expectedVersion:0})!;
+  const joinCode=store.get<{joinCode:string}>('class',c.id)!.joinCode;
+  const joined = await request('/classes/join', studentToken, 'POST', { joinCode });
   assert.equal(joined.status, 200); assert.equal(joined.body.data.joinCode, undefined);
   const draft = await request('/teacher/assignments', teacherToken, 'POST', { classId: c.id, title: '模拟HTTP问题', instructions: '模拟',
     questions: [{ id: 'q1', prompt: '模拟问题', maxLength: 200 }], deadlineAt: null, rubricId: null, expectedVersion: 0 });

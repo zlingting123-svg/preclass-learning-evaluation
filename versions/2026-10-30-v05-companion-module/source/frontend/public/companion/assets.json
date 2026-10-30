@@ -1,0 +1,394 @@
+[
+  {
+    "asset": "poses",
+    "width": 1536,
+    "height": 1024,
+    "frames": [
+      {
+        "row": 0,
+        "col": 0,
+        "source": [
+          0,
+          0,
+          512,
+          534
+        ],
+        "margins": [
+          51,
+          33,
+          12,
+          11
+        ],
+        "transparentFraction": 0.44019560510299627
+      },
+      {
+        "row": 0,
+        "col": 1,
+        "source": [
+          512,
+          0,
+          512,
+          534
+        ],
+        "margins": [
+          56,
+          33,
+          12,
+          14
+        ],
+        "transparentFraction": 0.4430484843164794
+      },
+      {
+        "row": 0,
+        "col": 2,
+        "source": [
+          1024,
+          0,
+          512,
+          534
+        ],
+        "margins": [
+          59,
+          35,
+          10,
+          6
+        ],
+        "transparentFraction": 0.44836288623595505
+      },
+      {
+        "row": 1,
+        "col": 0,
+        "source": [
+          0,
+          534,
+          512,
+          490
+        ],
+        "margins": [
+          48,
+          7,
+          19,
+          17
+        ],
+        "transparentFraction": 0.43813775510204084
+      },
+      {
+        "row": 1,
+        "col": 1,
+        "source": [
+          512,
+          534,
+          512,
+          490
+        ],
+        "margins": [
+          49,
+          5,
+          6,
+          17
+        ],
+        "transparentFraction": 0.4168845663265306
+      },
+      {
+        "row": 1,
+        "col": 2,
+        "source": [
+          1024,
+          534,
+          512,
+          490
+        ],
+        "margins": [
+          69,
+          10,
+          11,
+          17
+        ],
+        "transparentFraction": 0.44190848214285716
+      }
+    ],
+    "sha256": "a62ee409572e11bc7b6bb382eeab717f3a09c1c9ee3db1783b258f81468309ee",
+    "bytes": 2230588
+  },
+  {
+    "asset": "walk",
+    "width": 1254,
+    "height": 1254,
+    "frames": [
+      {
+        "row": 0,
+        "col": 0,
+        "source": [
+          0,
+          0,
+          314,
+          316
+        ],
+        "margins": [
+          38,
+          22,
+          13,
+          10
+        ],
+        "transparentFraction": 0.48170805450294285
+      },
+      {
+        "row": 0,
+        "col": 1,
+        "source": [
+          314,
+          0,
+          313,
+          316
+        ],
+        "margins": [
+          37,
+          23,
+          14,
+          10
+        ],
+        "transparentFraction": 0.4792433372426902
+      },
+      {
+        "row": 0,
+        "col": 2,
+        "source": [
+          627,
+          0,
+          314,
+          316
+        ],
+        "margins": [
+          38,
+          23,
+          18,
+          10
+        ],
+        "transparentFraction": 0.4824437636055793
+      },
+      {
+        "row": 0,
+        "col": 3,
+        "source": [
+          941,
+          0,
+          313,
+          316
+        ],
+        "margins": [
+          34,
+          22,
+          20,
+          10
+        ],
+        "transparentFraction": 0.4857342176568124
+      },
+      {
+        "row": 1,
+        "col": 0,
+        "source": [
+          0,
+          316,
+          314,
+          306
+        ],
+        "margins": [
+          30,
+          10,
+          37,
+          15
+        ],
+        "transparentFraction": 0.48578327296948504
+      },
+      {
+        "row": 1,
+        "col": 1,
+        "source": [
+          314,
+          316,
+          313,
+          306
+        ],
+        "margins": [
+          29,
+          10,
+          36,
+          12
+        ],
+        "transparentFraction": 0.48599887239240747
+      },
+      {
+        "row": 1,
+        "col": 2,
+        "source": [
+          627,
+          316,
+          314,
+          306
+        ],
+        "margins": [
+          27,
+          10,
+          35,
+          12
+        ],
+        "transparentFraction": 0.47741559468798134
+      },
+      {
+        "row": 1,
+        "col": 3,
+        "source": [
+          941,
+          316,
+          313,
+          306
+        ],
+        "margins": [
+          28,
+          10,
+          30,
+          12
+        ],
+        "transparentFraction": 0.48146756040009187
+      },
+      {
+        "row": 2,
+        "col": 0,
+        "source": [
+          0,
+          622,
+          314,
+          312
+        ],
+        "margins": [
+          44,
+          13,
+          14,
+          7
+        ],
+        "transparentFraction": 0.44895271925526703
+      },
+      {
+        "row": 2,
+        "col": 1,
+        "source": [
+          314,
+          622,
+          313,
+          312
+        ],
+        "margins": [
+          45,
+          15,
+          5,
+          9
+        ],
+        "transparentFraction": 0.4464753829769804
+      },
+      {
+        "row": 2,
+        "col": 2,
+        "source": [
+          627,
+          622,
+          314,
+          312
+        ],
+        "margins": [
+          42,
+          15,
+          6,
+          9
+        ],
+        "transparentFraction": 0.4502592683325167
+      },
+      {
+        "row": 2,
+        "col": 3,
+        "source": [
+          941,
+          622,
+          313,
+          312
+        ],
+        "margins": [
+          39,
+          12,
+          20,
+          7
+        ],
+        "transparentFraction": 0.45515892520684853
+      },
+      {
+        "row": 3,
+        "col": 0,
+        "source": [
+          0,
+          934,
+          314,
+          320
+        ],
+        "margins": [
+          25,
+          9,
+          47,
+          21
+        ],
+        "transparentFraction": 0.4971238057324841
+      },
+      {
+        "row": 3,
+        "col": 1,
+        "source": [
+          314,
+          934,
+          313,
+          320
+        ],
+        "margins": [
+          15,
+          11,
+          47,
+          20
+        ],
+        "transparentFraction": 0.4764676517571885
+      },
+      {
+        "row": 3,
+        "col": 2,
+        "source": [
+          627,
+          934,
+          314,
+          320
+        ],
+        "margins": [
+          10,
+          11,
+          50,
+          26
+        ],
+        "transparentFraction": 0.4821158439490446
+      },
+      {
+        "row": 3,
+        "col": 3,
+        "source": [
+          941,
+          934,
+          313,
+          320
+        ],
+        "margins": [
+          17,
+          9,
+          44,
+          21
+        ],
+        "transparentFraction": 0.47159544728434505
+      }
+    ],
+    "sha256": "812b491d4f97b9bf91594b2c075fe51e6466328bb6691cde29ca8d46168f60db",
+    "bytes": 1806661
+  }
+]

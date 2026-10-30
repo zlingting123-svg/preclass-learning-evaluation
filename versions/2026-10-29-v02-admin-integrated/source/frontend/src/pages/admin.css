@@ -1,0 +1,198 @@
+.admin-shell {
+  --admin-bg: #f4f6fb;
+  --admin-panel: #fff;
+  --admin-ink: #222b40;
+  --admin-muted: #677389;
+  --admin-accent: #5850c6;
+  --admin-line: #e2e7f0;
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  min-height: 100dvh;
+  background: var(--admin-bg);
+  color: var(--admin-ink);
+}
+.admin-nav {
+  background: var(--admin-panel);
+  border-right: 1px solid var(--admin-line);
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.admin-nav h2 {
+  margin: 0;
+}
+.admin-nav p,
+.admin-nav small {
+  color: var(--admin-muted);
+  font-size: 12px;
+}
+.admin-nav nav {
+  display: grid;
+  gap: 10px;
+  margin-top: 25px;
+}
+.admin-nav button {
+  text-align: left;
+  white-space: nowrap;
+}
+.admin-nav .active {
+  background: var(--admin-accent);
+  color: var(--admin-panel);
+}
+.admin-nav small {
+  margin-top: auto;
+}
+.admin-shell > main {
+  padding: 30px;
+  min-width: 0;
+}
+.admin-shell header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.admin-shell header p {
+  font-size: 10px;
+  letter-spacing: 0.13em;
+  color: var(--admin-muted);
+  margin: 0;
+}
+.admin-shell h1 {
+  font-size: 28px;
+  margin: 5px 0;
+}
+.admin-shell h2 {
+  font-size: 18px;
+}
+.admin-shell section {
+  background: var(--admin-panel);
+  border: 1px solid var(--admin-line);
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 22px;
+  min-width: 0;
+}
+.admin-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.admin-metrics article {
+  background: var(--admin-panel);
+  border: 1px solid var(--admin-line);
+  padding: 20px;
+  border-radius: 12px;
+}
+.admin-metrics span {
+  font-size: 12px;
+  color: var(--admin-muted);
+  display: block;
+}
+.admin-metrics strong {
+  font-size: 30px;
+}
+.admin-form,
+.admin-actions {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  flex-wrap: wrap;
+  margin: 15px 0;
+}
+.admin-form label {
+  flex: 1;
+  min-width: 160px;
+  font-size: 12px;
+}
+.admin-shell input,
+.admin-shell select {
+  display: block;
+  margin-top: 6px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+.admin-actions > input {
+  max-width: 300px;
+}
+.admin-actions > select {
+  max-width: 160px;
+}
+.admin-table {
+  overflow: auto;
+  max-width: 100%;
+}
+.admin-table table {
+  min-width: 600px;
+  width: 100%;
+  border-collapse: collapse;
+}
+.admin-table th,
+.admin-table td {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid var(--admin-line);
+  font-size: 12px;
+}
+.admin-table td:last-child {
+  overflow-wrap: anywhere;
+}
+.admin-table button {
+  font-size: 11px;
+  white-space: nowrap;
+}
+.admin-error {
+  background: #fff0f1;
+  color: #aa2944;
+  border-radius: 8px;
+  padding: 12px;
+}
+.admin-success {
+  background: #e9f6ef;
+  color: #216d4b;
+  border-radius: 8px;
+  padding: 12px;
+}
+@media (max-width: 768px) {
+  .admin-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .admin-nav {
+    padding: 18px;
+    gap: 5px;
+  }
+  .admin-nav nav {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 8px 0;
+  }
+  .admin-nav small {
+    margin: 0;
+  }
+  .admin-nav > button {
+    align-self: start;
+  }
+  .admin-shell > main {
+    padding: 18px;
+  }
+  .admin-shell h1 {
+    font-size: 24px;
+  }
+  .admin-shell section {
+    padding: 16px;
+  }
+  .admin-form label {
+    min-width: 130px;
+  }
+  .admin-table th,
+  .admin-table td {
+    padding: 8px;
+  }
+  .admin-shell header {
+    flex-wrap: wrap;
+  }
+}

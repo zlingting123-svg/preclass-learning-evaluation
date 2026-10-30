@@ -28,6 +28,7 @@ export function LoginPage() {
         session.user.role === 'teacher'
           ? '/teacher/overview'
           : '/student/assignments'
+      if(session.user.mustChangePassword){navigate('/change-password',{replace:true});return}
       if(session.user.role === 'admin'){navigate('/admin',{replace:true});return}
       const from = (location.state as { from?: unknown } | null)?.from
       const prefix = session.user.role === 'student' ? '/student/' : '/teacher/'
@@ -45,6 +46,7 @@ export function LoginPage() {
       <aside className="login-story"><span className="brand"><BrandMark /> 学习平台</span><p className="eyebrow">环境评价与管理</p><h2>从课前的一次思考开始</h2><p>在班级中完成问卷，与课程问题保持连接。</p><ol><li>进入所属班级</li><li>填写教师问卷</li><li>使用课程 AI 助手</li></ol></aside>
       <main className="app-main" style={{ maxWidth: 420 }}>
         <p className="eyebrow">学习平台</p><h1>登录</h1><p className="page-lead">欢迎回来，继续你的学习。</p>
+        {(location.state as {passwordChanged?:boolean}|null)?.passwordChanged && <p role="status" className="notice-box">密码已修改，请使用新密码重新登录。</p>}
         {expired && <div className="notice-box">会话已过期，请重新登录。</div>}
         {error && <ErrorState error={error} />}
         <form onSubmit={handleSubmit}>

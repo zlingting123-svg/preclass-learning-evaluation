@@ -1,0 +1,17 @@
+{
+    "passed": 11,
+    "failed": 0,
+    "checks": [
+        "18 source questions retained",
+        "only seven confirmed types accept responses",
+        "matrix saved as self-report values, not grade",
+        "partial draft permitted",
+        "unconfirmed question cannot silently acquire a type",
+        "out-of-range matrix value refused",
+        "unknown matrix row refused",
+        "unknown option refused",
+        "duplicate multiselect refused",
+        "text size bounded",
+        "leading zero identity is not part of questionnaire payload"
+    ]
+}

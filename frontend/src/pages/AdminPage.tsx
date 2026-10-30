@@ -1,3 +1,4 @@
+import {AdminRosterPanel} from '../preview/AdminRosterPanel';
 import { useEffect, useRef, useState } from "react";
 import { apiRequest as req } from "../services/httpClient";
 import { getCurrentUser, clearSession, api } from "../services/api";
@@ -14,6 +15,7 @@ interface Class {
   id: string;
   name: string;
   teacherId: string;
+  teacherIds?: string[];
   teacherName: string;
   cohortId: string | null;
   memberCount: number;
@@ -21,6 +23,11 @@ interface Class {
 }
 const msg = (e: unknown) => (e instanceof Error ? e.message : "操作失败");
 const auditLabels: Record<string, string> = {
+  "api.configure": "配置API",
+  "server.configure": "配置服务器",
+  change_own_password: "本人修改密码",
+  import_class_roster: "导入名单并建号",
+  claim_class: "教师添加班级",
   create_account: "创建账号",
   update_account: "更新账号",
   disable_account: "停用账号",
@@ -31,8 +38,9 @@ const auditLabels: Record<string, string> = {
   unenroll_student: "移出班级成员",
   authorize_cohort_teacher: "授予教学批次资格",
 };
-export function AdminConsole() {
-  const [tab, setTab] = useState("overview"),
+export function AdminConsole({ embedded=false, activeTab, onTabChange }: { embedded?:boolean;activeTab?:string;onTabChange?:(tab:string)=>void } = {}) {
+  const [batchAccounts,setBatchAccounts]=useState(false);
+  const [localTab, setLocalTab] = useState("overview"),
     [summary, setSummary] = useState<Record<string, number>>({}),
     [users, setUsers] = useState<Account[]>([]),
     [total, setTotal] = useState(0),
@@ -70,7 +78,9 @@ export function AdminConsole() {
     [classEdit, setClassEdit] = useState<Class | null>(null),
     [className, setClassName] = useState(""),
     [teacherId, setTeacherId] = useState(""),
+    [selectedTeachers,setSelectedTeachers] = useState<string[]>([]),
     [authorizeCohort, setAuthorizeCohort] = useState(false);
+  const tab=activeTab??localTab, setTab=onTabChange??setLocalTab;
   const loadSequence = useRef(0);
   const selectedClassRef = useRef(classId);
   selectedClassRef.current = classId;
@@ -96,9 +106,9 @@ export function AdminConsole() {
         "GET",
         `/admin/users?page=${page}&q=${encodeURIComponent(search)}${role ? "&role=" + role : ""}`,
       ),
-      req<Class[]>("GET", "/admin/classes"),
-      all("teacher"),
-      all("student"),
+      embedded&&tab!=="classes"?Promise.resolve([]):req<Class[]>("GET", "/admin/classes"),
+      embedded&&tab!=="classes"?Promise.resolve([]):all("teacher"),
+      embedded&&tab!=="classes"?Promise.resolve([]):all("student"),
       req<typeof audit>("GET", "/admin/audit"),
     ]);
     if (sequence !== loadSequence.current) return;
@@ -120,7 +130,7 @@ export function AdminConsole() {
     return () => {
       active = false;
     };
-  }, [page, search, role]);
+  }, [page, search, role, tab]);
   useEffect(() => {
     setMembers([]);
     if (!classId) return;
@@ -166,7 +176,7 @@ export function AdminConsole() {
       </main>
     );
   return (
-    <div className="admin-shell">
+    <div className={"admin-shell"+(embedded?" admin-embedded":"")}>
       <aside className="admin-nav">
         <h2>学习空间</h2>
         <p>独立管理中心</p>
@@ -239,9 +249,7 @@ export function AdminConsole() {
                 ["teachers", "教师"],
                 ["students", "学生"],
                 ["disabled", "已停用"],
-                ["classes", "班级"],
-                ["surveys", "问卷"],
-                ["responses", "已提交答卷"],
+                ...(!embedded?[["classes", "班级"],["surveys", "问卷"],["responses", "已提交答卷"]]:[]),
               ].map(([key, label]) => (
                 <article key={key}>
                   <span>{label}</span>
@@ -252,14 +260,14 @@ export function AdminConsole() {
             <section>
               <h2>管理范围</h2>
               <p>
-                统一创建与维护师生账号、分配授课教师、调整班级成员。停用账号或重置密码会使原会话失效。
+                {embedded?"统一查找和维护平台账户。课程、问卷和教学统计继续留在师生端。停用或重置密码会撤销原登录。":"统一创建与维护师生账号、分配授课教师、调整班级成员。停用账号或重置密码会使原会话失效。"}
               </p>
               <p>
                 管理员账号由本机受控命令维护；此页面不开放自助注册、提权或删除历史答卷。
               </p>
               <div className="admin-actions">
                 <button onClick={() => setTab("users")}>管理账号</button>
-                <button onClick={() => setTab("classes")}>管理班级</button>
+                {!embedded&&<button onClick={() => setTab("classes")}>管理班级</button>}
               </div>
             </section>
           </>
@@ -267,8 +275,9 @@ export function AdminConsole() {
         {tab === "users" && (
           <>
             <section>
-              <h2>创建师生账号</h2>
-              <form
+              <h2>创建师生账号</h2><button onClick={()=>setBatchAccounts(false)}>手动创建单个账号</button> <button onClick={()=>setBatchAccounts(true)}>从已导入学生名单批量建号</button>
+              {batchAccounts&&<AdminRosterPanel/>}
+              <form style={{display:batchAccounts?"none":undefined}}
                 className="admin-form"
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -280,7 +289,7 @@ export function AdminConsole() {
                       role: "teacher",
                       password: "",
                     });
-                  }, "账号已创建");
+                  }, "账号已创建，首次登录需修改初始密码");
                 }}
               >
                 <label>
@@ -520,7 +529,9 @@ export function AdminConsole() {
                       {
                         body: {
                           name: className,
-                          teacherId,
+                          managed: !classEdit,
+                          teacherId: selectedTeachers[0]??teacherId,
+                          teacherIds: selectedTeachers.length?selectedTeachers:[teacherId],
                           authorizeCohort,
                           expectedVersion: classEdit?.version ?? 0,
                         },
@@ -531,6 +542,7 @@ export function AdminConsole() {
                     setClassEdit(null);
                     setClassName("");
                     setTeacherId("");
+                    setSelectedTeachers([]);
                   }, "班级已保存");
                 }}
               >
@@ -543,14 +555,15 @@ export function AdminConsole() {
                   />
                 </label>
                 <label>
-                  授课教师
+                  授课教师（可多选，未选中的原教师将被撤权）
                   <select
                     aria-label="授课教师"
                     required
-                    value={teacherId}
-                    onChange={(e) => setTeacherId(e.target.value)}
+                    multiple
+                    value={selectedTeachers}
+                    onChange={(e) => setSelectedTeachers(Array.from(e.target.selectedOptions,o=>o.value))}
                   >
-                    <option value="">选择教师</option>
+
                     {teachers
                       .filter((t) => !t.disabled)
                       .map((t) => (
@@ -578,6 +591,7 @@ export function AdminConsole() {
                       setClassEdit(null);
                       setClassName("");
                       setTeacherId("");
+                    setSelectedTeachers([]);
                     }}
                   >
                     取消编辑
@@ -601,7 +615,7 @@ export function AdminConsole() {
                     {classes.map((c) => (
                       <tr key={c.id}>
                         <td>{c.name}</td>
-                        <td>{c.teacherName}</td>
+                        <td>{(c.teacherIds??[c.teacherId]).map(id=>teachers.find(t=>t.id===id)?.displayName??id).join("、")}</td>
                         <td>{c.memberCount}</td>
                         <td>
                           <button
@@ -610,6 +624,7 @@ export function AdminConsole() {
                               setAuthorizeCohort(false);
                               setClassName(c.name);
                               setTeacherId(c.teacherId);
+                              setSelectedTeachers(c.teacherIds??[c.teacherId]);
                             }}
                           >
                             编辑班级

@@ -1,3 +1,7 @@
+> 最新功能0.5.0：管理员名单分班与批量建号、首次登录改密、教师选择已建班级（同班可多名教师）。入口仍5175/design-preview.html，操作与边界见[本轮说明](docs/integration/2026-10-29-管理员名单与多教师班级.md)。
+
+> 2026-10-29 本轮按用户截图接入服务管理，正确页面为http://127.0.0.1:5175/design-preview.html，基于其他工作者feature/admin-console@3ffef2e。上一轮旧UI已撤回；请先读[本轮说明](docs/integration/2026-10-29-截图UI服务集成.md)与[接续](handoff/SERVICE_PREVIEW.md)。
+
 > **2026-10-28 最新：核心问卷 v0.4.0。** 用户提供《更新要求.md》并要求按 GitHub 最新项目修改。本轮基于 origin/integration/learning-platform@3d48082 新建 feature/core-questionnaires，正确本机目录为本聊天 work/core-questionnaires；不要回到旧 oss-foundations 或覆盖同事工作区。实现问卷编辑/发布、教师网页名单预览/确认、doc/docx/xls/xlsx/csv识别、服务端截止与时长、全班完成情况/只读答卷/逐题统计及AI助手。旧评分/复核/画像/课程导读等不再进入当前路由，历史代码与数据保留供追溯。
 >
 > 新导入学生按新需求默认12345，旧账号不重置；原CLI随机口令策略未改。AI由另一位同学实现，本轮chat/generate/insights均明确503未接入，不伪造结果。共享契约0.4.0；需求差异见docs/需求/2026-10-28-核心问卷改版.md，接口交接见docs/integration/AI接口交接.md。

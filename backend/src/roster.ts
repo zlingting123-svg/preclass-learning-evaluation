@@ -118,7 +118,7 @@ export class RosterImporter {
     const newRows = plan.rows.filter(row => row.status === 'new');
     for (let i = 0; i < newRows.length; i += 4) await Promise.all(newRows.slice(i, i + 4).map(async row => {
       const password = randomBytes(24).toString('base64url');
-      prepared.set(row.studentNumber, await this.auth.prepareUser(row.studentNumber, password, row.displayName, 'student'));
+      const account=await this.auth.prepareUser(row.studentNumber,password,row.displayName,'student');account.mustChangePassword=true;prepared.set(row.studentNumber,account);
       credentials.push({ studentNumber: row.studentNumber, username: row.studentNumber, password });
     }));
     let createdFile = false;

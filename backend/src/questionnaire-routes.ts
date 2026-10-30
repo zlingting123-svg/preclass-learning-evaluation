@@ -21,24 +21,7 @@ export function questionnaireRoutes(
   app.get("/api/v1/core/classes/:id/members", (req, res) =>
     ok(res, service.members(u(res), param(req.params.id))),
   );
-  app.post("/api/v1/core/classes/:id/roster/preview", (req, res) =>
-    ok(res, service.previewRoster(u(res), param(req.params.id), req.body.rows)),
-  );
-  app.post("/api/v1/core/classes/:id/roster/commit", async (req, res) => {
-    const b = z
-      .object({ planId: z.string(), fingerprint: z.string() })
-      .strict()
-      .parse(req.body);
-    ok(
-      res,
-      await service.commitRoster(
-        u(res),
-        param(req.params.id),
-        b.planId,
-        b.fingerprint,
-      ),
-    );
-  });
+  for(const action of ['preview','commit'])app.post(`/api/v1/core/classes/:id/roster/${action}`,(_req,_res)=>{ensure(false,403,'ADMIN_ROSTER_REQUIRED','学生名单由管理员统一导入，教师端仅可查看');});
   app.get("/api/v1/core/classes/:id/surveys", (req, res) =>
     ok(res, service.list(u(res), param(req.params.id))),
   );

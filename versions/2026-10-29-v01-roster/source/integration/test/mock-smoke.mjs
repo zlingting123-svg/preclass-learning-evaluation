@@ -1,0 +1,40 @@
+import { createRequire } from 'node:module';
+import { pathToFileURL, fileURLToPath } from 'node:url';
+import { dirname, resolve } from 'node:path';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import assert from 'node:assert/strict';
+
+const project = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
+const frontend = resolve(project, 'frontend');
+const requireFront = createRequire(resolve(frontend, 'package.json'));
+const { chromium } = requireFront('playwright-core');
+const { createServer } = await import(pathToFileURL(requireFront.resolve('vite')));
+process.env.VITE_API_MODE = 'mock';
+const vite = await createServer({ root: frontend, configFile: resolve(frontend, 'vite.config.ts'), mode: 'demo', logLevel: 'error' });
+let browser;
+const errors = [];
+try {
+  await vite.listen();
+  const executablePath = process.env.BROWSER_PATH || ['C:/Program Files/Google/Chrome/Application/chrome.exe', 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'].find(existsSync);
+  browser = await chromium.launch({ executablePath, headless: true });
+  const page = await browser.newPage(); page.on('pageerror', error => errors.push(error.message));
+  await page.goto('http://127.0.0.1:5173/login');
+  await page.getByText('演示数据 / 尚未连接后台', { exact: true }).waitFor();
+  await page.getByLabel('用户名', { exact: true }).fill('teacher'); await page.getByLabel('密码', { exact: true }).fill('demo123');
+  await page.getByRole('button', { name: '登录', exact: true }).click();
+  await page.getByTestId('join-code').first().waitFor();
+  assert.equal(await page.getByTestId('join-code').first().textContent(), 'DEMO-CLASS-1');
+  await page.getByRole('button', { name: '退出登录', exact: true }).click();
+  await page.getByLabel('用户名', { exact: true }).fill('student'); await page.getByLabel('密码', { exact: true }).fill('demo123');
+  await page.getByRole('button', { name: '登录', exact: true }).click();
+  await page.getByRole('heading', { name: '我的任务', exact: true }).waitFor();
+  assert.equal(await page.getByTestId('join-code').count(), 0);
+  await page.getByPlaceholder('输入教师提供的班级加入码').fill('DEMO-CLASS-3');
+  await page.getByRole('button', { name: '加入', exact: true }).click();
+  await page.getByRole('option', { name: '空示例班级（演示）', exact: true }).waitFor({ state: 'attached' });
+  assert.deepEqual(errors, []);
+  const result = { mode: 'explicit dev mock, not real HTTP or production', result: 'pass', checks: ['持续演示横幅', '模拟教师登录及加入码', '学生响应不展示加入码', '模拟加入码可用', '无未处理JS错误'] };
+  mkdirSync(resolve(project, 'integration/verification'), { recursive: true });
+  writeFileSync(resolve(project, 'integration/verification/2026-10-27-mock-smoke.json'), JSON.stringify(result, null, 2));
+  process.stdout.write('PASS 显式mock开发模式：横幅、教师/学生登录及模拟加入码，非正式接入结果\n');
+} finally { if (browser) await browser.close(); await vite.close(); }
