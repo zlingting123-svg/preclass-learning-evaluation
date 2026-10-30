@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "checks": [
+    "模糊学习问题短回答，无专业知识/模型调用",
+    "专业知识未收录，无模型常识补答",
+    "上传证据真实传入模型，旧非授权网站与外班来源排除",
+    "网关二次门禁拒绝general_knowledge绕过",
+    "伪造的官方来源也被网关URL二次校验阻断",
+    "真实上游消息具备来源、冲突、生效日期和草案限制",
+    "问卷匿名统计解读保持独立且可用",
+    "管理端固定MEE官网，拒绝其他政府或普通域名",
+    "真实SSE线程也支持本地短回应，非专业问题不套用知识点",
+    "广西溶洞原问题经真实HTTP命中官网分类条款及广西整治正文，并传入模型上下文",
+    "官网正文缓存、24小时过期排除、HTTPS域名伪装拒绝"
+  ],
+  "officialHits": 3,
+  "realModelCalls": 0,
+  "syntheticOnly": true,
+  "productionDataWritten": false,
+  "cacheResponse": "local evidence only; no live network per question"
+}

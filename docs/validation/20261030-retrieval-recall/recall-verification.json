@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "originalQuestion": "广西溶洞属于什么生态管控类型",
+  "before": "insufficient",
+  "after": "supported",
+  "effectiveDate": "2026-03-01",
+  "guideUrl": "https://www.mee.gov.cn/ywgz/fgbz/bz/bzwb/stzl/202601/t20260121_1142339.shtml",
+  "relatedOfficialNews": "https://www.mee.gov.cn/ywdt/xwfb/202609/t20260923_1174551.shtml",
+  "guideAndSpecificContextDelivered": true,
+  "sourceWhitelistPreserved": true,
+  "unknownIdentifiersRejected": true,
+  "commonLearningGuidancePreserved": true,
+  "unrelatedOfficialGenericMatchesExcluded": true,
+  "firstLookupMs": 202,
+  "realModelCalls": 0,
+  "productionDatabaseReadOnly": true
+}

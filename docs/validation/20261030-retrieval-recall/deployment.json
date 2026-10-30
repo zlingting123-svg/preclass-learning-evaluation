@@ -1,0 +1,31 @@
+{
+  "deployed": true,
+  "version": "0.3",
+  "current": "/opt/preclass/releases/20261030-retrieval-recall",
+  "previous": "/opt/preclass/releases/20261030-course-brand",
+  "changedFiles": [
+    "backend/dist/backend/src/strict-knowledge.js",
+    "ai-module/dist/src/deepseek.js",
+    "ai-module/dist/src/gateway.js"
+  ],
+  "unchangedFiles": 3666,
+  "addedFiles": 0,
+  "frontendUnchanged": true,
+  "databaseWritten": false,
+  "health": true,
+  "knowledgeMapHealthy": true,
+  "sourcePolicy": "uploaded_and_mee_only",
+  "cacheDocuments": 40,
+  "cachedNewOfficialNews": 2,
+  "sameMaxInputBudget": true,
+  "actualDeliveredSourcesOnly": true,
+  "modelAnswerQualityVerified": false,
+  "realModelCalls": 0,
+  "preservesCourseBrand": "环境评价与管理",
+  "filesSha256": {
+    "backend/dist/backend/src/strict-knowledge.js": "692d4abf364f77d891bc0eaf079223077151a2b3fe8e1eacf1c3a37d8e86166e",
+    "ai-module/dist/src/deepseek.js": "542130ae91c7fe6577185ddd660fb8939832b1eb96b596a671131e6a59da8dd8",
+    "ai-module/dist/src/gateway.js": "76d787da02900cc8da4cbc35a50a1d8444bffc8b31e8c9504586ac93328caaba"
+  },
+  "cacheWorkerSha256": "7c00bded94d49ed21c17ce48686745d48df89bb740adebba25fec11717dc3dbb"
+}

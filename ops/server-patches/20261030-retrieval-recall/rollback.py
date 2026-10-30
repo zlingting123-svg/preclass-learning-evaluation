@@ -1,0 +1,4 @@
+from pathlib import Path
+import json,os,subprocess,hashlib
+root=Path('/home/ubuntu/mee-retrieval-stage');state=json.loads((root/'activation-state.json').read_text());current=Path('/opt/preclass/current');assert os.geteuid()==0 and str(current.resolve())==state['current'];worker=Path('/opt/preclass/tools/mee-cache-worker.py');expected=json.loads((root/'deployment.json').read_text())['cacheWorkerSha256'];assert hashlib.sha256(worker.read_bytes()).hexdigest()==expected,'Cache worker changed; inspect before rollback'
+next=Path('/opt/preclass/.retrieval-recall-rollback');assert not next.exists();next.symlink_to(state['previous']);os.replace(next,current);worker.write_bytes((root/'cache-worker-before.py').read_bytes());subprocess.run(['systemctl','restart','preclass-test.service'],check=True);print('Previous code and cache worker restored; class data, conversations and cached documents preserved')
