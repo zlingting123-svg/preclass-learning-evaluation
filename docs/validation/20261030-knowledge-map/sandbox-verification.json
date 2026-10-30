@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "serviceUser": "preclass",
+  "ProtectHome": true,
+  "ProtectSystem": "strict",
+  "results": [
+    {
+      "format": ".doc",
+      "originalHashMatched": true,
+      "pdf": true,
+      "secondPage": true
+    },
+    {
+      "format": ".docx",
+      "originalHashMatched": true,
+      "pdf": true,
+      "secondPage": true
+    },
+    {
+      "format": ".ppt",
+      "originalHashMatched": true,
+      "pdf": true,
+      "secondPage": true
+    },
+    {
+      "format": ".pptx",
+      "originalHashMatched": true,
+      "pdf": true,
+      "secondPage": true
+    }
+  ],
+  "realModelCalls": 0,
+  "productionDataWritten": false
+}

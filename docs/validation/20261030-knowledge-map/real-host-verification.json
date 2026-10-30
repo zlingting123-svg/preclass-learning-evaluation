@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "checks": [
+    "Real host session and all 31 paginated classes",
+    "Student upload denied and teacher draft isolated",
+    "Published XMind native canvas/original bytes and PDF through real identities",
+    "Cross-class, student editing and withdrawal denied"
+  ],
+  "syntheticOnly": true,
+  "productionWritten": false,
+  "realModelCalls": 0,
+  "teacherClassesVerified": 31
+}

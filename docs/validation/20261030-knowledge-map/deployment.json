@@ -1,0 +1,29 @@
+{
+  "installed": true,
+  "moduleVersion": "0.5.0",
+  "productVersion": "0.3",
+  "current": "/opt/preclass/releases/20261030-knowledge-map",
+  "previous": "/opt/preclass/releases/20261030-attendance-copy",
+  "modulePath": "/opt/preclass/modules/knowledge-map-v1",
+  "entry": "/knowledge-map/",
+  "service": "preclass-knowledge-map.service",
+  "port": "127.0.0.1:3216",
+  "changedFiles": [
+    "backend/dist/backend/src/app.js"
+  ],
+  "addedFiles": [
+    "backend/dist/backend/src/knowledge-map-bridge.js"
+  ],
+  "unchangedFiles": 3664,
+  "hostHealthy": true,
+  "productionDemoMode": false,
+  "anonymousMapsHTTP": 401,
+  "httpModuleAssetsHashVerified": true,
+  "frontendExistingFilesChanged": false,
+  "productionTestRecords": 0,
+  "realModelCalls": 0,
+  "backupIntegrity": "ok",
+  "compatibilityPatch": "Host paginated classes items/nextCursor normalized",
+  "publicPortsOpened": false,
+  "rollback": "/opt/preclass/modules/knowledge-map-v1/rollback-server.sh"
+}
