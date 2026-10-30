@@ -1,0 +1,43 @@
+{
+  "activated": true,
+  "current": "/opt/preclass/releases/20261030-attendance",
+  "previous": "/opt/preclass/releases/20261030-course-library",
+  "files": [
+    "backend/dist/backend/src/attendance.js",
+    "backend/dist/backend/src/app.js",
+    "frontend/dist/index.html",
+    "frontend/dist/assets/attendance-20261030.js",
+    "frontend/dist/assets/attendance-20261030.css",
+    "frontend/dist/assets/main-attendance-20261030.js",
+    "frontend/dist/assets/main-entry-attendance-20261030.js"
+  ],
+  "changed": [
+    "backend/dist/backend/src/app.js",
+    "frontend/dist/index.html"
+  ],
+  "added": [
+    "backend/dist/backend/src/attendance.js",
+    "frontend/dist/assets/attendance-20261030.css",
+    "frontend/dist/assets/attendance-20261030.js",
+    "frontend/dist/assets/main-attendance-20261030.js",
+    "frontend/dist/assets/main-entry-attendance-20261030.js"
+  ],
+  "unchanged": 3658,
+  "seedImageId": "bd2ca0b9-244d-4f03-8c24-755b67df4130",
+  "imageSHA256": "17828ccbba8b96cc323547427097ee4ce4fecb4acaa7218cdd9e9a8aa98ef240",
+  "health": {
+    "contractVersion": "0.5.0",
+    "storage": "local-sqlite",
+    "auth": "local-bcrypt",
+    "productionReady": false
+  },
+  "authenticatedAdminImageList": true,
+  "httpAssetsHashVerified": true,
+  "syntheticProductionUsers": false,
+  "productionAttendanceSessionsCreated": false,
+  "realModelCalls": 0,
+  "publicPortsOpened": false,
+  "productVersion": "0.3",
+  "backupIntegrity": "ok",
+  "rollback": "Switch current to previous and restart backend; do not restore the whole database or delete real attendance data."
+}
