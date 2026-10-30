@@ -1,0 +1,10 @@
+[Unit]
+Description=Refresh MEE reference cache every six hours
+[Timer]
+OnBootSec=10min
+OnUnitActiveSec=6h
+RandomizedDelaySec=3min
+Persistent=true
+Unit=preclass-mee-cache.service
+[Install]
+WantedBy=timers.target

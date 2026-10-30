@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "adminPolicyReadVerified": true,
+  "domains": [
+    "mee.gov.cn"
+  ],
+  "website": "https://www.mee.gov.cn/",
+  "provider": "mee-cache",
+  "cacheDocuments": 38,
+  "draftCount": 3,
+  "statusNotAutomaticallyTreatedAsValid": true,
+  "timerEnabled": true,
+  "realModelCalls": 0,
+  "attendanceAndKnowledgeMapCodePreserved": true,
+  "health": true,
+  "productionReady": false
+}

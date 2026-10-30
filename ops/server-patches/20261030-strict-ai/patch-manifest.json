@@ -1,0 +1,7 @@
+{
+  "ai.js": "backend/dist/backend/src/ai.js",
+  "web-knowledge.js": "backend/dist/backend/src/web-knowledge.js",
+  "strict-knowledge.js": "backend/dist/backend/src/strict-knowledge.js",
+  "gateway.js": "ai-module/dist/src/gateway.js",
+  "deepseek.js": "ai-module/dist/src/deepseek.js"
+}

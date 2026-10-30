@@ -1,0 +1,37 @@
+{
+  "deployed": true,
+  "version": "0.3",
+  "current": "/opt/preclass/releases/20261030-strict-evidence",
+  "changedFiles": [
+    "backend/dist/backend/src/web-knowledge.js",
+    "backend/dist/backend/src/ai.js",
+    "ai-module/dist/src/deepseek.js",
+    "ai-module/dist/src/gateway.js"
+  ],
+  "addedFiles": [
+    "backend/dist/backend/src/strict-knowledge.js"
+  ],
+  "unchangedFiles": 3662,
+  "cacheDocuments": 38,
+  "cacheRefreshHours": 6,
+  "cacheExpiryHours": 24,
+  "website": "https://www.mee.gov.cn/",
+  "health": true,
+  "knowledgeMapHealthy": true,
+  "unrelatedDatabaseRecordsPreserved": true,
+  "backupIntegrity": "ok",
+  "realModelCalls": 0,
+  "publicPortsOpened": false,
+  "frontendFilesChanged": false,
+  "testMethod": "in-memory full HTTP app/mock provider, SSE; production admin settings read and health checks",
+  "cacheCoverage": "partial; validity unverified, not whole website",
+  "serverReferenceTimeIncluded": true,
+  "finalFilesSha256": {
+    "backend/dist/backend/src/ai.js": "d738ecbf6263a86949fcf311f8aafd25684cf4bdae9dbb2360b2dafa6cada6e9",
+    "backend/dist/backend/src/web-knowledge.js": "7972b357ff8c977bdf4e0909b57ca9d8dbb8fdb920b5fdcf593b613f072a2fe9",
+    "backend/dist/backend/src/strict-knowledge.js": "3b21247efa9000d30b021a5f4f0b1bb365d993c4f22838994a45fcc4c1bd0e99",
+    "ai-module/dist/src/gateway.js": "a3cecddad1b5743673e17a0cc529b8f8015b129c963f9fa6511fa7691906e494",
+    "ai-module/dist/src/deepseek.js": "829aaf84f2372ae3476a7dc8c8d7908e9db568b1cf3bbc3fa42f03943b3a6979"
+  },
+  "cacheWorkerSha256": "d4a09c5f633c728604b8f7420bbdc8c240bda066835e7b5368efeb021d316a85"
+}
