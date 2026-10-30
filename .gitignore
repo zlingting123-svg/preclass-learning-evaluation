@@ -28,3 +28,6 @@ Thumbs.db
 
 **/__pycache__/
 **/*.pyc
+
+# Locally installed/built standalone companion module
+frontend/public/ai-companion/

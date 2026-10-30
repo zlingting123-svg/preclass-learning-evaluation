@@ -1,4 +1,5 @@
-import {WhaleCompanion} from './WhaleCompanion';
+import {PackagedCompanion as WhaleCompanion} from './PackagedCompanion';
+import './companion-layout.css';
 import type {CompanionState} from './WhaleCompanion';
 import {getAccessToken} from '../services/authStore';
 import type {ChatDetail,ChatList} from '@shared/conversations';

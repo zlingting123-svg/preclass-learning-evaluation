@@ -15,7 +15,9 @@
     "test:mock": "node ../integration/test/mock-smoke.mjs",
     "build": "tsc -b && vite build",
     "check": "tsc -b",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prebuild": "node ../deployment/build-companion-module.mjs public/ai-companion",
+    "predev": "node ../deployment/build-companion-module.mjs public/ai-companion"
   },
   "dependencies": {
     "echarts": "6.1.0",

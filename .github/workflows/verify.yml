@@ -184,5 +184,5 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           persist-credentials: false
-      - name: Verify frontend-only atomic update and rollback on Linux
+      - name: Verify module-only install preserves server pages and supports rollback on Linux
         run: python3 deployment/test_companion_update.py -v
