@@ -1,0 +1,25 @@
+.wc-area{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:2}.wc-area-home{position:relative;height:252px;width:100%;inset:auto;margin:0 auto 10px}.wc-character{position:absolute;width:156px;height:176px;padding:0!important;margin:0!important;background:transparent!important;border:0!important;border-radius:12px;box-shadow:none!important;pointer-events:auto;touch-action:none;user-select:none;cursor:grab;color:var(--pv-accent);-webkit-user-select:none}.wc-character:active{cursor:grabbing}.wc-character:focus-visible{outline:2px solid var(--pv-accent);outline-offset:-2px}.wc-sprite{width:100%;height:100%;display:block;overflow:hidden;image-rendering:pixelated;transform-origin:center 85%}.wc-sprite image{image-rendering:pixelated}.wc-shadow{position:absolute;left:32%;right:32%;bottom:1px;height:6px;border-radius:50%;background:#31635e18;z-index:-1;pointer-events:none}.wc-character[data-state=idle] .wc-sprite{animation:wc-breathe 3.5s steps(1,end) infinite}.wc-character[data-state=welcome] .wc-sprite{animation:wc-welcome-jump 4.48s steps(3,end) infinite}.wc-character[data-state=thinking] .wc-sprite{animation:wc-ponder 2s steps(1,end) infinite}.wc-character[data-state=done] .wc-sprite{animation:wc-nod .75s steps(1,end) 3}.wc-character[data-state=failed] .wc-sprite{animation:wc-no .5s steps(1,end) 2}.wc-character[data-state=offline] .wc-sprite{animation:wc-breathe 6s steps(1,end) infinite}.wc-character[data-state^=walk] .wc-sprite{animation:wc-step .28s steps(1,end) infinite}.wc-thought{position:absolute;top:14%;right:0;display:flex;gap:3px}.wc-thought i{width:4px;height:4px;background:var(--pv-accent);animation:wc-dot 1.2s steps(1,end) infinite}.wc-thought i:nth-child(2){animation-delay:.2s}.wc-thought i:nth-child(3){animation-delay:.4s}.wc-sleep{position:absolute;top:12%;right:5%;font:bold 14px monospace;opacity:.5;animation:wc-rest 5s steps(3,end) infinite}
+@keyframes wc-breathe{50%{transform:translateY(-2px)}}@keyframes wc-hello{0%,16%,100%{transform:translate(0,0)}4%,12%{transform:translate(-2px,-3px)}8%{transform:translate(2px,-3px)}}@keyframes wc-ponder{50%{transform:translateY(-2px)}}@keyframes wc-nod{50%{transform:translateY(3px)}}@keyframes wc-no{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}@keyframes wc-step{50%{transform:translateY(-2px)}}@keyframes wc-dot{50%{opacity:.2;transform:translateY(-2px)}}@keyframes wc-rest{0%,100%{opacity:0;transform:translateY(2px)}50%{opacity:.5;transform:translateY(-4px)}}
+@media(max-width:900px){}
+@media(max-width:600px){.wc-area-home{height:232px}.wc-area-home .wc-character{width:148px;height:168px}}
+@media(prefers-reduced-motion:reduce){.wc-character .wc-sprite,.wc-character .wc-thought i,.wc-character .wc-sleep{animation:none!important}}
+
+/* Full-silhouette jump and pointer feedback. Top movement stays inside reserved headroom. */
+.wc-character[data-state=welcome] .wc-shadow{animation:wc-jump-shadow 4.48s steps(3,end) infinite}
+.wc-character[data-reaction] .wc-sprite{animation:wc-pointer-bob .72s steps(3,end) 1}
+.wc-character[data-place=home][data-reaction] .wc-sprite{animation:wc-pointer-jump .82s steps(3,end) 1}
+.wc-character[data-reaction] .wc-shadow{animation:wc-pointer-shadow .82s steps(3,end) 1}
+.wc-reaction-sparks{position:absolute;inset:0;pointer-events:none}.wc-reaction-sparks i{position:absolute;width:4px;height:4px;background:#f1c66c;box-shadow:0 -3px #f1c66c,0 3px #f1c66c,-3px 0 #f1c66c,3px 0 #f1c66c;animation:wc-spark .7s steps(3,end) both}.wc-reaction-sparks i:first-child{left:12%;top:18%}.wc-reaction-sparks i:nth-child(2){right:5%;top:6%;animation-delay:.08s}.wc-reaction-sparks i:nth-child(3){right:13%;top:43%;animation-delay:.16s}
+@keyframes wc-welcome-jump{0%,6%,35%,100%{transform:translateY(0) scaleY(1)}8%{transform:translateY(3px) scaleY(.94)}12%{transform:translateY(-18px)}16%,20%{transform:translateY(-36px)}26%{transform:translateY(-18px)}30%{transform:translateY(2px) scaleY(.96)}}
+@keyframes wc-jump-shadow{0%,8%,30%,100%{transform:scaleX(1);opacity:1}16%,20%{transform:scaleX(.62);opacity:.35}}
+@keyframes wc-pointer-jump{0%,100%{transform:translateY(0)}15%{transform:translateY(2px) scaleY(.95)}42%,55%{transform:translateY(-32px)}82%{transform:translateY(2px) scaleY(.96)}}
+@keyframes wc-pointer-bob{0%,100%{transform:translateY(0)}40%{transform:translateY(-9px)}75%{transform:translateY(1px)}}
+@keyframes wc-pointer-shadow{0%,100%{transform:scaleX(1);opacity:1}45%{transform:scaleX(.7);opacity:.35}}
+@keyframes wc-spark{0%{opacity:0;transform:translateY(4px)}35%{opacity:1}100%{opacity:0;transform:translateY(-8px)}}
+@media(prefers-reduced-motion:reduce){.wc-character .wc-sprite,.wc-character .wc-shadow,.wc-character .wc-reaction-sparks i{animation:none!important}}
+
+/* Chat mascot follows available content width; home keeps its larger invitation size. */
+.wc-area-chat .wc-character{width:clamp(68px,10vw,120px);width:clamp(68px,12cqw,120px);height:auto;aspect-ratio:39/44}
+@media(max-width:600px){.wc-area-chat .wc-thought{top:5%;right:0}.wc-area-chat .wc-thought i{width:3px;height:3px}.wc-area-chat .wc-sleep{font-size:11px;top:2%}}
+
+.wc-area-chat{container-type:inline-size}

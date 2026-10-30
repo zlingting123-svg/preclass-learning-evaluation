@@ -1,0 +1,62 @@
+{
+  "sourceCommit": "2b8dde5f41caa5bf3de002a48d131ce418e79afd",
+  "scope": "module-only-subset",
+  "files": [
+    {
+      "path": "deployment/build-companion-module.mjs",
+      "sha256": "9e25e713640030443c4663b6a6af529df5d6c7bb511015c6abb670a5c3472f0f"
+    },
+    {
+      "path": "deployment/build-companion-update.py",
+      "sha256": "888d109e8ef35feb36a07446c765534ea44699a2e4ae686e97f0856ad08c74b5"
+    },
+    {
+      "path": "deployment/test_companion_update.py",
+      "sha256": "fb5bc511c2783ef8f73818128925ee84184864da166033ff603d27d9e0573efd"
+    },
+    {
+      "path": "deployment/companion-update/install.sh",
+      "sha256": "db68c34923094e5dd9917ebff8f12cb465243cc1f92ab448ad51ceb0ef808715"
+    },
+    {
+      "path": "deployment/companion-update/update.py",
+      "sha256": "3d376e5caab562761a465632600a902a27a8204a0186c4860f41bc918d422089"
+    },
+    {
+      "path": "deployment/companion-update/README.md",
+      "sha256": "3d276a871ec9f674166a18f437f2655f34d7cd062f277505d2994dd6258aa237"
+    },
+    {
+      "path": "deployment/companion-update/INTEGRATION.md",
+      "sha256": "a5da72d3cbc72aecbca85a3f828566119c39b3b62799290881585e6592eca82c"
+    },
+    {
+      "path": "frontend/src/companion-module/element.tsx",
+      "sha256": "9f02f1308f5f680a0e3fdd63a6b48451c94125e777ca124e3d8caac914d597ce"
+    },
+    {
+      "path": "frontend/src/preview/WhaleCompanion.tsx",
+      "sha256": "b6f4a60f71e55327a61753c10d2fb3884430d5cd2d8d0dc5a53b78d8febaa25a"
+    },
+    {
+      "path": "frontend/src/preview/companion.css",
+      "sha256": "0fc6cc4579a1f96fc2910b6df07155934aba3cbe1a1787c20c448577a65bfc4f"
+    },
+    {
+      "path": "frontend/public/companion/poses.png",
+      "sha256": "a62ee409572e11bc7b6bb382eeab717f3a09c1c9ee3db1783b258f81468309ee"
+    },
+    {
+      "path": "frontend/public/companion/walk.png",
+      "sha256": "812b491d4f97b9bf91594b2c075fe51e6466328bb6691cde29ca8d46168f60db"
+    },
+    {
+      "path": "frontend/public/companion/assets.json",
+      "sha256": "b8e8da87f5d58418f45171a10cd2d2634bcc0cea2a7064b1641f743e9dd18bea"
+    },
+    {
+      "path": "frontend/public/companion/UPSTREAM-LICENSE.txt",
+      "sha256": "e9c7575c5ccf1be7d9d94509d3c268436624eb35344f5f96c33f92bc44c51c23"
+    }
+  ]
+}

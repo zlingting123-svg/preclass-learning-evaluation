@@ -1,0 +1,6 @@
+import {createRequire} from 'node:module';import {resolve} from 'node:path';import {mkdirSync,copyFileSync,readFileSync} from 'node:fs';
+const root=resolve(import.meta.dirname,'..'),require=createRequire(resolve(root,'frontend/package.json')),{build}=require('esbuild');
+const out=resolve(process.argv[2]||resolve(root,'work/companion-module-payload'));mkdirSync(out,{recursive:true});
+await build({entryPoints:[resolve(root,'frontend/src/companion-module/element.tsx')],bundle:true,jsx:'automatic',format:'esm',minify:true,platform:'browser',target:['es2022'],outfile:resolve(out,'module.js'),define:{'process.env.NODE_ENV':'"production"','import.meta.env.BASE_URL':'"/"'},plugins:[{name:'shadow-css',setup(b){b.onLoad({filter:/\.css\?inline$/},args=>({contents:`export default ${JSON.stringify(readFileSync(args.path.replace(/\?inline$/,''),'utf8'))}`,loader:'js'}));b.onResolve({filter:/\.css\?inline$/},args=>({path:resolve(args.resolveDir,args.path),namespace:'file'}));b.onLoad({filter:/\.css$/},()=>({contents:'',loader:'js'}))}}]});
+for(const file of ['poses.png','walk.png','assets.json','UPSTREAM-LICENSE.txt'])copyFileSync(resolve(root,'frontend/public/companion',file),resolve(out,file));
+console.log('Built isolated module (no HTML or application bundle): '+out);

@@ -1,0 +1,104 @@
+{
+  "package": {
+    "archive": "preclass-companion-module-2b8dde5f41ca.tar.gz",
+    "sha256": "eb6f80b78fddef98a42f899a28a6d0096e85fcaedf87183090988cd9c9d61219",
+    "bytes": 4052756,
+    "sourceCommit": "2b8dde5f41caa5bf3de002a48d131ce418e79afd",
+    "scope": "companion-module-only",
+    "payloadFingerprint": "6567304afa45163e9a87d0d0e1ca99249006ba53703b2bec63b7b956b07a7aaa",
+    "packageId": "companion-v05-2b8dde5f41ca"
+  },
+  "payloadFiles": [
+    "module.js",
+    "poses.png",
+    "walk.png",
+    "assets.json",
+    "UPSTREAM-LICENSE.txt"
+  ],
+  "containsWebpages": false,
+  "localMacOSPackageInstalled": true,
+  "protectedHtmlAppAndAccountFilesUnchanged": true,
+  "httpModuleMatchesArchive": true,
+  "browser": {
+    "scope": "真实隔离HTTP/SQLite与模拟AI；失败/服务关闭为定点路由故障注入；非真实模型/云部署/真机",
+    "checks": [
+      {
+        "name": "主页独有欢迎；形象点击进入问答，无形象设置面板",
+        "result": "pass"
+      },
+      {
+        "name": "推荐问题请求中思考，真实终态后完成，再恢复待机",
+        "result": "pass"
+      },
+      {
+        "name": "拖动四方向，松手回待机，不越界，位置在本机保存",
+        "result": "pass"
+      },
+      {
+        "name": "请求失败播放失败；取消回待机，不误报回答完成",
+        "result": "pass"
+      },
+      {
+        "name": "历史、新建、删除回归；历史加载不播放欢迎或完成",
+        "result": "pass"
+      },
+      {
+        "name": "服务待接入独立动画，不发送模型请求；拖动后恢复待接入",
+        "result": "pass"
+      },
+      {
+        "name": "窄屏无溢出、不覆盖输入框；减少动态效果静止",
+        "result": "pass"
+      },
+      {
+        "name": "手机触控模拟：点击反馈和拖动方向、松手恢复",
+        "result": "pass"
+      }
+    ],
+    "responsive": [
+      {
+        "viewport": 1440,
+        "mascotWidth": 120,
+        "mascotHeight": 135.375
+      },
+      {
+        "viewport": 900,
+        "mascotWidth": 87.59375,
+        "mascotHeight": 98.8125
+      },
+      {
+        "viewport": 768,
+        "mascotWidth": 71.75,
+        "mascotHeight": 80.9375
+      },
+      {
+        "viewport": 414,
+        "mascotWidth": 68,
+        "mascotHeight": 76.703125
+      },
+      {
+        "viewport": 375,
+        "mascotWidth": 68,
+        "mascotHeight": 76.703125
+      },
+      {
+        "viewport": 320,
+        "mascotWidth": 68,
+        "mascotHeight": 76.703125
+      }
+    ],
+    "pageErrors": []
+  },
+  "linuxTransactionTests": {
+    "result": "success",
+    "platform": "ubuntu-24.04",
+    "sourceCommit": "2b8dde5f41caa5bf3de002a48d131ce418e79afd",
+    "run": "https://github.com/zlingting123-svg/preclass-learning-evaluation/actions/runs/40986423420",
+    "job": "https://github.com/zlingting123-svg/preclass-learning-evaluation/actions/runs/40986423420/job/123838407966"
+  },
+  "notVerified": [
+    "user cloud host installation/integration",
+    "real AI provider",
+    "physical phone"
+  ]
+}

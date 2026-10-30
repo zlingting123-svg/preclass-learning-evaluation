@@ -1,0 +1,3 @@
+# v05 AI伙伴纯模块
+
+固定源码2b8dde5f41caa5bf3de002a48d131ce418e79afd，仅归档模块相关源文件及来源清单，不归档或携带网页；source是明确列出的模块源码子集，完整构建环境可检出同提交的项目库。manifest逐文件记录SHA-256。安装包在同项目Releases的companion-module-v05-20261030提供，服务器Codex按INTEGRATION.md接入其已修改网页。原v01–v04保持不动。
