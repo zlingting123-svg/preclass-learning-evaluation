@@ -1,0 +1,77 @@
+{
+  "description": "环境评价与管理课程资料",
+  "files": [
+    {
+      "path": "课件/1 绪论261026.pdf",
+      "bytes": 12541029,
+      "pages": 77,
+      "sha256": "7fd01a66aba82d0a5b71b71ce055b826f38b9b430a04517a036b5b66eb0e6362"
+    },
+    {
+      "path": "课件/2 生态环境问题与基础知识261026.pdf",
+      "bytes": 37310903,
+      "pages": 307,
+      "sha256": "7d718d5b891768c0f9a51657f0542f1c6d76e6ea9b9e766aac04aa0e73b5a630"
+    },
+    {
+      "path": "课件/3 环境评价基础理论知识261026.pdf",
+      "bytes": 17648284,
+      "pages": 108,
+      "sha256": "29739e5d2de2383017221ea0054f77afc57211f64d0de2a4d510bd07207794c0"
+    },
+    {
+      "path": "课件/4.1 环评程序和水环境评价 261026.pdf",
+      "bytes": 10560762,
+      "pages": 84,
+      "sha256": "7609a3e07baebe01dd46fa5f17365e851c7a769ada1efb17550aa7b6f4dc7c82"
+    },
+    {
+      "path": "课件/4.2 大气环境影响评价261026.pdf",
+      "bytes": 12487724,
+      "pages": 111,
+      "sha256": "2b78ef147ce04a1684dee254a52feed55f44b13b592ccdec62cbb274b06b9735"
+    },
+    {
+      "path": "课件/4.4 噪声261026.pdf",
+      "bytes": 6841013,
+      "pages": 64,
+      "sha256": "932c32233041c5776b9470b5ce40cff8d5749804f058a8b4c917875994f8aeaf"
+    },
+    {
+      "path": "课件/4.6 生态影响评价261026.pdf",
+      "bytes": 9832396,
+      "pages": 73,
+      "sha256": "c54a01a1096fb55abe5e95b24a4d9343916c6b2321fdd2a8d430c968f209658c"
+    },
+    {
+      "path": "课件/4.7 土壤环境影响评价261026.pdf",
+      "bytes": 9465926,
+      "pages": 60,
+      "sha256": "501f270d61bdcdc403518aaddd90ba0c3d94ddb14964fd8b6299549a7da77313"
+    },
+    {
+      "path": "课件/5 规划生态环境评价261026.pdf",
+      "bytes": 7156419,
+      "pages": 96,
+      "sha256": "ca2fc7266d0371888064457baaf5d8aa21bbc94593d75d039d451debc395b4a7"
+    },
+    {
+      "path": "课件/6.1 环境管理政策和制度261026.pdf",
+      "bytes": 12410586,
+      "pages": 71,
+      "sha256": "9cb8a8784ff593167c2ea2ca0429464e10ae58f30ec70bddd8a94375e0396d82"
+    },
+    {
+      "path": "课件/6.2  环境管理案例应用与实践261026.pdf",
+      "bytes": 26783542,
+      "pages": 105,
+      "sha256": "5a128cfddf8eed0f3e7fe000aeb890be91a85965372ebbc46a8b6869a92797fb"
+    },
+    {
+      "path": "教材/环境评价教程 （修订版）.pdf",
+      "bytes": 6210878,
+      "pages": 440,
+      "sha256": "2f3dfd124ee526649ab4d36dad8d725ec7f2d60cb70af19462078d742ae700b2"
+    }
+  ]
+}
