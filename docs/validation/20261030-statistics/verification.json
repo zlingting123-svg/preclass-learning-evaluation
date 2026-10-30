@@ -1,0 +1,32 @@
+{
+  "passed": true,
+  "checks": [
+    "500 submitted students and all choice counts exactly equal",
+    "one identity-table and one account-table read per roster",
+    "mixed imported identities, empty/null and duplicate identities preserve first-match fallback",
+    "duplicate account fallback preserves first match",
+    "not-started and in-progress statuses preserve output",
+    "optional text and mixed completion counts preserve output",
+    "empty roster",
+    "student and unrelated teacher access denied by both implementations",
+    "name changes and fresh membership immediately visible without persistent cache"
+  ],
+  "timing": {
+    "baseline": {
+      "samples": 7,
+      "p50ms": 530.699,
+      "maxMs": 539.888
+    },
+    "optimized": {
+      "samples": 7,
+      "p50ms": 10.286,
+      "maxMs": 11.087
+    }
+  },
+  "speedupMedian": 51.59,
+  "benchmark": "same server, in-memory SQLite copy of synthetic 500-student fixture, seven sequential service calls per version; not an HTTP/P95 claim",
+  "sourceSha256": "1579a9d75fca68eb4d34a703fa4ea562211155a2dff0a32738e08ff3f72cc45e",
+  "productionWritten": false,
+  "realModelCalls": 0,
+  "deployed": false
+}

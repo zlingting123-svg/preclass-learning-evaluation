@@ -1,0 +1,43 @@
+--- backend/dist/backend/src/questionnaires.js
++++ backend/dist/backend/src/questionnaires.js
+@@ -196,12 +196,19 @@
+     }
+     members(u, c) {
+         this.teacher(u, c);
+-        return this.store
+-            .all("member")
+-            .filter((m) => m.classId === c)
+-            .map((m) => ({
++        const members = this.store.all("member").filter((m) => m.classId === c);
++        if (!members.length) return [];
++        // Request-local indexes: preserve first-record and nullish fallback semantics.
++        const identities = new Map();
++        for (const row of this.store.all("student_identity"))
++            if (!identities.has(row.userId)) identities.set(row.userId, row.studentNumber);
++        const accounts = new Map();
++        if (members.some((m) => identities.get(m.studentId) == null))
++            for (const row of this.store.all("account"))
++                if (!accounts.has(row.user.id)) accounts.set(row.user.id, row.username);
++        return members.map((m) => ({
+             studentId: m.studentId,
+-            studentNumber: this.identity(m.studentId),
++            studentNumber: identities.get(m.studentId) ?? accounts.get(m.studentId) ?? "",
+             studentName: this.store.get("user", m.studentId)?.displayName ?? "",
+         }));
+     }
+@@ -212,10 +219,14 @@
+             .all("survey_response")
+             .filter((r) => r.surveyId === id);
+         const done = responses.filter((r) => r.submittedAt);
++        const responsesByStudent = new Map();
++        for (const response of responses)
++            if (!responsesByStudent.has(response.studentId))
++                responsesByStudent.set(response.studentId, response);
+         return {
+             survey: s,
+             students: this.members(u, s.classId).map((m) => {
+-                const r = responses.find((r) => r.studentId === m.studentId);
++                const r = responsesByStudent.get(m.studentId);
+                 return {
+                     ...m,
+                     status: r?.submittedAt ? "已提交" : r ? "作答中" : "未开始",

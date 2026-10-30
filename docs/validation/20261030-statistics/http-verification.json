@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "name": "baseline",
+      "requests": 21,
+      "concurrency": 7,
+      "p50ms": 3069.76,
+      "p95ms": 3607.24,
+      "maxMs": 3618.99,
+      "failed": 0,
+      "unauthenticated": 401,
+      "statsEqual": true,
+      "insightsSnapshotEqual": true
+    },
+    {
+      "name": "optimized",
+      "requests": 21,
+      "concurrency": 7,
+      "p50ms": 89.95,
+      "p95ms": 115.41,
+      "maxMs": 116.1,
+      "failed": 0,
+      "unauthenticated": 401,
+      "statsEqual": true,
+      "insightsSnapshotEqual": true
+    }
+  ],
+  "productionWritten": false,
+  "realModelCalls": 0,
+  "deployed": false,
+  "scope": "actual Express HTTP routes over loopback, same synthetic 500-person data in in-memory SQLite; no Caddy, public network or model requests"
+}

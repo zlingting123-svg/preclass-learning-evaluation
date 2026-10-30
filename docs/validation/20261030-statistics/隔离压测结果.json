@@ -1,0 +1,143 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "name": "500 independent accounts HTTP login, shared-NAT limit included",
+      "requests": 500,
+      "requestedConcurrency": 25,
+      "peakClientInflight": 25,
+      "elapsedSeconds": 158.34,
+      "requestsPerSecond": 3.16,
+      "p50ms": 7912.53,
+      "p95ms": 7959.07,
+      "p99ms": 22688.03,
+      "maxMs": 32508.34,
+      "status": {
+        "200": 500
+      },
+      "failed": 0
+    },
+    {
+      "name": "300 requests for deployed homepage and current JS/CSS assets",
+      "requests": 300,
+      "requestedConcurrency": 50,
+      "peakClientInflight": 50,
+      "elapsedSeconds": 0.272,
+      "requestsPerSecond": 1103.87,
+      "p50ms": 34.63,
+      "p95ms": 118.9,
+      "p99ms": 148.94,
+      "maxMs": 177.13,
+      "status": {
+        "200": 300
+      },
+      "failed": 0
+    },
+    {
+      "name": "500 authenticated survey sessions start",
+      "requests": 500,
+      "requestedConcurrency": 100,
+      "peakClientInflight": 100,
+      "elapsedSeconds": 2.829,
+      "requestsPerSecond": 176.71,
+      "p50ms": 208.02,
+      "p95ms": 2685.55,
+      "p99ms": 2797.1,
+      "maxMs": 2827.04,
+      "status": {
+        "200": 500
+      },
+      "failed": 0
+    },
+    {
+      "name": "300 independent students submit a ten-question survey concurrently",
+      "requests": 300,
+      "requestedConcurrency": 300,
+      "peakClientInflight": 300,
+      "elapsedSeconds": 1.479,
+      "requestsPerSecond": 202.8,
+      "p50ms": 769.49,
+      "p95ms": 1394.57,
+      "p99ms": 1452.58,
+      "maxMs": 1475.09,
+      "status": {
+        "200": 300
+      },
+      "failed": 0
+    },
+    {
+      "name": "Remaining 200 independent students submit",
+      "requests": 200,
+      "requestedConcurrency": 100,
+      "peakClientInflight": 100,
+      "elapsedSeconds": 0.944,
+      "requestsPerSecond": 211.86,
+      "p50ms": 153.39,
+      "p95ms": 899.05,
+      "p99ms": 934.43,
+      "maxMs": 942.17,
+      "status": {
+        "200": 200
+      },
+      "failed": 0
+    },
+    {
+      "name": "300 submitted answers replay: no duplicate records",
+      "requests": 300,
+      "requestedConcurrency": 300,
+      "peakClientInflight": 300,
+      "elapsedSeconds": 0.839,
+      "requestsPerSecond": 357.67,
+      "p50ms": 424.02,
+      "p95ms": 793.36,
+      "p99ms": 825.19,
+      "maxMs": 832.88,
+      "status": {
+        "200": 300
+      },
+      "failed": 0
+    },
+    {
+      "name": "Seven independent teachers read full 500-student statistics, three waves",
+      "requests": 21,
+      "requestedConcurrency": 7,
+      "peakClientInflight": 7,
+      "elapsedSeconds": 10.908,
+      "requestsPerSecond": 1.93,
+      "p50ms": 3096.56,
+      "p95ms": 6182.85,
+      "p99ms": 6182.85,
+      "maxMs": 6224.3,
+      "status": {
+        "200": 21
+      },
+      "failed": 0
+    },
+    {
+      "name": "300 student AI requests, explicit mock upstream, concurrency pool twelve",
+      "requests": 300,
+      "requestedConcurrency": 300,
+      "peakClientInflight": 300,
+      "elapsedSeconds": 9.908,
+      "requestsPerSecond": 30.28,
+      "p50ms": 5237.77,
+      "p95ms": 9602.81,
+      "p99ms": 9805.4,
+      "maxMs": 9905.75,
+      "status": {
+        "200": 300
+      },
+      "failed": 0
+    }
+  ],
+  "isolated": true,
+  "applicationRoot": "/opt/preclass/releases/20261030-survey-insights-followup",
+  "accounts": 500,
+  "teachers": 7,
+  "savedSubmittedResponses": 500,
+  "questions": 10,
+  "realModelCalls": 0,
+  "aiUpstream": "explicit-mock",
+  "traffic": "same-server HTTP through separate Caddy proxy; no public DNS/TLS or real-device capacity claim",
+  "productionDataWritten": false
+}

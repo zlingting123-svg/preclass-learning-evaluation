@@ -1,0 +1,28 @@
+{
+  "activated": true,
+  "base": "/opt/preclass/releases/20261030-survey-insights-followup",
+  "current": "/opt/preclass/releases/20261030-survey-stats-performance",
+  "changedFiles": [
+    "backend/dist/backend/src/questionnaires.js"
+  ],
+  "unchangedFiles": 3658,
+  "sourceSha256": "1579a9d75fca68eb4d34a703fa4ea562211155a2dff0a32738e08ff3f72cc45e",
+  "backupIntegrity": "ok",
+  "health": {
+    "ok": true,
+    "data": {
+      "contractVersion": "0.5.0",
+      "storage": "local-sqlite",
+      "auth": "local-bcrypt",
+      "productionReady": false
+    },
+    "requestId": "ab739623-e230-48d4-ac4f-e6b33ec2c2b2"
+  },
+  "webHTTP": 200,
+  "frontendChanged": false,
+  "authChanged": false,
+  "productionFixtureWritten": false,
+  "realModelCalls": 0,
+  "publicPortsOpened": false,
+  "rollback": "switch current to base, restart preclass-test.service; no database restore needed"
+}
