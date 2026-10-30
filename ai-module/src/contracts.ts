@@ -53,6 +53,7 @@ export type ProviderEvent =
   | { type: "usage"; usage: Usage }
   | { type: "finish"; reason: "stop" | "length" };
 export interface UpstreamInput {
+  task?: "survey_analysis";
   answerBasis?: "course_evidence" | "general_knowledge";
   question: string;
   history?: HistoryMessage[];

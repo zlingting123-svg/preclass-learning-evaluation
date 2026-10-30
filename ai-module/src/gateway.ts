@@ -4,6 +4,7 @@ import type {
   Policy,
   Deployment,
   Principal,
+  Purpose,
   Emit,
   Usage,
   HistoryMessage,
@@ -29,9 +30,10 @@ export class Gateway {
   }
   async prepare(
     user: Principal,
-    input: { courseId: string; question: string; clientRequestId: string; history?:HistoryMessage[] },
+    input: { courseId: string; question: string; clientRequestId: string; history?:HistoryMessage[]; purpose?:Purpose },
   ) {
     requireValue(user.role === "student" || (user.role === "teacher" && this.deps.allowTeacherQuestions === true), 403, "QUESTION_ROLE_REQUIRED");
+    requireValue(!input.purpose || input.purpose === "teacher_analytics" && user.role === "teacher",403,"INVALID_PURPOSE");
     await this.deps.authorization.authorize(user, input.courseId, "ask");
     requireValue(this.policy.enabled, 503, "AI_DISABLED");
     requireValue(
@@ -49,7 +51,7 @@ export class Gateway {
         id,
         fingerprint: hash(JSON.stringify(input)),
         subjectId: user.subjectId,
-        purpose: user.role === "teacher" ? "teacher_qa" : "student_qa",
+        purpose: input.purpose ?? (user.role === "teacher" ? "teacher_qa" : "student_qa"),
         courseId: input.courseId,
       },
       this.policy,
@@ -58,7 +60,7 @@ export class Gateway {
   }
   async answer(
     user: Principal,
-    input: { courseId: string; question: string; history?:HistoryMessage[] },
+    input: { courseId: string; question: string; history?:HistoryMessage[]; purpose?:Purpose },
     id: string,
     signal: AbortSignal,
     emit: Emit,
@@ -75,7 +77,8 @@ export class Gateway {
         input.courseId,
         "ask",
       );
-      const found = await this.deps.knowledge.retrieve({
+      requireValue(!input.purpose || input.purpose === "teacher_analytics" && user.role === "teacher",403,"INVALID_PURPOSE");
+      const found = input.purpose === "teacher_analytics" ? {status:"general_knowledge" as const,evidence:[],scoreType:"anonymous_survey_summary"} : await this.deps.knowledge.retrieve({
         ...input,
         scopeIds: grants.scopeIds,
         signal,
@@ -102,6 +105,7 @@ export class Gateway {
         "RETRIEVAL_SCOPE_VIOLATION",
       );
       const upstream = {
+        task: input.purpose === "teacher_analytics" ? "survey_analysis" as const : undefined,
         answerBasis: found.status === "general_knowledge" ? "general_knowledge" as const : "course_evidence" as const,
         question: input.question,
         history: input.history ? [...input.history] : undefined,
@@ -120,7 +124,7 @@ export class Gateway {
         "CONTEXT_TOO_LONG",
       );
       await emit("queued", { requestId: id });
-      const purpose=user.role==="teacher"&&this.deployments.some(d=>d.purposes.includes("teacher_qa"))?"teacher_qa":"student_qa";
+      const purpose=input.purpose ?? (user.role==="teacher"&&this.deployments.some(d=>d.purposes.includes("teacher_qa"))?"teacher_qa":"student_qa");
       lease = await this.scheduler.take(user.subjectId, signal, purpose);
       signal.throwIfAborted();
       await this.deps.authorization.authorize(user, input.courseId, "ask");
@@ -142,7 +146,7 @@ export class Gateway {
         })),
         scoreType: found.scoreType,
       });
-      if (found.status === "general_knowledge") await emit("delta", {text:"【一般知识解释，未依据已上传课程资料】\n\n"});
+      if (found.status === "general_knowledge" && !input.purpose) await emit("delta", {text:"【一般知识解释，未依据已上传课程资料】\n\n"});
       for await (const event of lease.deployment.provider.stream(upstream)) {
         if (event.type === "model")
           await this.store.update(id, { model: event.model });
