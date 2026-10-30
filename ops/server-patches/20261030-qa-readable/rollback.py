@@ -1,0 +1,3 @@
+from pathlib import Path
+import json,hashlib,os,subprocess
+root=Path('/home/ubuntu/qa-language-stage');state=json.loads((root/'stage.json').read_text());current=Path('/opt/preclass/current');assert os.geteuid()==0 and str(current.resolve())==state['target'];file=Path(state['target'])/'ai-module/dist/src/deepseek.js';assert hashlib.sha256(file.read_bytes()).hexdigest()==state['after']['ai-module/dist/src/deepseek.js'];next=Path('/opt/preclass/.qa-language-rollback');assert not next.exists();next.symlink_to(state['base']);os.replace(next,current);subprocess.run(['systemctl','restart','preclass-test.service'],check=True);print('Previous code restored; no database or conversation rewrite')

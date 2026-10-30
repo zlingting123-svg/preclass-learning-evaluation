@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "professionalPromptAndEvidenceNoInternalStatusCodes": true,
+  "sourceIdentityAndCurrencySeparated": true,
+  "missingDatesOmitted": true,
+  "uncertaintyPreservedInChinese": true,
+  "draftWarningPreserved": true,
+  "unknownEnumNeverEchoed": true,
+  "originalBodyUnchanged": true,
+  "surveyMessagesUnchanged": true,
+  "realModelCalls": 0
+}

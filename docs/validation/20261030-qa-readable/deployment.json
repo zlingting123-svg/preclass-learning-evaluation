@@ -1,0 +1,21 @@
+{
+  "deployed": true,
+  "version": "0.3",
+  "current": "/opt/preclass/releases/20261030-qa-readable",
+  "previous": "/opt/preclass/releases/20261030-retrieval-recall",
+  "modifiedFiles": [
+    "ai-module/dist/src/deepseek.js"
+  ],
+  "unchangedFiles": 3668,
+  "health": true,
+  "knowledgeMapHealthy": true,
+  "databaseWritten": false,
+  "oldConversationRewritten": false,
+  "frontendChanged": false,
+  "rawStatusRemovedFromProfessionalMetadata": true,
+  "uncertaintyPreserved": true,
+  "sourceWhitelistUnchanged": true,
+  "realModelCalls": 0,
+  "realModelAnswerQualityVerified": false,
+  "sha256": "1f6f5264f396e544992c540355c0d92b8fb8bd5b16f9d2da9e1b01dc89203e97"
+}
