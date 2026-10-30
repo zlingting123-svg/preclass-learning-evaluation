@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "checks": [
+    "实际DeepSeek完成教师问卷解读，页面明确待核实与匿名汇总口径",
+    "320/375/414/768布局无整页溢出",
+    "刷新后读取相同快照的保存结果，无二次模型请求"
+  ],
+  "errors": [],
+  "realProvider": "deepseek",
+  "syntheticData": true,
+  "localFrontend": true,
+  "remoteIsolatedMemoryBackend": true,
+  "productionDeploymentUnchanged": true,
+  "reportGeneratedAt": "2026-10-30T03:31:56.335Z"
+}
