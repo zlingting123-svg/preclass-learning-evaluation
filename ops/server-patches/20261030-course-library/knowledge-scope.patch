@@ -1,0 +1,11 @@
+--- backend/dist/backend/src/knowledge-import.js
++++ backend/dist/backend/src/knowledge-import.js
+@@ -33,7 +33,7 @@
+     const q = terms(question);
+     if (!q.length)
+         return [];
+-    return store.all('ai_imported_source').filter(s => s.state === 'published').flatMap(s => s.chunks.map((content, i) => {
++    return store.all('ai_imported_source').filter(s => s.state === 'published' && (s.classId === classId || s.classId === '__all_classes__')).flatMap(s => s.chunks.map((content, i) => {
+         const hay = content.toLowerCase().replace(/\s+/g, '');
+         const score = q.filter(t => hay.includes(t)).length / q.length;
+         return { id: `${s.id}_${i}`, scopeId: classId, topicId: 'imported_material', title: s.title, content, url: s.url, version: s.version, approved: true, keywords: [], score };

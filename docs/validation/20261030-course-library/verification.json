@@ -1,0 +1,296 @@
+{
+  "passed": true,
+  "files": 12,
+  "pages": 1596,
+  "newFiles": 11,
+  "reused": 1,
+  "publishedSources": 12,
+  "adminListHTTP": 200,
+  "adminDownloadHash": true,
+  "studentAndTeacherAdminDenied": true,
+  "scopedPrivateAndWithdrawnExcluded": true,
+  "queries": [
+    {
+      "question": "环境影响评价的基本程序有哪些阶段？",
+      "results": [
+        {
+          "title": "环境评价教程",
+          "score": 0.7333333333333333,
+          "pageTagged": true
+        },
+        {
+          "title": "4.7 土壤环境影响评价261026",
+          "score": 0.6666666666666666,
+          "pageTagged": true
+        },
+        {
+          "title": "环境评价教程",
+          "score": 0.6666666666666666,
+          "pageTagged": true
+        },
+        {
+          "title": "环境评价教程",
+          "score": 0.6666666666666666,
+          "pageTagged": true
+        }
+      ]
+    },
+    {
+      "question": "生态环境问题的主要类型有哪些？",
+      "results": [
+        {
+          "title": "2 生态环境问题与基础知识261026",
+          "score": 0.6923076923076923,
+          "pageTagged": true
+        },
+        {
+          "title": "4.6 生态影响评价261026",
+          "score": 0.6923076923076923,
+          "pageTagged": true
+        },
+        {
+          "title": "2 生态环境问题与基础知识261026",
+          "score": 0.6153846153846154,
+          "pageTagged": true
+        },
+        {
+          "title": "4.7 土壤环境影响评价261026",
+          "score": 0.6153846153846154,
+          "pageTagged": true
+        }
+      ]
+    },
+    {
+      "question": "环境容量和环境承载力是什么？",
+      "results": [
+        {
+          "title": "5 规划生态环境评价261026",
+          "score": 0.6363636363636364,
+          "pageTagged": true
+        },
+        {
+          "title": "环境评价教程",
+          "score": 0.6363636363636364,
+          "pageTagged": false
+        },
+        {
+          "title": "5 规划生态环境评价261026",
+          "score": 0.5454545454545454,
+          "pageTagged": true
+        },
+        {
+          "title": "5 规划生态环境评价261026",
+          "score": 0.5454545454545454,
+          "pageTagged": true
+        }
+      ]
+    },
+    {
+      "question": "地表水环境影响评价如何确定评价等级？",
+      "results": [
+        {
+          "title": "环境评价教程",
+          "score": 0.8,
+          "pageTagged": true
+        },
+        {
+          "title": "环境评价教程",
+          "score": 0.7333333333333333,
+          "pageTagged": true
+        },
+        {
+          "title": "环境评价教程",
+          "score": 0.7333333333333333,
+          "pageTagged": true
+        },
+        {
+          "title": "环境评价教程",
+          "score": 0.7333333333333333,
+          "pageTagged": true
+        }
+      ]
+    },
+    {
+      "question": "大气环境影响评价中的估算模型是什么？",
+      "results": [
+        {
+          "title": "环境评价教程",
+          "score": 0.6875,
+          "pageTagged": false
+        },
+        {
+          "title": "环境评价教程",
+          "score": 0.625,
+          "pageTagged": false
+        },
+        {
+          "title": "环境评价教程",
+          "score": 0.625,
+          "pageTagged": true
+        },
+        {
+          "title": "环境评价教程",
+          "score": 0.625,
+          "pageTagged": true
+        }
+      ]
+    },
+    {
+      "question": "声环境影响评价如何进行噪声预测？",
+      "results": [
+        {
+          "title": "环境评价教程",
+          "score": 0.7142857142857143,
+          "pageTagged": true
+        },
+        {
+          "title": "环境评价教程",
+          "score": 0.6428571428571429,
+          "pageTagged": false
+        },
+        {
+          "title": "环境评价教程",
+          "score": 0.6428571428571429,
+          "pageTagged": true
+        },
+        {
+          "title": "环境评价教程",
+          "score": 0.6428571428571429,
+          "pageTagged": true
+        }
+      ]
+    },
+    {
+      "question": "生态影响评价的主要内容有哪些？",
+      "results": [
+        {
+          "title": "环境评价教程",
+          "score": 0.9230769230769231,
+          "pageTagged": true
+        },
+        {
+          "title": "环境评价教程",
+          "score": 0.8461538461538461,
+          "pageTagged": true
+        },
+        {
+          "title": "4.6 生态影响评价261026",
+          "score": 0.7692307692307693,
+          "pageTagged": true
+        },
+        {
+          "title": "4.6 生态影响评价261026",
+          "score": 0.7692307692307693,
+          "pageTagged": true
+        }
+      ]
+    },
+    {
+      "question": "土壤环境影响评价的工作等级如何划分？",
+      "results": [
+        {
+          "title": "环境评价教程",
+          "score": 0.75,
+          "pageTagged": false
+        },
+        {
+          "title": "环境评价教程",
+          "score": 0.75,
+          "pageTagged": true
+        },
+        {
+          "title": "4.7 土壤环境影响评价261026",
+          "score": 0.6875,
+          "pageTagged": true
+        },
+        {
+          "title": "环境评价教程",
+          "score": 0.6875,
+          "pageTagged": false
+        }
+      ]
+    },
+    {
+      "question": "规划环境影响评价与建设项目环境影响评价有什么区别？",
+      "results": [
+        {
+          "title": "5 规划生态环境评价261026",
+          "score": 0.6666666666666666,
+          "pageTagged": true
+        },
+        {
+          "title": "环境评价教程",
+          "score": 0.6666666666666666,
+          "pageTagged": true
+        },
+        {
+          "title": "环境评价教程",
+          "score": 0.6111111111111112,
+          "pageTagged": false
+        },
+        {
+          "title": "环境评价教程",
+          "score": 0.6111111111111112,
+          "pageTagged": true
+        }
+      ]
+    },
+    {
+      "question": "排污许可制度与环境影响评价制度如何衔接？",
+      "results": [
+        {
+          "title": "环境评价教程",
+          "score": 0.6470588235294118,
+          "pageTagged": true
+        },
+        {
+          "title": "6.1 环境管理政策和制度261026",
+          "score": 0.5882352941176471,
+          "pageTagged": true
+        },
+        {
+          "title": "1 绪论261026",
+          "score": 0.5882352941176471,
+          "pageTagged": true
+        },
+        {
+          "title": "环境评价教程",
+          "score": 0.5882352941176471,
+          "pageTagged": true
+        }
+      ]
+    },
+    {
+      "question": "环境管理案例如何识别主要环境问题？",
+      "results": [
+        {
+          "title": "6.2  环境管理案例应用与实践261026",
+          "score": 0.5,
+          "pageTagged": true
+        },
+        {
+          "title": "6.2  环境管理案例应用与实践261026",
+          "score": 0.5,
+          "pageTagged": true
+        },
+        {
+          "title": "6.2  环境管理案例应用与实践261026",
+          "score": 0.5,
+          "pageTagged": true
+        },
+        {
+          "title": "6.2  环境管理案例应用与实践261026",
+          "score": 0.5,
+          "pageTagged": true
+        }
+      ]
+    }
+  ],
+  "mockChatHTTP": 200,
+  "modelReceivedEvidence": true,
+  "realModelCalls": 0,
+  "productionDataWritten": false,
+  "frontendChanged": false,
+  "retrievalCalibrated": false,
+  "limits": "sample retrieval integration with synthetic accounts; not pedagogical correctness or full retrieval calibration"
+}

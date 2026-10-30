@@ -1,0 +1,60 @@
+{
+  "activated": true,
+  "current": "/opt/preclass/releases/20261030-course-library",
+  "previous": "/opt/preclass/releases/20261030-survey-stats-performance",
+  "productVersion": "0.3",
+  "sourceCommit": "62aaaab45fdf064b308c32ce9bc53e1dc2586e55",
+  "files": 12,
+  "newFiles": 11,
+  "reusedFiles": 1,
+  "pages": 1596,
+  "originalsHashVerifiedOverAuthenticatedHTTP": 12,
+  "changedCodeFiles": [
+    "backend/dist/backend/src/knowledge-import.js"
+  ],
+  "addedMetadata": [
+    "backend/course-library-release.json"
+  ],
+  "preservedFiles": 3658,
+  "allLibrarySourcesPublished": true,
+  "newPaidSummariesStarted": 0,
+  "existingTextbookAiMemoryPreserved": true,
+  "retrievalCalibrated": false,
+  "health": {
+    "contractVersion": "0.5.0",
+    "storage": "local-sqlite",
+    "auth": "local-bcrypt",
+    "productionReady": false
+  },
+  "backupIntegrity": "ok",
+  "publicPortsOpened": false,
+  "frontendChanged": false,
+  "syntheticProductionAccountsCreated": false,
+  "newIds": [
+    "6d105ec8-886a-5a7d-aa07-712c1ae48305",
+    "53189423-95c7-5a0a-8edf-c9db2f3e0977",
+    "1fc5eb17-e304-5d0a-ace0-ae0e2118f53e",
+    "0063e440-9f42-5a5b-9616-b40ef4f7a6fe",
+    "df8e5f15-bcfa-5c9c-8cee-2af6ee5e35bc",
+    "e3f4de45-c091-56bd-815a-269d8df5d784",
+    "cca1e8fd-31d9-51db-b7c1-c8a1bae740b7",
+    "e4621749-df8f-5c86-9ffc-24c756778261",
+    "eba19bb7-fdf9-55fe-809d-5501870b7ada",
+    "19854120-5e38-5fe1-8cb9-364ebafb842e",
+    "ad0576f1-ade1-5843-bdfb-8729b1ecba0e"
+  ],
+  "auditIds": [
+    "ae7df655-7c87-4feb-a3c0-0351c01ca617",
+    "f2544417-304e-418c-a8ea-57b366fd9b5d",
+    "42fc81ff-7010-4b0c-b99a-a1c4f522fec7",
+    "d2ffdd76-ca12-4de3-b3ac-684eaa1030b0",
+    "b762eb7f-110f-440b-8dbb-b060acbfd4a8",
+    "dfdbcc20-f354-4d63-93e9-5ac2ddcf149d",
+    "b97ea6d9-b075-4dc1-b70e-654b2b0425f3",
+    "f1fb7fe2-c18a-43f0-85d4-56196113edc0",
+    "97abac71-7c52-48ce-8033-9108505b75a0",
+    "dbf0b5bb-8e9c-4528-8372-08c04d1d7a14",
+    "534e313d-5f8f-4530-9fdb-fdd4a8df997f"
+  ],
+  "rollback": "Switch current to previous and restart backend; withdraw only the 11 newly imported source ids if data rollback is desired; preserve textbook and other business data."
+}
