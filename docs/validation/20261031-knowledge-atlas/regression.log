@@ -1,0 +1,33 @@
+test_input (test_api.Test.test_input) ... ok
+test_lifecycle (test_api.Test.test_lifecycle) ... ok
+test_svg_input_and_text_pdf (test_api.Test.test_svg_input_and_text_pdf) ... ok
+test_xmind_canvas_roundtrip (test_api.Test.test_xmind_canvas_roundtrip) ... ok
+test_xmind_default_native_and_download (test_api.Test.test_xmind_default_native_and_download) ... ok
+test_docx_xmind (test_extract.Extract.test_docx_xmind) ... ok
+test_pdf (test_extract.Extract.test_pdf) ... ok
+test_all_formats (test_formats.Formats.test_all_formats) ... PASS .svg image/svg+xml
+PASS .doc application/pdf
+PASS .docx application/pdf
+PASS .pdf application/pdf
+PASS .bmp image/png
+PASS .gif image/gif
+PASS .jpg image/jpeg
+PASS .png image/png
+PASS .tiff image/png
+PASS .webp image/webp
+PASS .ppt application/pdf
+PASS .pptx application/pdf
+ok
+test_invalid_not_silent (test_xmind.XMind.test_invalid_not_silent) ... ok
+test_legacy_xml (test_xmind.XMind.test_legacy_xml) ... ok
+test_limits_not_silent_truncation (test_xmind.XMind.test_limits_not_silent_truncation) ... ok
+test_modern_sheets_and_detached (test_xmind.XMind.test_modern_sheets_and_detached) ... ok
+test_saved_canvas_bytes_without_relayout (test_xmind.XMind.test_saved_canvas_bytes_without_relayout) ... ok
+test_legacy_and_invalid (test_xmind_render.Rendering.test_legacy_and_invalid) ... ok
+test_multiple_sheets_branches_pdf (test_xmind_render.Rendering.test_multiple_sheets_branches_pdf) ... ok
+test_xml_styles_and_complete_labels (test_xmind_render.Rendering.test_xml_styles_and_complete_labels) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 13.231s
+
+OK
