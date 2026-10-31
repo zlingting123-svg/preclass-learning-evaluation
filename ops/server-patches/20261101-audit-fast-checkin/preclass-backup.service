@@ -1,0 +1,15 @@
+[Unit]
+Description=Private Preclass data backup and restore checks
+
+[Service]
+Type=oneshot
+User=root
+UMask=0077
+ExecStart=/usr/bin/python3 /opt/preclass/ops/automatic_backup.py
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadWritePaths=/var/backups/preclass/automatic /var/lib/preclass
+Nice=10
+TimeoutStartSec=600

@@ -1,0 +1,16 @@
+import {normalizeQuery} from './strict-knowledge.js';
+export const reviewIntent=q=>/框架|脉络|知识体系|重点|要点|提纲|梳理|总结|概括/.test(q);
+export function materialPrivacyRequest(q){return /课件|资料|幻灯|ppt|pdf|文件/i.test(q)&&/逐页|逐字|原文|全文|下载|导出|文件名|文件路径|文件链接|完整内容|全部内容|截图/.test(q)}
+const key=t=>normalizeQuery(t).replace(/\.(pdf|pptx?|docx?)$/i,'').replace(/\d{6,8}\s*$/,'').replace(/^\s*\d+(?:\.\d+)?[.、\s]*/,'').replace(/基本/g,'基础').replace(/[^\p{L}\p{N}]/gu,'');
+export const cleanBody=text=>text.replace(/\[第\s*\d+\s*页\]/g,'').replace(/(?:第\s*\d+\s*页|page\s*\d+\s*(?:of\s*\d+)?)/gi,'').trim();
+function outlineFor(s){const headings=[],seen=new Set();for(const c of s.chunks){const head=cleanBody(c).split('\n').map(x=>x.trim()).find(Boolean)||'';if(/^(?:0[1-9]|第[一二三四五六七八九十\d]+[章节部分]|\d+\.\d+)\s*[^\d\s]/.test(head)&&head.length<65&&!seen.has(head)){headings.push(head);seen.add(head)}}return headings.slice(0,35)}
+function chapterNumber(value){
+ if(/^\d+$/.test(value))return Number(value);
+ const digits={'零':0,'〇':0,'一':1,'二':2,'两':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9};
+ if(value.includes('十')){const [a,b]=value.split('十');return (a?digits[a]:1)*10+(b?digits[b]:0)}
+ return digits[value];
+}
+const sourceChapter=s=>{const m=s.title.normalize('NFKC').trim().match(/^(?:第\s*)?([零〇一二三四五六七八九十两\d]+)\s*(?:章|[.、])/);return m?chapterNumber(m[1]):undefined};
+export function reviewEvidence(core,input){if(!reviewIntent(input.question))return null;const q=key(input.question),sources=core.store.all('ai_imported_source').filter(s=>s.state==='published'&&(s.classId===input.courseId||s.classId==='__all_classes__')&&!s.url&&Array.isArray(s.chunks));let matches=sources.filter(s=>{const k=key(s.title);return k.length>=4&&q.includes(k)});if(!matches.length){const m=input.question.normalize('NFKC').match(/第\s*([零〇一二三四五六七八九十两\d]+)\s*章/);if(m){const n=chapterNumber(m[1]);if(Number.isInteger(n))matches=sources.filter(s=>sourceChapter(s)===n)}}if(matches.length!==1)return null;const s=matches[0],outline=outlineFor(s);const summaries=s.chunks.filter(c=>/本章知识图谱与学习要点|本章小结|本章总结|学习重点|知识框架|复习要点/.test(c)).map(cleanBody);if(!summaries.length&&outline.length<2)return null;
+ const sections=summaries.length?summaries.slice(0,10):outline.map(head=>{const at=s.chunks.findIndex(c=>cleanBody(c).startsWith(head));return head+'\n'+cleanBody(s.chunks[at]||'').slice(head.length,head.length+180)});
+ const content='章节主题：'+s.title.replace(/\d{6,8}\s*$/,'').replace(/\.(pdf|pptx?)$/i,'').trim()+'\n章节结构：\n'+outline.join('\n')+'\n复习重点线索（归纳改写，不能逐页复述）：\n'+sections.join('\n').slice(0,6500);return {status:'supported',scoreType:'chapter_review',evidence:[{id:s.id+'_review',scopeId:input.courseId,topicId:'chapter_review',sourceType:'uploaded_material',approved:true,title:s.title,privateFileName:s.name,version:s.version,content,reviewOverview:true}]};}

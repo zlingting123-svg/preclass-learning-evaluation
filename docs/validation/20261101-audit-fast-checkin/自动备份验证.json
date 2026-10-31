@@ -1,0 +1,1 @@
+{"ok": true, "snapshot": "auto-20261031T160304Z", "files": 146, "databases": 15, "bytes": 206967673, "restoredChecksumsAndDatabases": true, "externalReplica": false, "timerActive": true, "retainedSnapshots": 14, "schedule": "03:30 Asia/Shanghai + <=5min random delay", "manualBackupsPreserved": true, "fullApplicationRestoreTested": false}
