@@ -90,7 +90,9 @@
       "loginDelayMs": 90000,
       "anonymousCheckinDenied": true,
       "crossOriginDenied": true,
-      "publicResponseHasNoRoster": true
+      "publicResponseHasNoRoster": true,
+      "proofTransferWithoutDeviceCookieDenied": true,
+      "httpOnlySameSiteCookie": true
     },
     {
       "name": "survey_versioned_drafts",

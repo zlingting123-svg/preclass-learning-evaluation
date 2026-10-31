@@ -1,4 +1,4 @@
-import {createHmac,randomBytes,timingSafeEqual} from 'node:crypto';
+import {createHmac,createHash,randomBytes,timingSafeEqual} from 'node:crypto';
 import {ensure} from './errors.js';
 export const QR_INTERVAL_MS=2000,QR_VALID_MS=10000,SCAN_PROOF_MS=180000;
 const legacyUntil=Date.now()+30000;
@@ -19,13 +19,15 @@ export function qrState(s,now){
  const start=Math.floor(now/QR_INTERVAL_MS)*QR_INTERVAL_MS;
  return {ticket:ticketAt(s,now),expiresAt:start+QR_INTERVAL_MS,serverNow:now,qrIntervalMs:QR_INTERVAL_MS,qrValidityMs:QR_VALID_MS,qrTickets:Array.from({length:16},(_,i)=>({ticket:ticketAt(s,start+i*QR_INTERVAL_MS),from:start+i*QR_INTERVAL_MS,until:start+(i+1)*QR_INTERVAL_MS}))};
 }
-export function captureProof(s,ticket,now){
+const deviceHash=value=>createHash('sha256').update(value).digest('base64url');
+export function captureProof(s,ticket,now,device){
  ensure(verifyTicket(s,ticket,now),409,'QR_EXPIRED','二维码已过期，请重新扫码');
- const body='s2.'+s.id+'.'+now+'.'+randomBytes(12).toString('base64url');
+ ensure(typeof device==='string'&&/^[-_A-Za-z0-9]{43}$/.test(device),400,'SCAN_DEVICE_REQUIRED','请使用当前浏览器重新扫码');
+ const body='s3.'+s.id+'.'+now+'.'+randomBytes(12).toString('base64url')+'.'+deviceHash(device);
  return {sessionId:s.id,scanProof:body+'.'+sign(s,body),expiresAt:now+SCAN_PROOF_MS};
 }
-export function verifyProof(s,proof,now){
+export function verifyProof(s,proof,now,device){
  const p=String(proof).split('.');
- if(p.length!==5||p[0]!=='s2'||p[1]!==s.id||!/^\d{10,16}$/.test(p[2])||!/^[-_A-Za-z0-9]{16}$/.test(p[3]))return false;
- const at=Number(p[2]);return at<=now&&now<at+SCAN_PROOF_MS&&equal(p[4],sign(s,p.slice(0,4).join('.')));
+ if(typeof device!=='string'||!/^[-_A-Za-z0-9]{43}$/.test(device)||p.length!==6||p[0]!=='s3'||p[1]!==s.id||!/^\d{10,16}$/.test(p[2])||!/^[-_A-Za-z0-9]{16}$/.test(p[3]))return false;
+ const at=Number(p[2]);return at<=now&&now<at+SCAN_PROOF_MS&&equal(p[4],deviceHash(device))&&equal(p[5],sign(s,p.slice(0,5).join('.')));
 }

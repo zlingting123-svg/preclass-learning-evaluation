@@ -5,12 +5,13 @@ import assert from 'node:assert/strict';
 const require=createRequire('C:/Users/96496/Documents/Codex/2026-10-28/outputs-md/work/deepseek-live-source/preclass-learning-evaluation-ddc55257eccf2aba137f4e38ce3f645393eb54a1/frontend/package.json');
 const {chromium}=require('playwright-core');
 const b=await chromium.launch({executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',headless:true});
-const output={productionWrites:false,paidModelCalls:0,checks:[]},errors=[];
+const liveAssets=process.env.LIVE_ASSETS==='1';
+const output={productionWrites:false,paidModelCalls:0,productionAssets:liveAssets,checks:[]},errors=[];
 const p=await b.newPage();p.on('pageerror',e=>errors.push(e.message));
 let role='student',delay=0,qrMode=false;const calls=[],drawRequests=[],mockHistory=[],drawResults=new Map();
 let draft={answers:{},draftVersion:0,submittedAt:null};
 const survey={id:'mock-survey',classId:'class-a',title:'合成问卷',state:'published',version:1,deadlineAt:null,durationMinutes:null,questions:[{id:'q',title:'合成开放题',type:'text',required:false,options:[]}]};
-await p.route('**/assets/**',async route=>{const name=new URL(route.request().url()).pathname.split('/').at(-1);const file=join('work/project-audit/fixes/frontend/dist/assets',name==='main-rollcall-stage.js'?'main-audit-fix.js':name);if(existsSync(file))await route.fulfill({path:file,contentType:name.endsWith('.css')?'text/css':'application/javascript'});else await route.continue()});
+if(!liveAssets)await p.route('**/assets/**',async route=>{const name=new URL(route.request().url()).pathname.split('/').at(-1);const file=join('work/project-audit/fixes/frontend/dist/assets',name==='main-rollcall-stage.js'?'main-audit-fix.js':name);if(existsSync(file))await route.fulfill({path:file,contentType:name.endsWith('.css')?'text/css':'application/javascript'});else await route.continue()});
 await p.route('**/api/v1/**',async route=>{
  const path=new URL(route.request().url()).pathname.replace('/api/v1','');calls.push({method:route.request().method(),path,body:route.request().postDataJSON?.()});
  const user={id:'mock-'+role,displayName:'合成用户',role,mustChangePassword:false};let data=[];
@@ -58,4 +59,4 @@ try{
  for(const width of [320,375,414,768,1024]){await p.setViewportSize({width,height:1000});assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1))}await p.setViewportSize({width:1400,height:1000});output.checks.push({name:'responsive_checkin',passed:true,widths:[320,375,414,768,1024]});
  await p.getByRole('button',{name:'退出登录',exact:true}).click();role='student';const from=calls.length;await p.goto('http://127.0.0.1:5173/checkin?sessionId=mock-session&ticket=synthetic-qr');await p.waitForFunction(()=>JSON.parse(sessionStorage.getItem('attendance.pending')||'null')?.scanProof);await enterLogin();await p.getByRole('button',{name:'确认签到',exact:true}).click();await p.getByText('签到成功，你的拼图已归位。',{exact:true}).waitFor();const recent=calls.slice(from);assert(recent.findIndex(c=>c.path==='/attendance/scan')<recent.findIndex(c=>c.path==='/auth/login'));const checkin=recent.find(c=>c.path==='/core/attendance-checkin');assert.equal(checkin.body.scanProof,'synthetic-proof-only');assert(!checkin.body.ticket);output.checks.push({name:'scan_before_login_then_confirm',passed:true,proofExchangedBeforeLogin:true});
  assert.deepEqual(errors,[]);output.pageErrors=errors;output.passed=true;
-}catch(e){output.testError=e.message;output.pageText=(await p.locator('body').innerText()).slice(0,2000);output.calls=calls.slice(-20);process.exitCode=1}finally{writeFileSync('work/project-audit/browser-fixed-result.json',JSON.stringify(output,null,2));console.log(JSON.stringify(output));await b.close()}
+}catch(e){output.testError=e.message;output.pageText=(await p.locator('body').innerText()).slice(0,2000);output.calls=calls.slice(-20);process.exitCode=1}finally{writeFileSync('work/project-audit/'+(liveAssets?'browser-live-result.json':'browser-fixed-result.json'),JSON.stringify(output,null,2));console.log(JSON.stringify(output));await b.close()}

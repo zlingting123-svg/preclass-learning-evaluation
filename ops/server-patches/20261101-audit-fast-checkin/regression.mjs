@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
-import {SqliteStore} from '/opt/preclass/releases/20261031-audit-fast-checkin/backend/dist/backend/src/store.js';
-import {Service,keyFor} from '/opt/preclass/releases/20261031-audit-fast-checkin/backend/dist/backend/src/service.js';
-import {LocalAuth} from '/opt/preclass/releases/20261031-audit-fast-checkin/backend/dist/backend/src/auth.js';
-import {AttendanceService} from '/opt/preclass/releases/20261031-audit-fast-checkin/backend/dist/backend/src/attendance.js';
-import {QuestionnaireService} from '/opt/preclass/releases/20261031-audit-fast-checkin/backend/dist/backend/src/questionnaires.js';
-import {reviewEvidence} from '/opt/preclass/releases/20261031-audit-fast-checkin/backend/dist/backend/src/course-review.js';
-import {protectCourseReply,Gateway} from '/opt/preclass/releases/20261031-audit-fast-checkin/ai-module/dist/src/gateway.js';
-import {referenceAiRoutes} from '/opt/preclass/releases/20261031-audit-fast-checkin/backend/dist/backend/src/reference-ai.js';
+import {SqliteStore} from '/opt/preclass/releases/20261101-audit-fast-checkin-bound/backend/dist/backend/src/store.js';
+import {Service,keyFor} from '/opt/preclass/releases/20261101-audit-fast-checkin-bound/backend/dist/backend/src/service.js';
+import {LocalAuth} from '/opt/preclass/releases/20261101-audit-fast-checkin-bound/backend/dist/backend/src/auth.js';
+import {AttendanceService} from '/opt/preclass/releases/20261101-audit-fast-checkin-bound/backend/dist/backend/src/attendance.js';
+import {QuestionnaireService} from '/opt/preclass/releases/20261101-audit-fast-checkin-bound/backend/dist/backend/src/questionnaires.js';
+import {reviewEvidence} from '/opt/preclass/releases/20261101-audit-fast-checkin-bound/backend/dist/backend/src/course-review.js';
+import {protectCourseReply,Gateway} from '/opt/preclass/releases/20261101-audit-fast-checkin-bound/ai-module/dist/src/gateway.js';
+import {referenceAiRoutes} from '/opt/preclass/releases/20261101-audit-fast-checkin-bound/backend/dist/backend/src/reference-ai.js';
 import {mkdtempSync,writeFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
@@ -62,12 +62,12 @@ const principal={subjectId:'student',role:'student'},input={courseId:'class-a',q
 const rid=await gateway.prepare(principal,input);await gateway.answer(principal,input,rid,new AbortController().signal,async(event,data)=>events.push({event,data}));
 check('revoke_access_during_generation',{revoked,authChecks,answerEmittedAfterRevocation:events.some(x=>x.event==='delta'),done:events.some(x=>x.event==='done')});
 
-const moduleRoot='/opt/preclass/releases/20261031-audit-fast-checkin';
+const moduleRoot='/opt/preclass/releases/20261101-audit-fast-checkin-bound';
 const {ticketAt,verifyTicket,qrState,captureProof,verifyProof,QR_INTERVAL_MS,QR_VALID_MS,SCAN_PROOF_MS}=await import(moduleRoot+'/backend/dist/backend/src/attendance-qr.js');
 const specimen={id:'00000000-0000-4000-8000-000000000000',secret:'synthetic-secret-only'};
-const start=Math.floor(now/2000)*2000,code=ticketAt(specimen,start),proof=captureProof(specimen,code,start+1000);
+const start=Math.floor(now/2000)*2000,code=ticketAt(specimen,start),proof=captureProof(specimen,code,start+1000,'A'.repeat(43));
 assert.notEqual(ticketAt(specimen,start+2000),code);assert(verifyTicket(specimen,code,start+9999));assert(!verifyTicket(specimen,code,start+10000));assert(!verifyTicket(specimen,ticketAt(specimen,start+2000),start));
-assert(verifyProof(specimen,proof.scanProof,start+1000+179999));assert(!verifyProof(specimen,proof.scanProof,start+1000+180000));assert(!verifyProof({...specimen,secret:'different'},proof.scanProof,start+2000));assert(!verifyProof(specimen,proof.scanProof+'x',start+2000));
+assert(verifyProof(specimen,proof.scanProof,start+1000+179999,'A'.repeat(43)));assert(!verifyProof(specimen,proof.scanProof,start+1000+180000,'A'.repeat(43)));assert(!verifyProof(specimen,proof.scanProof,start+2000,'B'.repeat(43)));assert(!verifyProof(specimen,proof.scanProof,start+2000));assert(!verifyProof({...specimen,secret:'different'},proof.scanProof,start+2000,'A'.repeat(43)));assert(!verifyProof(specimen,proof.scanProof+'x',start+2000,'A'.repeat(43)));
 check('fast_qr_boundaries',{passed:true,rotationMs:QR_INTERVAL_MS,validityMs:QR_VALID_MS,loginProofMs:SCAN_PROOF_MS,prefetchedFrames:qrState(specimen,start).qrTickets.length});
 const school=new SqliteStore(':memory:'),schoolCore=new Service(school,()=>now),classId='http-class';
 school.put('class',classId,{id:classId,teacherId:t.id});school.put('user',s.id,s);school.put('member',keyFor(classId,s.id),{classId,studentId:s.id});
@@ -77,12 +77,13 @@ const httpAuth={authenticate(token){if(token==='student-token')return s;if(token
 const server=createApp(schoolCore,httpAuth).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));
 const origin='http://127.0.0.1:'+server.address().port;
 try{
- const capture=await fetch(origin+'/api/v1/attendance/scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:open.id,ticket:open.ticket})});assert.equal(capture.status,200);const captured=await capture.json();assert.deepEqual(Object.keys(captured.data).sort(),['expiresAt','scanProof','sessionId']);
+ const capture=await fetch(origin+'/api/v1/attendance/scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:open.id,ticket:open.ticket})});assert.equal(capture.status,200);const cookie=capture.headers.get('set-cookie').split(';')[0];assert(capture.headers.get('set-cookie').includes('HttpOnly'));assert(capture.headers.get('set-cookie').includes('SameSite=Strict'));const captured=await capture.json();assert.deepEqual(Object.keys(captured.data).sort(),['expiresAt','scanProof','sessionId']);
+ const transferred=await fetch(origin+'/api/v1/core/attendance-checkin',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer student-token'},body:JSON.stringify({sessionId:open.id,scanProof:captured.data.scanProof})});assert.equal(transferred.status,409);
  now+=90000;
- const result=await fetch(origin+'/api/v1/core/attendance-checkin',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer student-token'},body:JSON.stringify({sessionId:open.id,scanProof:captured.data.scanProof})});assert.equal(result.status,200);assert((await result.json()).data.checkedIn);
+ const result=await fetch(origin+'/api/v1/core/attendance-checkin',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer student-token',Cookie:cookie},body:JSON.stringify({sessionId:open.id,scanProof:captured.data.scanProof})});assert.equal(result.status,200);assert((await result.json()).data.checkedIn);
  const unsigned=await fetch(origin+'/api/v1/core/attendance-checkin',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:open.id,scanProof:captured.data.scanProof})});assert.equal(unsigned.status,401);
  const wrongOrigin=await fetch(origin+'/api/v1/attendance/scan',{method:'POST',headers:{'Content-Type':'application/json',Origin:'https://untrusted.example'},body:JSON.stringify({sessionId:open.id,ticket:open.ticket})});assert.equal(wrongOrigin.status,403);
- check('prelogin_scan_http',{passed:true,loginDelayMs:90000,anonymousCheckinDenied:true,crossOriginDenied:true,publicResponseHasNoRoster:true});
+ check('prelogin_scan_http',{passed:true,loginDelayMs:90000,anonymousCheckinDenied:true,crossOriginDenied:true,publicResponseHasNoRoster:true,proofTransferWithoutDeviceCookieDenied:true,httpOnlySameSiteCookie:true});
 }finally{await new Promise(r=>server.close(r));school.close()}
 const qdb=new SqliteStore(':memory:'),qc=new Service(qdb,()=>now);qdb.put('class','qa',{id:'qa',teacherId:t.id});qdb.put('member',keyFor('qa',s.id),{classId:'qa',studentId:s.id});
 const qservice=new QuestionnaireService(qc);let question=qservice.save(t,{classId:'qa',title:'Draft checks',questions:[{id:'required',title:'required',type:'text',required:true,options:[]},{id:'optional',title:'optional',type:'multiple',required:false,options:['A','B']}],deadlineAt:null,durationMinutes:null,expectedVersion:0});qservice.transition(t,question.id,question.version,'publish');qservice.start(s,question.id);
