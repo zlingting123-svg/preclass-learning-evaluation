@@ -1,0 +1,33 @@
+/* Hallmark · pre-emit critique: P5 H5 E4 S5 R5 V4
+ * component: university identity · existing forest theme · original supplied artwork */
+.pv-cau-lockup{box-sizing:border-box;display:flex;align-items:center;justify-content:center;width:298px;max-width:100%;padding:24px 27px;background:#fbfcf9;border:1px solid #ffffff80;border-radius:12px;box-shadow:0 16px 42px #062b2024;overflow:hidden;flex:none}
+.pv-cau-lockup img{display:block;width:242px;max-width:100%;height:auto;object-fit:contain;flex:none}
+.pv-welcome .pv-cau-welcome{display:flex;align-items:center;justify-content:center;flex:none;width:330px;height:auto;min-height:170px;margin:0 10px 0 24px;border:0;border-radius:0;background:transparent;transform:none;position:relative}
+.pv-cau-welcome:before,.pv-cau-welcome:after{content:"";position:absolute;width:330px;height:330px;border:1px solid var(--pv-hero-edge);border-radius:50%;z-index:-1;pointer-events:none}
+.pv-cau-welcome:after{width:390px;height:390px;opacity:.55}
+.pv-welcome:has(.pv-cau-welcome){gap:18px;padding:34px 36px;min-height:260px}
+.pv-welcome:has(.pv-cau-welcome)>div:first-child{position:relative;z-index:1;min-width:0}
+.pv-welcome:has(.pv-cau-welcome) .pv-welcome-label{font-size:10px;letter-spacing:.1em;right:46px;bottom:20px;color:var(--pv-hero-text)}
+.pv-cau-login-identity{display:flex;flex-direction:column;align-items:flex-start;gap:22px}
+.pv-cau-course{font-size:19px;font-weight:600;letter-spacing:.04em;color:var(--pv-white);padding-left:2px}
+.pv-login:has(.pv-cau-login-identity)>aside{position:relative;overflow:hidden;background:linear-gradient(145deg,var(--pv-hero-start),var(--pv-hero-end))}
+.pv-login:has(.pv-cau-login-identity) .pv-login-story{padding:45px 0}
+.pv-login:has(.pv-cau-login-identity) .pv-small{font-size:11px;letter-spacing:.06em}
+.pv-cau-shield{display:block;position:relative;width:31px;height:39px;overflow:hidden;flex:none}
+.pv-cau-shield img{display:block;position:absolute;left:0;top:0;width:128px;max-width:none;height:auto}
+.pv-sidebar .pv-brand-icon.pv-cau-brand-icon{height:45px;width:39px;min-width:39px;border-radius:8px;background:#fbfcf9;box-shadow:none;color:inherit;padding:3px 4px}
+@media(max-width:1200px){.pv-welcome .pv-cau-welcome{width:270px;margin-right:0;margin-left:6px}.pv-cau-welcome .pv-cau-lockup{padding:20px 14px;width:270px}.pv-welcome:has(.pv-cau-welcome){padding:28px;gap:12px}.pv-welcome:has(.pv-cau-welcome) h2{font-size:26px}}
+@media(max-width:1000px) and (min-width:761px){.pv-welcome .pv-cau-welcome{width:100px}.pv-cau-welcome .pv-cau-lockup{width:78px;height:96px;padding:10px;justify-content:flex-start}.pv-cau-welcome .pv-cau-lockup img{width:242px;max-width:none;height:74px}.pv-cau-welcome:before{width:190px;height:190px}.pv-cau-welcome:after{width:240px;height:240px}}
+@media(max-width:760px){.pv-welcome:has(.pv-cau-welcome){padding:24px;gap:14px;min-height:240px;align-items:flex-start}.pv-welcome .pv-cau-welcome{display:flex!important;width:58px;min-height:74px;align-items:flex-start;margin:0}.pv-cau-welcome .pv-cau-lockup{width:58px;height:74px;padding:0;background:none;border:0;border-radius:0;box-shadow:none;justify-content:flex-start}.pv-cau-welcome .pv-cau-lockup img{width:242px;max-width:none;height:74px}.pv-cau-welcome:before,.pv-cau-welcome:after{display:none}.pv-welcome:has(.pv-cau-welcome) h2{font-size:25px}.pv-welcome:has(.pv-cau-welcome) .pv-welcome-tag{font-size:9px;line-height:1.6}.pv-welcome:has(.pv-cau-welcome) .pv-welcome-label{left:24px;right:auto;bottom:18px;font-size:9px}.pv-cau-login-identity{flex-direction:row;align-items:center;gap:18px}.pv-cau-login-identity .pv-cau-lockup{width:58px;height:74px;padding:0;background:none;border:0;box-shadow:none;border-radius:0;justify-content:flex-start}.pv-cau-login-identity .pv-cau-lockup img{width:242px;max-width:none;height:74px}.pv-cau-course{font-size:20px;letter-spacing:0}.pv-login:has(.pv-cau-login-identity)>aside{padding:24px;min-height:220px}.pv-login:has(.pv-cau-login-identity) .pv-login-story{padding:24px 0 0}.pv-login:has(.pv-cau-login-identity) .pv-login-story h1{font-size:26px}}
+@media(max-width:375px){.pv-welcome:has(.pv-cau-welcome){padding:20px;gap:10px}.pv-welcome:has(.pv-cau-welcome) h2{font-size:23px}.pv-welcome:has(.pv-cau-welcome) .pv-welcome-label{left:20px}.pv-cau-course{font-size:18px}}
+/* Integrated identity: no white plaques, source artwork preserved. */
+.pv-cau-lockup{background:transparent;border:0;border-radius:0;box-shadow:none;padding:14px 22px}
+.pv-cau-lockup img{filter:grayscale(1) invert(1) contrast(1.35);mix-blend-mode:screen;opacity:.94}
+.pv-welcome .pv-cau-welcome{isolation:isolate}
+.pv-cau-welcome:before,.pv-cau-welcome:after{opacity:.35}
+.pv-cau-welcome:after{opacity:.2}
+.pv-sidebar .pv-brand-icon.pv-cau-brand-icon{background:transparent;padding:3px 4px}
+@media(max-width:1200px){.pv-cau-welcome .pv-cau-lockup{padding:16px 14px}}
+@media(max-width:1000px) and (min-width:761px){.pv-cau-welcome .pv-cau-lockup{padding:10px}}
+@media(max-width:760px){.pv-cau-welcome .pv-cau-lockup,.pv-cau-login-identity .pv-cau-lockup{padding:0}.pv-cau-welcome .pv-cau-lockup img,.pv-cau-login-identity .pv-cau-lockup img{opacity:.9}}
+.pv-welcome .pv-cau-welcome{isolation:auto}.pv-cau-lockup{mix-blend-mode:screen}.pv-cau-lockup img{mix-blend-mode:normal;filter:grayscale(1) invert(1) contrast(1.65) brightness(1.25);opacity:.93}

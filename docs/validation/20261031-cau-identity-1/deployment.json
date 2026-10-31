@@ -1,0 +1,21 @@
+{
+  "deployed": true,
+  "current": "/opt/preclass/releases/20261031-cau-identity-1",
+  "previous": "/opt/preclass/releases/20261031-attendance-blur",
+  "backendChanged": false,
+  "databaseChanged": false,
+  "servicesRestarted": false,
+  "newAssets": 4,
+  "unchangedFiles": 3676,
+  "logoOriginalSha256": "da43960ace33637c5368c65edc48f5aec6a30eee53af9a92ea1f9548f729ca36",
+  "sourceArtworkPreserved": true,
+  "recoloredByCSS": true,
+  "whitePlaque": false,
+  "wideScreen": "shield and university name",
+  "compactScreen": "shield only",
+  "sidebar": "green shield",
+  "loginUpdated": true,
+  "welcomeUpdated": true,
+  "health": true,
+  "httpHashesVerified": true
+}

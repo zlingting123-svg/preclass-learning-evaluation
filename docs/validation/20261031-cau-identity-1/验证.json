@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "syntheticOnly": true,
+  "productionAssets": true,
+  "productionWritten": false,
+  "paths": [
+    "/auth/login",
+    "/account/profile",
+    "/classes",
+    "/core/classes/preview-class/surveys"
+  ],
+  "checks": [
+    "登录页校徽组合标志",
+    "窄屏仅校徽，保留课程名称",
+    "桌面工作台完整校徽校名",
+    "侧栏仅校徽",
+    "320/375/414/768/1024无横向溢出",
+    "模拟登录交互正常",
+    "页面无运行错误"
+  ]
+}
