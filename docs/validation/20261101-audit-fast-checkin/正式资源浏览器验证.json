@@ -1,0 +1,54 @@
+{
+  "productionWrites": false,
+  "paidModelCalls": 0,
+  "productionAssets": true,
+  "checks": [
+    {
+      "name": "survey_draft_navigation_recovery",
+      "passed": true,
+      "serverSaved": true,
+      "version": 1
+    },
+    {
+      "name": "strict_source_ui_copy",
+      "passed": true,
+      "text": "专业知识仅依据已上传课程资料和生态环境部官网文件；资料不足时会说明限制。请核对重要信息。"
+    },
+    {
+      "name": "slow_network_serial_refresh",
+      "passed": true,
+      "latencyMs": 2200,
+      "loadedMembers": 1
+    },
+    {
+      "name": "rollcall_response_lost_retry",
+      "passed": true,
+      "committedDraws": 1,
+      "sameIdempotencyKey": true
+    },
+    {
+      "name": "fast_qr_browser_rotation",
+      "passed": true,
+      "distinctQrFrames": 4,
+      "observedMs": 6000
+    },
+    {
+      "name": "responsive_checkin",
+      "passed": true,
+      "widths": [
+        320,
+        375,
+        414,
+        768,
+        1024
+      ]
+    },
+    {
+      "name": "scan_before_login_then_confirm",
+      "passed": true,
+      "proofExchangedBeforeLogin": true
+    }
+  ],
+  "pageErrors": [],
+  "passed": true
+}
