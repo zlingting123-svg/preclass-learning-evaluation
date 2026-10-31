@@ -1,0 +1,19 @@
+{
+  "deployed": true,
+  "current": "/opt/preclass/releases/20261031-attendance-blur",
+  "previous": "/opt/preclass/releases/20261031-knowledge-atlas",
+  "sourceAtlasRetained": true,
+  "backendChanged": false,
+  "restartedServices": false,
+  "databaseChanged": false,
+  "imageUpload": "admin",
+  "teacherBlurRange": [
+    0,
+    32
+  ],
+  "defaultBlur": 14,
+  "preferenceStorage": "browser per class",
+  "newAssets": 4,
+  "unchangedFiles": 3672,
+  "health": true
+}
