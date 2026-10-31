@@ -1,0 +1,19 @@
+{
+  "deployed": true,
+  "current": "/opt/preclass/releases/20261031-rollcall-stage",
+  "previous": "/opt/preclass/releases/20261031-course-review",
+  "backendChanged": false,
+  "databaseChanged": false,
+  "servicesRestarted": false,
+  "newAssets": 4,
+  "unchangedFiles": 3688,
+  "scope": "teacher rollcall left stage; settings/backend selection rules preserved",
+  "actualServerDrawUnchanged": true,
+  "themesInherited": true,
+  "singleThreeFiveSupported": true,
+  "fullscreen": true,
+  "reducedMotion": true,
+  "attendanceBlurRetained": true,
+  "health": true,
+  "httpHashesVerified": true
+}

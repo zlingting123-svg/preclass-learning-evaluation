@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "productionAssets": true,
+  "productionWritten": false,
+  "syntheticOnly": true,
+  "checks": [
+    "正式主站教师导航进入点名舞台",
+    "模拟接口返回同学与结果卡一致",
+    "主题切换与窄屏无横向溢出",
+    "页面无运行错误"
+  ]
+}

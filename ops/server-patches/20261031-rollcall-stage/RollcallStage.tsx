@@ -1,0 +1,21 @@
+import {a as React} from './react-DFdtPfhg.js';
+const Arrow=()=> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg>;
+export function RollcallStage({members=[],pool=[],chosen=[],busy=false,rolling='',error='',scope='all',count=1,onDraw}:any){
+ const [tick,setTick]=React.useState(0),[expanded,setExpanded]=React.useState(false),ref=React.useRef(null),reduced=React.useRef(matchMedia('(prefers-reduced-motion: reduce)').matches);
+ const phase=chosen.length?'result':busy?'drawing':error?'error':members.length?'ready':'empty',scopeLabel=scope==='signed'?'本场已签到':scope==='absent'?'本场未签到':'全班同学';
+ React.useEffect(()=>{if(!busy||reduced.current)return;let cancelled=false,task:any,start=performance.now();const next=()=>{if(cancelled)return;setTick(t=>t+1);task=setTimeout(next,rolling?Math.min(230,65+(performance.now()-start)/14):110)};next();return()=>{cancelled=true;clearTimeout(task)}},[busy,rolling]);
+ React.useEffect(()=>{const change=()=>setExpanded(document.fullscreenElement===ref.current);document.addEventListener('fullscreenchange',change);return()=>document.removeEventListener('fullscreenchange',change)},[]);
+ const displayed=pool.slice(0,18),current=pool[tick%Math.max(1,pool.length)];
+ return <div ref={ref} className={'rl-stage rl-'+phase} data-phase={phase} aria-busy={busy}>
+  <header className="rl-stage-head"><span className="rl-eyebrow"><i/>随机点名</span><div><span className="rl-state" role="status">{phase==='result'?'抽取完成':phase==='drawing'?'正在抽取':phase==='error'?'本次未完成':phase==='empty'?'暂无学生':'准备就绪'}</span><button type="button" className="rl-full" aria-label={expanded?'退出点名全屏':'全屏点名'} onClick={()=>{if(expanded)document.exitFullscreen();else (ref.current as HTMLElement)?.requestFullscreen?.().catch(()=>{})}}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg></button></div></header>
+  <div className="rl-meta"><span>{scopeLabel}</span><span>一次 {count} 人</span><span>班级 {members.length} 人</span></div>
+  <div className="rl-scene">
+   <div className="rl-ambient" aria-hidden="true"><i/><i/><i/></div>
+   {!chosen.length&&<div className="rl-card-field" aria-hidden="true">{displayed.map((s,i)=><div className={'rl-orbit-card rl-pos-'+i} key={s.studentId} style={{'--order':i} as any}><b>{Array.from(s.studentName||'?')[0]}</b><span>{s.studentName}</span><small>{s.studentNumber}</small></div>)}</div>}
+   {phase==='result'?<div className={'rl-results '+(chosen.length>1?'rl-many':'')} aria-label="点名结果" aria-live="polite">{chosen.map((s,i)=><article className="rl-result-card" key={s.studentId} style={{'--order':i} as any}><div className="rl-result-top"><span>本次点名</span><b>{String(i+1).padStart(2,'0')}</b></div><span className="rl-result-initial" aria-hidden="true">{Array.from(s.studentName||'?')[0]}</span><h2>{s.studentName}</h2><p>{s.studentNumber}</p><div className="rl-result-rule"><i/><span>已选中</span></div></article>)}</div>:<div className="rl-center">
+    {busy?<div className="rl-reel" aria-hidden="true"><span className="rl-reel-neighbor">{pool[(tick+pool.length-1)%Math.max(1,pool.length)]?.studentName||'读取名单'}</span><strong key={tick}>{reduced.current?'正在抽取':current?.studentName||'等待抽取结果'}</strong><span className="rl-reel-neighbor">{pool[(tick+1)%Math.max(1,pool.length)]?.studentName||'请稍候'}</span><i className="rl-scan-line"/></div>:<><div className="rl-ready-symbol" aria-hidden="true"><svg viewBox="0 0 80 80" fill="none"><rect x="15" y="20" width="35" height="46" rx="8" transform="rotate(-18 15 20)"/><rect x="33" y="10" width="35" height="46" rx="8" transform="rotate(12 33 10)"/><path d="m42 29 9 1m-10 8 15 2"/></svg></div><h2>{members.length?'准备点名':'班级尚无学生'}</h2><p>{members.length?'点击开始，揭晓本次同学':'添加班级成员后即可点名'}</p></>}
+   </div>}
+  </div>
+  <footer className="rl-bottom"><p className="rl-caption">{busy?(rolling?'正在揭晓…':'正在获取抽取结果…'):chosen.length?'本次结果已记录，可继续下一次点名':error?'请检查上方提示后重试':'按当前点名设置抽取'}</p><button className="rl-draw" type="button" disabled={busy||!members.length} onClick={onDraw}><span>{busy?<i className="rl-spinner"/>:null}{busy?'正在抽取…':chosen.length?'再次随机点名':'开始随机点名'}</span><Arrow/></button></footer>
+ </div>
+}
