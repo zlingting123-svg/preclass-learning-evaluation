@@ -1,0 +1,80 @@
+{
+  "isolated": true,
+  "productionWrites": false,
+  "paidModelCalls": 0,
+  "checks": [
+    {
+      "name": "student_read_session",
+      "denied": true,
+      "code": "FORBIDDEN"
+    },
+    {
+      "name": "cross_class_access",
+      "denied": true,
+      "code": "FORBIDDEN"
+    },
+    {
+      "name": "valid_checkin",
+      "result": true
+    },
+    {
+      "name": "duplicate_checkin",
+      "count": 1
+    },
+    {
+      "name": "expired_qr",
+      "denied": true,
+      "code": "QR_EXPIRED"
+    },
+    {
+      "name": "privacy_filter",
+      "input": "参考合成教材.txt中的内容。",
+      "output": "参考合成教材.txt中的内容。"
+    },
+    {
+      "name": "privacy_filter",
+      "input": "请阅读 page 15。",
+      "output": "请阅读 page 15。"
+    },
+    {
+      "name": "privacy_filter",
+      "input": "请阅读第15页。",
+      "output": "请阅读相关部分。"
+    },
+    {
+      "name": "chapter_alias",
+      "question": "总结2.生态环境问题与基础知识的知识框架",
+      "matched": true
+    },
+    {
+      "name": "chapter_alias",
+      "question": "总结第2章的知识框架",
+      "matched": false
+    },
+    {
+      "name": "chapter_alias",
+      "question": "总结第二章的知识框架",
+      "matched": false
+    },
+    {
+      "name": "optional_single_empty_string",
+      "accepted": false,
+      "code": "INVALID_OPTIONS"
+    },
+    {
+      "name": "reference_ai_route",
+      "state": "ai_read_complete",
+      "ledgerPurpose": "system_admin",
+      "schedulerPurpose": "student_qa",
+      "policyOutputLimit": 512,
+      "requestedMaxTokens": 4096
+    },
+    {
+      "name": "revoke_access_during_generation",
+      "revoked": true,
+      "authChecks": 3,
+      "answerEmittedAfterRevocation": true,
+      "done": true
+    }
+  ]
+}
