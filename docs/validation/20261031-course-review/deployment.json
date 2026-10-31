@@ -1,0 +1,33 @@
+{
+  "deployed": true,
+  "current": "/opt/preclass/releases/20261031-course-review",
+  "previous": "/opt/preclass/releases/20261031-cau-identity-hd",
+  "chapterReview": true,
+  "strictSources": "uploaded material and MEE only",
+  "inputBudgetUnchanged": true,
+  "uploadedMetadataHidden": true,
+  "verbatimReplyGuard": true,
+  "courseReplyCheckedBeforeEmit": true,
+  "surveyStreamingUnchanged": true,
+  "loginFourModuleLayout": true,
+  "existingFilesChanged": [
+    "backend/dist/backend/src/strict-knowledge.js",
+    "frontend/dist/index.html",
+    "ai-module/dist/src/deepseek.js",
+    "ai-module/dist/src/gateway.js"
+  ],
+  "addedFiles": [
+    "frontend/dist/assets/main-course-review.js",
+    "frontend/dist/assets/course-review-layout.css",
+    "frontend/dist/assets/main-entry-course-review.js",
+    "backend/dist/backend/src/course-review.js"
+  ],
+  "unchangedFiles": 3681,
+  "businessDataMigrated": false,
+  "sourceDocumentsUnchanged": true,
+  "hostRestarted": true,
+  "knowledgeMapRestarted": false,
+  "realModelCalls": 0,
+  "mockProviderIntegrationPassed": true,
+  "health": true
+}

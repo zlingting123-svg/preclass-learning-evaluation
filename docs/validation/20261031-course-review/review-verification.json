@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "question": "总结一下本次课“2.生态环境问题与基础知识”的知识框架",
+  "beforeRetrievedChunks": 6,
+  "beforeStatus": "supported",
+  "after": "chapter_review",
+  "sixBranchesCovered": true,
+  "uploadedOnly": true,
+  "sourceReadOnly": true,
+  "promptBytes": 6290,
+  "maxInputBytes": 32000,
+  "filenamesAndPageMarkersExcluded": true,
+  "verbatimGuard": true,
+  "crossClassDenied": true,
+  "unknownChapterNoGuessing": true,
+  "realModelCalls": 0
+}
