@@ -1,0 +1,1 @@
+{"deployed": true, "current": "/opt/preclass/releases/20261101-survey-delete", "previous": "/opt/preclass/releases/20261101-survey-analysis-entry", "backendChanged": true, "databaseChanged": false, "serviceRestarted": true, "changedExistingFiles": 3, "newAssets": 4, "httpHashesVerified": true, "health": true}
