@@ -1,0 +1,1 @@
+{"deployed": true, "current": "/opt/preclass/releases/20261101-question-insight", "previous": "/opt/preclass/releases/20261101-back-to-top", "backendChanged": true, "databaseChanged": false, "serviceRestarted": true, "changedExistingFiles": 2, "newAssets": 6, "httpHashesVerified": true, "health": true}

@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "perQuestionOnly": true,
+  "choiceAndMatrix": true,
+  "privacy": true,
+  "roleAndClass": true,
+  "cachedAndVersioned": true,
+  "mockAi": true,
+  "realModelCalls": 0
+}
