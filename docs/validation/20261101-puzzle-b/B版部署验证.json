@@ -1,0 +1,1 @@
+{"deployed": true, "current": "/opt/preclass/releases/20261101-puzzle-b", "previous": "/opt/preclass/releases/20261101-rollcall-custom", "backendChanged": false, "databaseChanged": false, "servicesRestarted": false, "changedExistingFiles": 1, "newAssets": 4, "unchangedFiles": 3732, "httpHashesVerified": true}

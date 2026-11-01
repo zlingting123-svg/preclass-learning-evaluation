@@ -1,0 +1,12 @@
+{
+  "productionWrites": false,
+  "simulatedOnly": true,
+  "passed": true,
+  "partialCount": 216,
+  "exactMissing": 84,
+  "completeSinglePhoto": true,
+  "clickMissing": true,
+  "blur": true,
+  "responsive": true,
+  "errors": []
+}

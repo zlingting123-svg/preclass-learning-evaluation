@@ -1,0 +1,1 @@
+{"deployed": true, "current": "/opt/preclass/releases/20261101-survey-builder", "previous": "/opt/preclass/releases/20261101-puzzle-b", "changedExistingFiles": 3, "newFiles": 9, "unchangedFiles": 3734, "databaseMigration": false, "productionTestWrites": false, "backupBeforeSwitch": true, "health": true, "httpHashesVerified": true, "puzzleBRollcallTimedAttendancePreserved": true}
