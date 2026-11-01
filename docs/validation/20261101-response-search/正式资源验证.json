@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "productionAssets": true,
+  "productionWrites": false,
+  "mockApi": true,
+  "studentCount": 300,
+  "nameAndNumberSearch": true,
+  "caseAndWhitespace": true,
+  "matchedAnswerLink": true,
+  "returnPreservesSearch": true,
+  "unsubmittedStatus": true,
+  "noResultsAndClear": true,
+  "noRequestWhileTyping": true,
+  "responsive": [
+    320,
+    375,
+    414,
+    768
+  ],
+  "errors": []
+}
