@@ -1,0 +1,27 @@
+import{writeFileSync,mkdirSync}from'node:fs';import{createHash}from'node:crypto';
+const r='work/nav-icons';mkdirSync(r+'/dist/assets',{recursive:true});const get=async p=>{const x=await fetch('http://127.0.0.1:5173'+p);if(!x.ok)throw Error(p);return x.text()},sha=s=>createHash('sha256').update(s).digest('hex');const html=await get('/'),entryName=html.match(/src="([^"]*main-entry[^" ]+)"/)[1],entry=await get(entryName),mainName=entry.match(/\.\/(main-[\w-]+\.js)/)[1],main=await get('/assets/'+mainName);
+writeFileSync(r+'/main.before.js',main);writeFileSync(r+'/index.before.html',html);writeFileSync(r+'/entry.before.js',entry);writeFileSync(r+'/baseline.json',JSON.stringify({entryName,mainName,mainHash:sha(main),indexHash:sha(html)}));
+const icons={
+navHome:'M3 10 12 3l9 7M5 9v12h5v-7h4v7h5V9',
+navSurvey:'M8 4H5v17h14V4h-3M8 3h8v4H8ZM8 11l1 1 2-2M13 11h3M8 16l1 1 2-2M13 16h3',
+navAI:'M5 5h14v12h-7l-5 4v-4H5ZM9 10h.01M15 10h.01M9 13h6M12 2v3',
+navMap:'M9 9h6v6H9ZM12 3v6M3 12h6M15 12h6M12 15v6M10 1h4v2h-4ZM1 10h2v4H1ZM21 10h2v4h-2ZM10 21h4v2h-4Z',
+navCheckin:'M5 5h14v16H5ZM8 3v4M16 3v4M5 10h14M8 15l3 3 5-5',
+navRoll:'M4 3h12v16H4ZM8 7h4M8 11h2M16 7h4v14H8v-2M12 15l1 1 2-3',
+navRoster:'M8 3H4v18h16V3h-4M8 2h8v4H8ZM10 10a2 2 0 1 0 4 0 2 2 0 1 0-4 0M8 18v-1a4 4 0 0 1 8 0v1',
+navQR:'M3 3h6v6H3ZM15 3h6v6h-6ZM3 15h6v6H3ZM15 15h2v2h-2ZM19 15h2v6h-6v-2',
+navAdmin:'M3 13h7v8H3ZM14 3h7v18h-7ZM3 3h7v6H3Z',
+navImport:'M4 3h10l6 6v12H4ZM14 3v6h6M12 11v7M9 15l3 3 3-3',
+navClasses:'M3 21V7l9-4 9 4v14M3 21h18M7 10h2M15 10h2M7 14h2M15 14h2M10 21v-4h4v4',
+navAccount:'M8 7a4 4 0 1 0 8 0 4 4 0 1 0-8 0M4 21v-2a8 8 0 0 1 16 0v2',
+navKnowledge:'M4 3h13a3 3 0 0 1 3 3v15H7a3 3 0 0 1-3-3ZM4 17h16M8 7h8M8 11h6',
+navImages:'M3 4h18v16H3ZM3 17l6-6 4 4 3-3 5 5M15 8h.01',
+navRecords:'M4 5h16v16H4ZM8 2v6M16 2v6M4 10h16M8 14h8M8 17h5',
+navAPI:'m8 6-6 6 6 6m8-12 6 6-6 6M14 3l-4 18',
+navServer:'M3 3h18v7H3ZM3 14h18v7H3ZM7 6h.01M7 17h.01M11 6h6M11 17h6',
+navUsage:'M4 3v18h17M8 17v-4M13 17V8M18 17V5',
+navAudit:'M4 3h12v7M4 3v18h7M8 7h4M8 11h2M15 13a4 4 0 1 0 0 8 4 4 0 1 0 0-8M18 20l3 3'
+};
+const mapping={'/':'navHome','/questionnaires':'navSurvey','/assistant':'navAI','/knowledge-maps':'navMap','/attendance':'navCheckin','/rollcall':'navRoll','/student-checkin':'navQR','/rosters':'navImport','/classes':'navClasses','/accounts':'navAccount','/knowledge':'navKnowledge','/attendance-images':'navImages','/attendance-records':'navRecords','/api':'navAPI','/server':'navServer','/usage':'navUsage','/audit':'navAudit'};
+const helper=`function sidebarIconFor(path,admin){return path==='/'&&admin?'navAdmin':path.endsWith('/roster')?'navRoster':${JSON.stringify(mapping)}[path]||'navHome'}\n`;
+const start='function ve({name:e,className:t=""}){const r={';if(main.split(start).length!==2||main.split('o.jsx(ve,{name:O})').length!==2)throw Error('Icon caller changed');let next=helper+main.replace(start,start+Object.entries(icons).map(([name,d])=>name+':o.jsx("path",{d:'+JSON.stringify(d)+'})').join(',')+',').replace('o.jsx(ve,{name:O})','o.jsx(ve,{name:sidebarIconFor(A,w)})');writeFileSync(r+'/icons.json',JSON.stringify({icons,mapping},null,2));writeFileSync(r+'/dist/assets/main-nav-icons.js',next);writeFileSync(r+'/dist/assets/main-entry-nav-icons.js',entry.replaceAll(mainName,'main-nav-icons.js'));console.log('Distinct semantic SVG icons added to sidebar only.');

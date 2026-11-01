@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "mockApi": true,
+  "productionWrites": false,
+  "productionAssets": false,
+  "checks": [
+    {
+      "role": "teacher",
+      "count": 7,
+      "unique": true
+    },
+    {
+      "role": "student",
+      "count": 5,
+      "unique": true
+    },
+    {
+      "role": "admin",
+      "count": 11,
+      "unique": true
+    }
+  ],
+  "errors": []
+}
