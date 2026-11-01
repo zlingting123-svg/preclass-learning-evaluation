@@ -1,0 +1,5 @@
+/* Attendance projection: prioritize a larger QR and keep the mosaic within a readable frame. */
+@media(min-width:761px){.att .att-stage{grid-template-columns:clamp(320px,30vw,420px) minmax(0,1fr)}.att .att-qr{padding:30px 22px}.att .att-qr-image{width:min(360px,100%);height:auto;aspect-ratio:1}.att .att-puzzle .board-shell{width:100%;max-width:760px;margin-left:auto;margin-right:auto}.att .att-board-heading,.att .att-puzzle .att-board-note,.att .att-puzzle .att-progress,.att .att-puzzle .att-blur-control{max-width:760px;margin-left:auto;margin-right:auto}}
+@media(min-width:761px) and (max-width:1000px){.att .att-stage{grid-template-columns:minmax(270px,38%) minmax(0,1fr)}.att .att-qr{padding-left:16px;padding-right:16px}}
+@media(max-width:760px){.att .att-qr{padding:25px 16px}.att .att-qr-image{width:min(360px,100%);height:auto;aspect-ratio:1}.att .att-puzzle .board-shell{width:100%;max-width:680px;margin-left:auto;margin-right:auto}}
+.att .att-qr-image img{object-fit:contain}
