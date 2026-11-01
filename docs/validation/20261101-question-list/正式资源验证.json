@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "productionAssets": true,
+  "productionWrites": false,
+  "mockApi": true,
+  "questionList": true,
+  "matrixGroupedAndCountsPerRow": true,
+  "chartSelectionExpandAndExport": true,
+  "textDetail": true,
+  "heatmapJump": true,
+  "escapeAndFocusReturn": true,
+  "responsive": [
+    320,
+    375,
+    414,
+    768
+  ],
+  "errors": []
+}
