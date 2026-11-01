@@ -1,0 +1,35 @@
+{
+  "passed": true,
+  "productionAssets": false,
+  "productionWrites": false,
+  "mockApi": true,
+  "paidModelCalls": 0,
+  "checks": [
+    {
+      "role": "teacher",
+      "profileAboveNavigation": true,
+      "personalAndLogoutAccessible": true,
+      "sidebarMatchesHome": true,
+      "historyAndComposer": true
+    },
+    {
+      "role": "student",
+      "profileAboveNavigation": true,
+      "personalAndLogoutAccessible": true,
+      "sidebarMatchesHome": true,
+      "historyAndComposer": true
+    }
+  ],
+  "responsive": [
+    320,
+    375,
+    414,
+    768,
+    901,
+    1024,
+    1440,
+    1600
+  ],
+  "mobileMenuAndHistory": true,
+  "errors": []
+}
