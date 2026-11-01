@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "productionAssets": false,
+  "mockApi": true,
+  "productionWrites": false,
+  "cancelNoRequest": true,
+  "errorPreservesSurvey": true,
+  "confirmedDeleteAndVersion": true,
+  "responsive": true,
+  "errors": []
+}

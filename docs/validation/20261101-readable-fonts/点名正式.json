@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "productionAssets": true,
+  "mockApi": true,
+  "productionWrites": false,
+  "rollcall": true,
+  "selectReadable": true,
+  "responsive": true,
+  "errors": []
+}

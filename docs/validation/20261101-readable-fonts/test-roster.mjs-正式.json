@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "productionAssets": true,
+  "mockApi": true,
+  "productionWrites": false,
+  "results": [
+    {
+      "role": "teacher",
+      "scrollAndReturn": true
+    },
+    {
+      "role": "student",
+      "scrollAndReturn": true
+    }
+  ],
+  "teacherQuestionnaireAndRoster": true,
+  "internalScroller": true,
+  "mobile": true,
+  "keyboard": true,
+  "reducedMotion": true,
+  "errors": []
+}
