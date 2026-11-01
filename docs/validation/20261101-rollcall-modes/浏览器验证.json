@@ -1,0 +1,63 @@
+{
+  "productionWrites": false,
+  "mockApi": true,
+  "productionAssets": false,
+  "checks": [
+    {
+      "name": "faster_sequential_5",
+      "passed": true,
+      "drawRequests": 1,
+      "fastInterval": 65,
+      "slowInterval": 87,
+      "totalMs": 13121,
+      "rightRail": true,
+      "previousWinnerExcludedFromVisualPool": true
+    },
+    {
+      "name": "single_timing_unchanged",
+      "passed": true,
+      "totalMs": 5974
+    },
+    {
+      "name": "fullscreen",
+      "passed": true
+    },
+    {
+      "name": "responsive_320_375_414_768",
+      "passed": true,
+      "mobileListBelow": true
+    },
+    {
+      "name": "simultaneous_cards_5",
+      "passed": true,
+      "totalMs": 2453,
+      "noEarlyNames": true,
+      "allZeroFlipDelays": true,
+      "singleBatchRequest": true,
+      "mobileResponsive": true
+    },
+    {
+      "name": "mode_persistence_single_fallback_and_switch_without_redraw",
+      "passed": true
+    },
+    {
+      "name": "1_3_5_25_reduced_motion_300_skip",
+      "passed": true,
+      "skipHasNoNewDraw": true
+    },
+    {
+      "name": "count_validation_and_failed_request_idempotent_retry",
+      "passed": true
+    },
+    {
+      "name": "card_error_no_fake_names_and_same_request_retry",
+      "passed": true
+    },
+    {
+      "name": "simultaneous_300_reduced_motion_scroll",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "pageErrors": []
+}
