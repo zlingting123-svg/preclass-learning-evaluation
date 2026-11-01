@@ -1,0 +1,37 @@
+{
+  "productionWrites": false,
+  "mockApi": true,
+  "productionAssets": false,
+  "checks": [
+    {
+      "name": "single_sequential_5",
+      "passed": true,
+      "drawRequests": 1,
+      "fastInterval": 70,
+      "slowInterval": 78,
+      "totalMs": 23011,
+      "rightRail": true,
+      "previousWinnerExcludedFromVisualPool": true
+    },
+    {
+      "name": "fullscreen",
+      "passed": true
+    },
+    {
+      "name": "responsive_320_375_414_768",
+      "passed": true,
+      "mobileListBelow": true
+    },
+    {
+      "name": "1_3_5_25_reduced_motion_300_skip",
+      "passed": true,
+      "skipHasNoNewDraw": true
+    },
+    {
+      "name": "count_validation_and_failed_request_idempotent_retry",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "pageErrors": []
+}

@@ -1,0 +1,1180 @@
+import {puzzleB} from '../puzzle-redesign/puzzle-b.js';
+import {RollcallStage as Se} from './RollcallStage.tsx';
+var Fn = Object.create;
+var Ce = Object.defineProperty;
+var $n = Object.getOwnPropertyDescriptor;
+var On = Object.getOwnPropertyNames;
+var zn = Object.getPrototypeOf, Hn = Object.prototype.hasOwnProperty;
+var N = (n, t) => () => {
+  try {
+    return t || n((t = { exports: {} }).exports, t), t.exports;
+  } catch (e) {
+    throw t = 0, e;
+  }
+};
+var Jn = (n, t, e, r) => {
+  if (t && typeof t == "object" || typeof t == "function") for (let s of On(t)) !Hn.call(n, s) && s !== e && Ce(n, s, { get: () => t[s], enumerable: !(r = $n(t, s)) || r.enumerable });
+  return n;
+};
+var Kn = (n, t, e) => (e = n != null ? Fn(zn(n)) : {}, Jn(t || !n || !n.__esModule ? Ce(e, "default", { value: n, enumerable: true }) : e, n));
+var Ae = N((Jr, Ie) => {
+  Ie.exports = function() {
+    return typeof Promise == "function" && Promise.prototype && Promise.prototype.then;
+  };
+});
+var H = N((G) => {
+  var Vt, Gn = [0, 26, 44, 70, 100, 134, 172, 196, 242, 292, 346, 404, 466, 532, 581, 655, 733, 815, 901, 991, 1085, 1156, 1258, 1364, 1474, 1588, 1706, 1828, 1921, 2051, 2185, 2323, 2465, 2611, 2761, 2876, 3034, 3196, 3362, 3532, 3706];
+  G.getSymbolSize = function(t) {
+    if (!t) throw new Error('"version" cannot be null or undefined');
+    if (t < 1 || t > 40) throw new Error('"version" should be in range from 1 to 40');
+    return t * 4 + 17;
+  };
+  G.getSymbolTotalCodewords = function(t) {
+    return Gn[t];
+  };
+  G.getBCHDigit = function(n) {
+    let t = 0;
+    for (; n !== 0; ) t++, n >>>= 1;
+    return t;
+  };
+  G.setToSJISFunction = function(t) {
+    if (typeof t != "function") throw new Error('"toSJISFunc" is not a valid function.');
+    Vt = t;
+  };
+  G.isKanjiModeEnabled = function() {
+    return typeof Vt < "u";
+  };
+  G.toSJIS = function(t) {
+    return Vt(t);
+  };
+});
+var Et = N((_) => {
+  _.L = { bit: 1 };
+  _.M = { bit: 0 };
+  _.Q = { bit: 3 };
+  _.H = { bit: 2 };
+  function Yn(n) {
+    if (typeof n != "string") throw new Error("Param is not a string");
+    switch (n.toLowerCase()) {
+      case "l":
+      case "low":
+        return _.L;
+      case "m":
+      case "medium":
+        return _.M;
+      case "q":
+      case "quartile":
+        return _.Q;
+      case "h":
+      case "high":
+        return _.H;
+      default:
+        throw new Error("Unknown EC Level: " + n);
+    }
+  }
+  _.isValid = function(t) {
+    return t && typeof t.bit < "u" && t.bit >= 0 && t.bit < 4;
+  };
+  _.from = function(t, e) {
+    if (_.isValid(t)) return t;
+    try {
+      return Yn(t);
+    } catch {
+      return e;
+    }
+  };
+});
+var ve = N((Gr, Me) => {
+  function Be() {
+    this.buffer = [], this.length = 0;
+  }
+  Be.prototype = { get: function(n) {
+    let t = Math.floor(n / 8);
+    return (this.buffer[t] >>> 7 - n % 8 & 1) === 1;
+  }, put: function(n, t) {
+    for (let e = 0; e < t; e++) this.putBit((n >>> t - e - 1 & 1) === 1);
+  }, getLengthInBits: function() {
+    return this.length;
+  }, putBit: function(n) {
+    let t = Math.floor(this.length / 8);
+    this.buffer.length <= t && this.buffer.push(0), n && (this.buffer[t] |= 128 >>> this.length % 8), this.length++;
+  } };
+  Me.exports = Be;
+});
+var Pe = N((Yr, Te) => {
+  function it(n) {
+    if (!n || n < 1) throw new Error("BitMatrix size must be defined and greater than 0");
+    this.size = n, this.data = new Uint8Array(n * n), this.reservedBit = new Uint8Array(n * n);
+  }
+  it.prototype.set = function(n, t, e, r) {
+    let s = n * this.size + t;
+    this.data[s] = e, r && (this.reservedBit[s] = true);
+  };
+  it.prototype.get = function(n, t) {
+    return this.data[n * this.size + t];
+  };
+  it.prototype.xor = function(n, t, e) {
+    this.data[n * this.size + t] ^= e;
+  };
+  it.prototype.isReserved = function(n, t) {
+    return this.reservedBit[n * this.size + t];
+  };
+  Te.exports = it;
+});
+var ke = N((Ct) => {
+  var jn = H().getSymbolSize;
+  Ct.getRowColCoords = function(t) {
+    if (t === 1) return [];
+    let e = Math.floor(t / 7) + 2, r = jn(t), s = r === 145 ? 26 : Math.ceil((r - 13) / (2 * e - 2)) * 2, o = [r - 7];
+    for (let a = 1; a < e - 1; a++) o[a] = o[a - 1] - s;
+    return o.push(6), o.reverse();
+  };
+  Ct.getPositions = function(t) {
+    let e = [], r = Ct.getRowColCoords(t), s = r.length;
+    for (let o = 0; o < s; o++) for (let a = 0; a < s; a++) o === 0 && a === 0 || o === 0 && a === s - 1 || o === s - 1 && a === 0 || e.push([r[o], r[a]]);
+    return e;
+  };
+});
+var De = N((Le) => {
+  var Qn = H().getSymbolSize, xe = 7;
+  Le.getPositions = function(t) {
+    let e = Qn(t);
+    return [[0, 0], [e - xe, 0], [0, e - xe]];
+  };
+});
+var Ue = N((E) => {
+  E.Patterns = { PATTERN000: 0, PATTERN001: 1, PATTERN010: 2, PATTERN011: 3, PATTERN100: 4, PATTERN101: 5, PATTERN110: 6, PATTERN111: 7 };
+  var Y = { N1: 3, N2: 3, N3: 40, N4: 10 };
+  E.isValid = function(t) {
+    return t != null && t !== "" && !isNaN(t) && t >= 0 && t <= 7;
+  };
+  E.from = function(t) {
+    return E.isValid(t) ? parseInt(t, 10) : void 0;
+  };
+  E.getPenaltyN1 = function(t) {
+    let e = t.size, r = 0, s = 0, o = 0, a = null, l = null;
+    for (let u = 0; u < e; u++) {
+      s = o = 0, a = l = null;
+      for (let d = 0; d < e; d++) {
+        let g = t.get(u, d);
+        g === a ? s++ : (s >= 5 && (r += Y.N1 + (s - 5)), a = g, s = 1), g = t.get(d, u), g === l ? o++ : (o >= 5 && (r += Y.N1 + (o - 5)), l = g, o = 1);
+      }
+      s >= 5 && (r += Y.N1 + (s - 5)), o >= 5 && (r += Y.N1 + (o - 5));
+    }
+    return r;
+  };
+  E.getPenaltyN2 = function(t) {
+    let e = t.size, r = 0;
+    for (let s = 0; s < e - 1; s++) for (let o = 0; o < e - 1; o++) {
+      let a = t.get(s, o) + t.get(s, o + 1) + t.get(s + 1, o) + t.get(s + 1, o + 1);
+      (a === 4 || a === 0) && r++;
+    }
+    return r * Y.N2;
+  };
+  E.getPenaltyN3 = function(t) {
+    let e = t.size, r = 0, s = 0, o = 0;
+    for (let a = 0; a < e; a++) {
+      s = o = 0;
+      for (let l = 0; l < e; l++) s = s << 1 & 2047 | t.get(a, l), l >= 10 && (s === 1488 || s === 93) && r++, o = o << 1 & 2047 | t.get(l, a), l >= 10 && (o === 1488 || o === 93) && r++;
+    }
+    return r * Y.N3;
+  };
+  E.getPenaltyN4 = function(t) {
+    let e = 0, r = t.data.length;
+    for (let o = 0; o < r; o++) e += t.data[o];
+    return Math.abs(Math.ceil(e * 100 / r / 5) - 10) * Y.N4;
+  };
+  function Wn(n, t, e) {
+    switch (n) {
+      case E.Patterns.PATTERN000:
+        return (t + e) % 2 === 0;
+      case E.Patterns.PATTERN001:
+        return t % 2 === 0;
+      case E.Patterns.PATTERN010:
+        return e % 3 === 0;
+      case E.Patterns.PATTERN011:
+        return (t + e) % 3 === 0;
+      case E.Patterns.PATTERN100:
+        return (Math.floor(t / 2) + Math.floor(e / 3)) % 2 === 0;
+      case E.Patterns.PATTERN101:
+        return t * e % 2 + t * e % 3 === 0;
+      case E.Patterns.PATTERN110:
+        return (t * e % 2 + t * e % 3) % 2 === 0;
+      case E.Patterns.PATTERN111:
+        return (t * e % 3 + (t + e) % 2) % 2 === 0;
+      default:
+        throw new Error("bad maskPattern:" + n);
+    }
+  }
+  E.applyMask = function(t, e) {
+    let r = e.size;
+    for (let s = 0; s < r; s++) for (let o = 0; o < r; o++) e.isReserved(o, s) || e.xor(o, s, Wn(t, o, s));
+  };
+  E.getBestMask = function(t, e) {
+    let r = Object.keys(E.Patterns).length, s = 0, o = 1 / 0;
+    for (let a = 0; a < r; a++) {
+      e(a), E.applyMask(a, t);
+      let l = E.getPenaltyN1(t) + E.getPenaltyN2(t) + E.getPenaltyN3(t) + E.getPenaltyN4(t);
+      E.applyMask(a, t), l < o && (o = l, s = a);
+    }
+    return s;
+  };
+});
+var Yt = N((Gt) => {
+  var J = Et(), St = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 2, 2, 4, 1, 2, 4, 4, 2, 4, 4, 4, 2, 4, 6, 5, 2, 4, 6, 6, 2, 5, 8, 8, 4, 5, 8, 8, 4, 5, 8, 11, 4, 8, 10, 11, 4, 9, 12, 16, 4, 9, 16, 16, 6, 10, 12, 18, 6, 10, 17, 16, 6, 11, 16, 19, 6, 13, 18, 21, 7, 14, 21, 25, 8, 16, 20, 25, 8, 17, 23, 25, 9, 17, 23, 34, 9, 18, 25, 30, 10, 20, 27, 32, 12, 21, 29, 35, 12, 23, 34, 37, 12, 25, 34, 40, 13, 26, 35, 42, 14, 28, 38, 45, 15, 29, 40, 48, 16, 31, 43, 51, 17, 33, 45, 54, 18, 35, 48, 57, 19, 37, 51, 60, 19, 38, 53, 63, 20, 40, 56, 66, 21, 43, 59, 70, 22, 45, 62, 74, 24, 47, 65, 77, 25, 49, 68, 81], It = [7, 10, 13, 17, 10, 16, 22, 28, 15, 26, 36, 44, 20, 36, 52, 64, 26, 48, 72, 88, 36, 64, 96, 112, 40, 72, 108, 130, 48, 88, 132, 156, 60, 110, 160, 192, 72, 130, 192, 224, 80, 150, 224, 264, 96, 176, 260, 308, 104, 198, 288, 352, 120, 216, 320, 384, 132, 240, 360, 432, 144, 280, 408, 480, 168, 308, 448, 532, 180, 338, 504, 588, 196, 364, 546, 650, 224, 416, 600, 700, 224, 442, 644, 750, 252, 476, 690, 816, 270, 504, 750, 900, 300, 560, 810, 960, 312, 588, 870, 1050, 336, 644, 952, 1110, 360, 700, 1020, 1200, 390, 728, 1050, 1260, 420, 784, 1140, 1350, 450, 812, 1200, 1440, 480, 868, 1290, 1530, 510, 924, 1350, 1620, 540, 980, 1440, 1710, 570, 1036, 1530, 1800, 570, 1064, 1590, 1890, 600, 1120, 1680, 1980, 630, 1204, 1770, 2100, 660, 1260, 1860, 2220, 720, 1316, 1950, 2310, 750, 1372, 2040, 2430];
+  Gt.getBlocksCount = function(t, e) {
+    switch (e) {
+      case J.L:
+        return St[(t - 1) * 4 + 0];
+      case J.M:
+        return St[(t - 1) * 4 + 1];
+      case J.Q:
+        return St[(t - 1) * 4 + 2];
+      case J.H:
+        return St[(t - 1) * 4 + 3];
+      default:
+        return;
+    }
+  };
+  Gt.getTotalCodewordsCount = function(t, e) {
+    switch (e) {
+      case J.L:
+        return It[(t - 1) * 4 + 0];
+      case J.M:
+        return It[(t - 1) * 4 + 1];
+      case J.Q:
+        return It[(t - 1) * 4 + 2];
+      case J.H:
+        return It[(t - 1) * 4 + 3];
+      default:
+        return;
+    }
+  };
+});
+var _e = N((Bt) => {
+  var at = new Uint8Array(512), At = new Uint8Array(256);
+  (function() {
+    let t = 1;
+    for (let e = 0; e < 255; e++) at[e] = t, At[t] = e, t <<= 1, t & 256 && (t ^= 285);
+    for (let e = 255; e < 512; e++) at[e] = at[e - 255];
+  })();
+  Bt.log = function(t) {
+    if (t < 1) throw new Error("log(" + t + ")");
+    return At[t];
+  };
+  Bt.exp = function(t) {
+    return at[t];
+  };
+  Bt.mul = function(t, e) {
+    return t === 0 || e === 0 ? 0 : at[At[t] + At[e]];
+  };
+});
+var qe = N((lt) => {
+  var jt = _e();
+  lt.mul = function(t, e) {
+    let r = new Uint8Array(t.length + e.length - 1);
+    for (let s = 0; s < t.length; s++) for (let o = 0; o < e.length; o++) r[s + o] ^= jt.mul(t[s], e[o]);
+    return r;
+  };
+  lt.mod = function(t, e) {
+    let r = new Uint8Array(t);
+    for (; r.length - e.length >= 0; ) {
+      let s = r[0];
+      for (let a = 0; a < e.length; a++) r[a] ^= jt.mul(e[a], s);
+      let o = 0;
+      for (; o < r.length && r[o] === 0; ) o++;
+      r = r.slice(o);
+    }
+    return r;
+  };
+  lt.generateECPolynomial = function(t) {
+    let e = new Uint8Array([1]);
+    for (let r = 0; r < t; r++) e = lt.mul(e, new Uint8Array([1, jt.exp(r)]));
+    return e;
+  };
+});
+var Oe = N((ts, $e) => {
+  var Fe = qe();
+  function Qt(n) {
+    this.genPoly = void 0, this.degree = n, this.degree && this.initialize(this.degree);
+  }
+  Qt.prototype.initialize = function(t) {
+    this.degree = t, this.genPoly = Fe.generateECPolynomial(this.degree);
+  };
+  Qt.prototype.encode = function(t) {
+    if (!this.genPoly) throw new Error("Encoder not initialized");
+    let e = new Uint8Array(t.length + this.degree);
+    e.set(t);
+    let r = Fe.mod(e, this.genPoly), s = this.degree - r.length;
+    if (s > 0) {
+      let o = new Uint8Array(this.degree);
+      return o.set(r, s), o;
+    }
+    return r;
+  };
+  $e.exports = Qt;
+});
+var Wt = N((ze) => {
+  ze.isValid = function(t) {
+    return !isNaN(t) && t >= 1 && t <= 40;
+  };
+});
+var Zt = N(($) => {
+  var He = "[0-9]+", Zn = "[A-Z $%*+\\-./:]+", ut = "(?:[u3000-u303F]|[u3040-u309F]|[u30A0-u30FF]|[uFF00-uFFEF]|[u4E00-u9FAF]|[u2605-u2606]|[u2190-u2195]|u203B|[u2010u2015u2018u2019u2025u2026u201Cu201Du2225u2260]|[u0391-u0451]|[u00A7u00A8u00B1u00B4u00D7u00F7])+";
+  ut = ut.replace(/u/g, "\\u");
+  var Xn = "(?:(?![A-Z0-9 $%*+\\-./:]|" + ut + `)(?:.|[\r
+]))+`;
+  $.KANJI = new RegExp(ut, "g");
+  $.BYTE_KANJI = new RegExp("[^A-Z0-9 $%*+\\-./:]+", "g");
+  $.BYTE = new RegExp(Xn, "g");
+  $.NUMERIC = new RegExp(He, "g");
+  $.ALPHANUMERIC = new RegExp(Zn, "g");
+  var Rn = new RegExp("^" + ut + "$"), tr = new RegExp("^" + He + "$"), er = new RegExp("^[A-Z0-9 $%*+\\-./:]+$");
+  $.testKanji = function(t) {
+    return Rn.test(t);
+  };
+  $.testNumeric = function(t) {
+    return tr.test(t);
+  };
+  $.testAlphanumeric = function(t) {
+    return er.test(t);
+  };
+});
+var K = N((v) => {
+  var nr = Wt(), Xt = Zt();
+  v.NUMERIC = { id: "Numeric", bit: 1, ccBits: [10, 12, 14] };
+  v.ALPHANUMERIC = { id: "Alphanumeric", bit: 2, ccBits: [9, 11, 13] };
+  v.BYTE = { id: "Byte", bit: 4, ccBits: [8, 16, 16] };
+  v.KANJI = { id: "Kanji", bit: 8, ccBits: [8, 10, 12] };
+  v.MIXED = { bit: -1 };
+  v.getCharCountIndicator = function(t, e) {
+    if (!t.ccBits) throw new Error("Invalid mode: " + t);
+    if (!nr.isValid(e)) throw new Error("Invalid version: " + e);
+    return e >= 1 && e < 10 ? t.ccBits[0] : e < 27 ? t.ccBits[1] : t.ccBits[2];
+  };
+  v.getBestModeForData = function(t) {
+    return Xt.testNumeric(t) ? v.NUMERIC : Xt.testAlphanumeric(t) ? v.ALPHANUMERIC : Xt.testKanji(t) ? v.KANJI : v.BYTE;
+  };
+  v.toString = function(t) {
+    if (t && t.id) return t.id;
+    throw new Error("Invalid mode");
+  };
+  v.isValid = function(t) {
+    return t && t.bit && t.ccBits;
+  };
+  function rr(n) {
+    if (typeof n != "string") throw new Error("Param is not a string");
+    switch (n.toLowerCase()) {
+      case "numeric":
+        return v.NUMERIC;
+      case "alphanumeric":
+        return v.ALPHANUMERIC;
+      case "kanji":
+        return v.KANJI;
+      case "byte":
+        return v.BYTE;
+      default:
+        throw new Error("Unknown mode: " + n);
+    }
+  }
+  v.from = function(t, e) {
+    if (v.isValid(t)) return t;
+    try {
+      return rr(t);
+    } catch {
+      return e;
+    }
+  };
+});
+var Ye = N((j) => {
+  var Mt = H(), sr = Yt(), Je = Et(), V = K(), Rt = Wt(), Ve = 7973, Ke = Mt.getBCHDigit(Ve);
+  function or(n, t, e) {
+    for (let r = 1; r <= 40; r++) if (t <= j.getCapacity(r, e, n)) return r;
+  }
+  function Ge(n, t) {
+    return V.getCharCountIndicator(n, t) + 4;
+  }
+  function ir(n, t) {
+    let e = 0;
+    return n.forEach(function(r) {
+      let s = Ge(r.mode, t);
+      e += s + r.getBitsLength();
+    }), e;
+  }
+  function ar(n, t) {
+    for (let e = 1; e <= 40; e++) if (ir(n, e) <= j.getCapacity(e, t, V.MIXED)) return e;
+  }
+  j.from = function(t, e) {
+    return Rt.isValid(t) ? parseInt(t, 10) : e;
+  };
+  j.getCapacity = function(t, e, r) {
+    if (!Rt.isValid(t)) throw new Error("Invalid QR Code version");
+    typeof r > "u" && (r = V.BYTE);
+    let s = Mt.getSymbolTotalCodewords(t), o = sr.getTotalCodewordsCount(t, e), a = (s - o) * 8;
+    if (r === V.MIXED) return a;
+    let l = a - Ge(r, t);
+    switch (r) {
+      case V.NUMERIC:
+        return Math.floor(l / 10 * 3);
+      case V.ALPHANUMERIC:
+        return Math.floor(l / 11 * 2);
+      case V.KANJI:
+        return Math.floor(l / 13);
+      case V.BYTE:
+      default:
+        return Math.floor(l / 8);
+    }
+  };
+  j.getBestVersionForData = function(t, e) {
+    let r, s = Je.from(e, Je.M);
+    if (Array.isArray(t)) {
+      if (t.length > 1) return ar(t, s);
+      if (t.length === 0) return 1;
+      r = t[0];
+    } else r = t;
+    return or(r.mode, r.getLength(), s);
+  };
+  j.getEncodedBits = function(t) {
+    if (!Rt.isValid(t) || t < 7) throw new Error("Invalid QR Code version");
+    let e = t << 12;
+    for (; Mt.getBCHDigit(e) - Ke >= 0; ) e ^= Ve << Mt.getBCHDigit(e) - Ke;
+    return t << 12 | e;
+  };
+});
+var Ze = N((We) => {
+  var te = H(), Qe = 1335, lr = 21522, je = te.getBCHDigit(Qe);
+  We.getEncodedBits = function(t, e) {
+    let r = t.bit << 3 | e, s = r << 10;
+    for (; te.getBCHDigit(s) - je >= 0; ) s ^= Qe << te.getBCHDigit(s) - je;
+    return (r << 10 | s) ^ lr;
+  };
+});
+var Re = N((is, Xe) => {
+  var ur = K();
+  function R(n) {
+    this.mode = ur.NUMERIC, this.data = n.toString();
+  }
+  R.getBitsLength = function(t) {
+    return 10 * Math.floor(t / 3) + (t % 3 ? t % 3 * 3 + 1 : 0);
+  };
+  R.prototype.getLength = function() {
+    return this.data.length;
+  };
+  R.prototype.getBitsLength = function() {
+    return R.getBitsLength(this.data.length);
+  };
+  R.prototype.write = function(t) {
+    let e, r, s;
+    for (e = 0; e + 3 <= this.data.length; e += 3) r = this.data.substr(e, 3), s = parseInt(r, 10), t.put(s, 10);
+    let o = this.data.length - e;
+    o > 0 && (r = this.data.substr(e), s = parseInt(r, 10), t.put(s, o * 3 + 1));
+  };
+  Xe.exports = R;
+});
+var en = N((as, tn) => {
+  var cr = K(), ee = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", " ", "$", "%", "*", "+", "-", ".", "/", ":"];
+  function tt(n) {
+    this.mode = cr.ALPHANUMERIC, this.data = n;
+  }
+  tt.getBitsLength = function(t) {
+    return 11 * Math.floor(t / 2) + 6 * (t % 2);
+  };
+  tt.prototype.getLength = function() {
+    return this.data.length;
+  };
+  tt.prototype.getBitsLength = function() {
+    return tt.getBitsLength(this.data.length);
+  };
+  tt.prototype.write = function(t) {
+    let e;
+    for (e = 0; e + 2 <= this.data.length; e += 2) {
+      let r = ee.indexOf(this.data[e]) * 45;
+      r += ee.indexOf(this.data[e + 1]), t.put(r, 11);
+    }
+    this.data.length % 2 && t.put(ee.indexOf(this.data[e]), 6);
+  };
+  tn.exports = tt;
+});
+var rn = N((ls, nn) => {
+  var dr = K();
+  function et(n) {
+    this.mode = dr.BYTE, typeof n == "string" ? this.data = new TextEncoder().encode(n) : this.data = new Uint8Array(n);
+  }
+  et.getBitsLength = function(t) {
+    return t * 8;
+  };
+  et.prototype.getLength = function() {
+    return this.data.length;
+  };
+  et.prototype.getBitsLength = function() {
+    return et.getBitsLength(this.data.length);
+  };
+  et.prototype.write = function(n) {
+    for (let t = 0, e = this.data.length; t < e; t++) n.put(this.data[t], 8);
+  };
+  nn.exports = et;
+});
+var on = N((us, sn) => {
+  var fr = K(), gr = H();
+  function nt(n) {
+    this.mode = fr.KANJI, this.data = n;
+  }
+  nt.getBitsLength = function(t) {
+    return t * 13;
+  };
+  nt.prototype.getLength = function() {
+    return this.data.length;
+  };
+  nt.prototype.getBitsLength = function() {
+    return nt.getBitsLength(this.data.length);
+  };
+  nt.prototype.write = function(n) {
+    let t;
+    for (t = 0; t < this.data.length; t++) {
+      let e = gr.toSJIS(this.data[t]);
+      if (e >= 33088 && e <= 40956) e -= 33088;
+      else if (e >= 57408 && e <= 60351) e -= 49472;
+      else throw new Error("Invalid SJIS character: " + this.data[t] + `
+Make sure your charset is UTF-8`);
+      e = (e >>> 8 & 255) * 192 + (e & 255), n.put(e, 13);
+    }
+  };
+  sn.exports = nt;
+});
+var an = N((cs, ne) => {
+  "use strict";
+  var ct = { single_source_shortest_paths: function(n, t, e) {
+    var r = {}, s = {};
+    s[t] = 0;
+    var o = ct.PriorityQueue.make();
+    o.push(t, 0);
+    for (var a, l, u, d, g, m, p, y, S; !o.empty(); ) {
+      a = o.pop(), l = a.value, d = a.cost, g = n[l] || {};
+      for (u in g) g.hasOwnProperty(u) && (m = g[u], p = d + m, y = s[u], S = typeof s[u] > "u", (S || y > p) && (s[u] = p, o.push(u, p), r[u] = l));
+    }
+    if (typeof e < "u" && typeof s[e] > "u") {
+      var C = ["Could not find a path from ", t, " to ", e, "."].join("");
+      throw new Error(C);
+    }
+    return r;
+  }, extract_shortest_path_from_predecessor_list: function(n, t) {
+    for (var e = [], r = t, s; r; ) e.push(r), s = n[r], r = n[r];
+    return e.reverse(), e;
+  }, find_path: function(n, t, e) {
+    var r = ct.single_source_shortest_paths(n, t, e);
+    return ct.extract_shortest_path_from_predecessor_list(r, e);
+  }, PriorityQueue: { make: function(n) {
+    var t = ct.PriorityQueue, e = {}, r;
+    n = n || {};
+    for (r in t) t.hasOwnProperty(r) && (e[r] = t[r]);
+    return e.queue = [], e.sorter = n.sorter || t.default_sorter, e;
+  }, default_sorter: function(n, t) {
+    return n.cost - t.cost;
+  }, push: function(n, t) {
+    var e = { value: n, cost: t };
+    this.queue.push(e), this.queue.sort(this.sorter);
+  }, pop: function() {
+    return this.queue.shift();
+  }, empty: function() {
+    return this.queue.length === 0;
+  } } };
+  typeof ne < "u" && (ne.exports = ct);
+});
+var pn = N((rt) => {
+  var b = K(), cn = Re(), dn = en(), fn = rn(), gn = on(), dt = Zt(), vt = H(), hr = an();
+  function ln(n) {
+    return unescape(encodeURIComponent(n)).length;
+  }
+  function ft(n, t, e) {
+    let r = [], s;
+    for (; (s = n.exec(e)) !== null; ) r.push({ data: s[0], index: s.index, mode: t, length: s[0].length });
+    return r;
+  }
+  function hn(n) {
+    let t = ft(dt.NUMERIC, b.NUMERIC, n), e = ft(dt.ALPHANUMERIC, b.ALPHANUMERIC, n), r, s;
+    return vt.isKanjiModeEnabled() ? (r = ft(dt.BYTE, b.BYTE, n), s = ft(dt.KANJI, b.KANJI, n)) : (r = ft(dt.BYTE_KANJI, b.BYTE, n), s = []), t.concat(e, r, s).sort(function(a, l) {
+      return a.index - l.index;
+    }).map(function(a) {
+      return { data: a.data, mode: a.mode, length: a.length };
+    });
+  }
+  function re(n, t) {
+    switch (t) {
+      case b.NUMERIC:
+        return cn.getBitsLength(n);
+      case b.ALPHANUMERIC:
+        return dn.getBitsLength(n);
+      case b.KANJI:
+        return gn.getBitsLength(n);
+      case b.BYTE:
+        return fn.getBitsLength(n);
+    }
+  }
+  function pr(n) {
+    return n.reduce(function(t, e) {
+      let r = t.length - 1 >= 0 ? t[t.length - 1] : null;
+      return r && r.mode === e.mode ? (t[t.length - 1].data += e.data, t) : (t.push(e), t);
+    }, []);
+  }
+  function mr(n) {
+    let t = [];
+    for (let e = 0; e < n.length; e++) {
+      let r = n[e];
+      switch (r.mode) {
+        case b.NUMERIC:
+          t.push([r, { data: r.data, mode: b.ALPHANUMERIC, length: r.length }, { data: r.data, mode: b.BYTE, length: r.length }]);
+          break;
+        case b.ALPHANUMERIC:
+          t.push([r, { data: r.data, mode: b.BYTE, length: r.length }]);
+          break;
+        case b.KANJI:
+          t.push([r, { data: r.data, mode: b.BYTE, length: ln(r.data) }]);
+          break;
+        case b.BYTE:
+          t.push([{ data: r.data, mode: b.BYTE, length: ln(r.data) }]);
+      }
+    }
+    return t;
+  }
+  function yr(n, t) {
+    let e = {}, r = { start: {} }, s = ["start"];
+    for (let o = 0; o < n.length; o++) {
+      let a = n[o], l = [];
+      for (let u = 0; u < a.length; u++) {
+        let d = a[u], g = "" + o + u;
+        l.push(g), e[g] = { node: d, lastCount: 0 }, r[g] = {};
+        for (let m = 0; m < s.length; m++) {
+          let p = s[m];
+          e[p] && e[p].node.mode === d.mode ? (r[p][g] = re(e[p].lastCount + d.length, d.mode) - re(e[p].lastCount, d.mode), e[p].lastCount += d.length) : (e[p] && (e[p].lastCount = d.length), r[p][g] = re(d.length, d.mode) + 4 + b.getCharCountIndicator(d.mode, t));
+        }
+      }
+      s = l;
+    }
+    for (let o = 0; o < s.length; o++) r[s[o]].end = 0;
+    return { map: r, table: e };
+  }
+  function un(n, t) {
+    let e, r = b.getBestModeForData(n);
+    if (e = b.from(t, r), e !== b.BYTE && e.bit < r.bit) throw new Error('"' + n + '" cannot be encoded with mode ' + b.toString(e) + `.
+ Suggested mode is: ` + b.toString(r));
+    switch (e === b.KANJI && !vt.isKanjiModeEnabled() && (e = b.BYTE), e) {
+      case b.NUMERIC:
+        return new cn(n);
+      case b.ALPHANUMERIC:
+        return new dn(n);
+      case b.KANJI:
+        return new gn(n);
+      case b.BYTE:
+        return new fn(n);
+    }
+  }
+  rt.fromArray = function(t) {
+    return t.reduce(function(e, r) {
+      return typeof r == "string" ? e.push(un(r, null)) : r.data && e.push(un(r.data, r.mode)), e;
+    }, []);
+  };
+  rt.fromString = function(t, e) {
+    let r = hn(t, vt.isKanjiModeEnabled()), s = mr(r), o = yr(s, e), a = hr.find_path(o.map, "start", "end"), l = [];
+    for (let u = 1; u < a.length - 1; u++) l.push(o.table[a[u]].node);
+    return rt.fromArray(pr(l));
+  };
+  rt.rawSplit = function(t) {
+    return rt.fromArray(hn(t, vt.isKanjiModeEnabled()));
+  };
+});
+var yn = N((mn) => {
+  var Pt = H(), se = Et(), wr = ve(), br = Pe(), Nr = ke(), Er = De(), ae = Ue(), le = Yt(), Cr = Oe(), Tt = Ye(), Sr = Ze(), Ir = K(), oe = pn();
+  function Ar(n, t) {
+    let e = n.size, r = Er.getPositions(t);
+    for (let s = 0; s < r.length; s++) {
+      let o = r[s][0], a = r[s][1];
+      for (let l = -1; l <= 7; l++) if (!(o + l <= -1 || e <= o + l)) for (let u = -1; u <= 7; u++) a + u <= -1 || e <= a + u || (l >= 0 && l <= 6 && (u === 0 || u === 6) || u >= 0 && u <= 6 && (l === 0 || l === 6) || l >= 2 && l <= 4 && u >= 2 && u <= 4 ? n.set(o + l, a + u, true, true) : n.set(o + l, a + u, false, true));
+    }
+  }
+  function Br(n) {
+    let t = n.size;
+    for (let e = 8; e < t - 8; e++) {
+      let r = e % 2 === 0;
+      n.set(e, 6, r, true), n.set(6, e, r, true);
+    }
+  }
+  function Mr(n, t) {
+    let e = Nr.getPositions(t);
+    for (let r = 0; r < e.length; r++) {
+      let s = e[r][0], o = e[r][1];
+      for (let a = -2; a <= 2; a++) for (let l = -2; l <= 2; l++) a === -2 || a === 2 || l === -2 || l === 2 || a === 0 && l === 0 ? n.set(s + a, o + l, true, true) : n.set(s + a, o + l, false, true);
+    }
+  }
+  function vr(n, t) {
+    let e = n.size, r = Tt.getEncodedBits(t), s, o, a;
+    for (let l = 0; l < 18; l++) s = Math.floor(l / 3), o = l % 3 + e - 8 - 3, a = (r >> l & 1) === 1, n.set(s, o, a, true), n.set(o, s, a, true);
+  }
+  function ie(n, t, e) {
+    let r = n.size, s = Sr.getEncodedBits(t, e), o, a;
+    for (o = 0; o < 15; o++) a = (s >> o & 1) === 1, o < 6 ? n.set(o, 8, a, true) : o < 8 ? n.set(o + 1, 8, a, true) : n.set(r - 15 + o, 8, a, true), o < 8 ? n.set(8, r - o - 1, a, true) : o < 9 ? n.set(8, 15 - o - 1 + 1, a, true) : n.set(8, 15 - o - 1, a, true);
+    n.set(r - 8, 8, 1, true);
+  }
+  function Tr(n, t) {
+    let e = n.size, r = -1, s = e - 1, o = 7, a = 0;
+    for (let l = e - 1; l > 0; l -= 2) for (l === 6 && l--; ; ) {
+      for (let u = 0; u < 2; u++) if (!n.isReserved(s, l - u)) {
+        let d = false;
+        a < t.length && (d = (t[a] >>> o & 1) === 1), n.set(s, l - u, d), o--, o === -1 && (a++, o = 7);
+      }
+      if (s += r, s < 0 || e <= s) {
+        s -= r, r = -r;
+        break;
+      }
+    }
+  }
+  function Pr(n, t, e) {
+    let r = new wr();
+    e.forEach(function(u) {
+      r.put(u.mode.bit, 4), r.put(u.getLength(), Ir.getCharCountIndicator(u.mode, n)), u.write(r);
+    });
+    let s = Pt.getSymbolTotalCodewords(n), o = le.getTotalCodewordsCount(n, t), a = (s - o) * 8;
+    for (r.getLengthInBits() + 4 <= a && r.put(0, 4); r.getLengthInBits() % 8 !== 0; ) r.putBit(0);
+    let l = (a - r.getLengthInBits()) / 8;
+    for (let u = 0; u < l; u++) r.put(u % 2 ? 17 : 236, 8);
+    return kr(r, n, t);
+  }
+  function kr(n, t, e) {
+    let r = Pt.getSymbolTotalCodewords(t), s = le.getTotalCodewordsCount(t, e), o = r - s, a = le.getBlocksCount(t, e), l = r % a, u = a - l, d = Math.floor(r / a), g = Math.floor(o / a), m = g + 1, p = d - g, y = new Cr(p), S = 0, C = new Array(a), A = new Array(a), x = 0, P = new Uint8Array(n.buffer);
+    for (let k = 0; k < a; k++) {
+      let L = k < u ? g : m;
+      C[k] = P.slice(S, S + L), A[k] = y.encode(C[k]), S += L, x = Math.max(x, L);
+    }
+    let B = new Uint8Array(r), I = 0, w, M;
+    for (w = 0; w < x; w++) for (M = 0; M < a; M++) w < C[M].length && (B[I++] = C[M][w]);
+    for (w = 0; w < p; w++) for (M = 0; M < a; M++) B[I++] = A[M][w];
+    return B;
+  }
+  function xr(n, t, e, r) {
+    let s;
+    if (Array.isArray(n)) s = oe.fromArray(n);
+    else if (typeof n == "string") {
+      let d = t;
+      if (!d) {
+        let g = oe.rawSplit(n);
+        d = Tt.getBestVersionForData(g, e);
+      }
+      s = oe.fromString(n, d || 40);
+    } else throw new Error("Invalid data");
+    let o = Tt.getBestVersionForData(s, e);
+    if (!o) throw new Error("The amount of data is too big to be stored in a QR Code");
+    if (!t) t = o;
+    else if (t < o) throw new Error(`
+The chosen QR Code version cannot contain this amount of data.
+Minimum version required to store current data is: ` + o + `.
+`);
+    let a = Pr(t, e, s), l = Pt.getSymbolSize(t), u = new br(l);
+    return Ar(u, t), Br(u), Mr(u, t), ie(u, e, 0), t >= 7 && vr(u, t), Tr(u, a), isNaN(r) && (r = ae.getBestMask(u, ie.bind(null, u, e))), ae.applyMask(r, u), ie(u, e, r), { modules: u, version: t, errorCorrectionLevel: e, maskPattern: r, segments: s };
+  }
+  mn.create = function(t, e) {
+    if (typeof t > "u" || t === "") throw new Error("No input text");
+    let r = se.M, s, o;
+    return typeof e < "u" && (r = se.from(e.errorCorrectionLevel, se.M), s = Tt.from(e.version), o = ae.from(e.maskPattern), e.toSJISFunc && Pt.setToSJISFunction(e.toSJISFunc)), xr(t, s, r, o);
+  };
+});
+var ue = N((Q) => {
+  function wn(n) {
+    if (typeof n == "number" && (n = n.toString()), typeof n != "string") throw new Error("Color should be defined as hex string");
+    let t = n.slice().replace("#", "").split("");
+    if (t.length < 3 || t.length === 5 || t.length > 8) throw new Error("Invalid hex color: " + n);
+    (t.length === 3 || t.length === 4) && (t = Array.prototype.concat.apply([], t.map(function(r) {
+      return [r, r];
+    }))), t.length === 6 && t.push("F", "F");
+    let e = parseInt(t.join(""), 16);
+    return { r: e >> 24 & 255, g: e >> 16 & 255, b: e >> 8 & 255, a: e & 255, hex: "#" + t.slice(0, 6).join("") };
+  }
+  Q.getOptions = function(t) {
+    t || (t = {}), t.color || (t.color = {});
+    let e = typeof t.margin > "u" || t.margin === null || t.margin < 0 ? 4 : t.margin, r = t.width && t.width >= 21 ? t.width : void 0, s = t.scale || 4;
+    return { width: r, scale: r ? 4 : s, margin: e, color: { dark: wn(t.color.dark || "#000000ff"), light: wn(t.color.light || "#ffffffff") }, type: t.type, rendererOpts: t.rendererOpts || {} };
+  };
+  Q.getScale = function(t, e) {
+    return e.width && e.width >= t + e.margin * 2 ? e.width / (t + e.margin * 2) : e.scale;
+  };
+  Q.getImageWidth = function(t, e) {
+    let r = Q.getScale(t, e);
+    return Math.floor((t + e.margin * 2) * r);
+  };
+  Q.qrToImageData = function(t, e, r) {
+    let s = e.modules.size, o = e.modules.data, a = Q.getScale(s, r), l = Math.floor((s + r.margin * 2) * a), u = r.margin * a, d = [r.color.light, r.color.dark];
+    for (let g = 0; g < l; g++) for (let m = 0; m < l; m++) {
+      let p = (g * l + m) * 4, y = r.color.light;
+      if (g >= u && m >= u && g < l - u && m < l - u) {
+        let S = Math.floor((g - u) / a), C = Math.floor((m - u) / a);
+        y = d[o[S * s + C] ? 1 : 0];
+      }
+      t[p++] = y.r, t[p++] = y.g, t[p++] = y.b, t[p] = y.a;
+    }
+  };
+});
+var bn = N((kt) => {
+  var ce = ue();
+  function Lr(n, t, e) {
+    n.clearRect(0, 0, t.width, t.height), t.style || (t.style = {}), t.height = e, t.width = e, t.style.height = e + "px", t.style.width = e + "px";
+  }
+  function Dr() {
+    try {
+      return document.createElement("canvas");
+    } catch {
+      throw new Error("You need to specify a canvas element");
+    }
+  }
+  kt.render = function(t, e, r) {
+    let s = r, o = e;
+    typeof s > "u" && (!e || !e.getContext) && (s = e, e = void 0), e || (o = Dr()), s = ce.getOptions(s);
+    let a = ce.getImageWidth(t.modules.size, s), l = o.getContext("2d"), u = l.createImageData(a, a);
+    return ce.qrToImageData(u.data, t, s), Lr(l, o, a), l.putImageData(u, 0, 0), o;
+  };
+  kt.renderToDataURL = function(t, e, r) {
+    let s = r;
+    typeof s > "u" && (!e || !e.getContext) && (s = e, e = void 0), s || (s = {});
+    let o = kt.render(t, e, s), a = s.type || "image/png", l = s.rendererOpts || {};
+    return o.toDataURL(a, l.quality);
+  };
+});
+var Cn = N((En) => {
+  var Ur = ue();
+  function Nn(n, t) {
+    let e = n.a / 255, r = t + '="' + n.hex + '"';
+    return e < 1 ? r + " " + t + '-opacity="' + e.toFixed(2).slice(1) + '"' : r;
+  }
+  function de(n, t, e) {
+    let r = n + t;
+    return typeof e < "u" && (r += " " + e), r;
+  }
+  function _r(n, t, e) {
+    let r = "", s = 0, o = false, a = 0;
+    for (let l = 0; l < n.length; l++) {
+      let u = Math.floor(l % t), d = Math.floor(l / t);
+      !u && !o && (o = true), n[l] ? (a++, l > 0 && u > 0 && n[l - 1] || (r += o ? de("M", u + e, 0.5 + d + e) : de("m", s, 0), s = 0, o = false), u + 1 < t && n[l + 1] || (r += de("h", a), a = 0)) : s++;
+    }
+    return r;
+  }
+  En.render = function(t, e, r) {
+    let s = Ur.getOptions(e), o = t.modules.size, a = t.modules.data, l = o + s.margin * 2, u = s.color.light.a ? "<path " + Nn(s.color.light, "fill") + ' d="M0 0h' + l + "v" + l + 'H0z"/>' : "", d = "<path " + Nn(s.color.dark, "stroke") + ' d="' + _r(a, o, s.margin) + '"/>', g = 'viewBox="0 0 ' + l + " " + l + '"', p = '<svg xmlns="http://www.w3.org/2000/svg" ' + (s.width ? 'width="' + s.width + '" height="' + s.width + '" ' : "") + g + ' shape-rendering="crispEdges">' + u + d + `</svg>
+`;
+    return typeof r == "function" && r(null, p), p;
+  };
+});
+var In = N((gt) => {
+  var qr = Ae(), fe = yn(), Sn = bn(), Fr = Cn();
+  function ge(n, t, e, r, s) {
+    let o = [].slice.call(arguments, 1), a = o.length, l = typeof o[a - 1] == "function";
+    if (!l && !qr()) throw new Error("Callback required as last argument");
+    if (l) {
+      if (a < 2) throw new Error("Too few arguments provided");
+      a === 2 ? (s = e, e = t, t = r = void 0) : a === 3 && (t.getContext && typeof s > "u" ? (s = r, r = void 0) : (s = r, r = e, e = t, t = void 0));
+    } else {
+      if (a < 1) throw new Error("Too few arguments provided");
+      return a === 1 ? (e = t, t = r = void 0) : a === 2 && !t.getContext && (r = e, e = t, t = void 0), new Promise(function(u, d) {
+        try {
+          let g = fe.create(e, r);
+          u(n(g, t, r));
+        } catch (g) {
+          d(g);
+        }
+      });
+    }
+    try {
+      let u = fe.create(e, r);
+      s(null, n(u, t, r));
+    } catch (u) {
+      s(u);
+    }
+  }
+  gt.create = fe.create;
+  gt.toCanvas = ge.bind(null, Sn.render);
+  gt.toDataURL = ge.bind(null, Sn.renderToDataURL);
+  gt.toString = ge.bind(null, function(n, t, e) {
+    return Fr.render(n, e);
+  });
+});
+import { a as f } from "./react-DFdtPfhg.js";
+var Vn = () => f.createElement("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.7", "aria-hidden": "true" }, f.createElement("path", { d: "M4 12h16m-6-6 6 6-6 6" }));
+var vn = Kn(In());
+import { a as i } from "./react-DFdtPfhg.js";
+function An(n) {
+  let t = 1, e = 1 / 0;
+  for (let a = 1; a <= Math.min(n, Math.ceil(Math.sqrt(n) * 2)); a++) {
+    let l = Math.ceil(n / a), u = Math.abs(Math.log(a / l / (4 / 3))) + (a * l - n) / n * 3;
+    u < e && (t = a, e = u);
+  }
+  let r = Math.ceil(n / t), s = [], o = t * r - n;
+  for (let a = 0; a < r; a++) {
+    let l = Math.min(Math.floor(t / 2), Math.ceil(o / (r - a)));
+    o -= l;
+    let u = [...Array(l).fill(2), ...Array(t - l * 2).fill(1)];
+    if (u.length) {
+      let g = a % u.length;
+      u.push(...u.splice(0, g));
+    }
+    let d = 0;
+    for (let g of u) s.push({ c: d, r: a, span: g }), d += g;
+  }
+  return { cols: t, rows: r, cells: s };
+}
+function xt(n, t, e, r, s) {
+  let o = Math.hypot(e, r), a = -r / o, l = e / o, u = o * 0.16, d = (g, m = 0) => `${(n + e * g + a * m).toFixed(2)},${(t + r * g + l * m).toFixed(2)}`;
+  return s ? `L${d(0.35)} C${d(0.45)} ${d(0.38, s * u)} ${d(0.5, s * u)} C${d(0.62, s * u)} ${d(0.55)} ${d(0.65)} L${d(1)}` : `L${d(1)}`;
+}
+var Lt = (n, t) => (n * 17 + t * 13) % 3 === 0 ? 1 : -1;
+function Bn(n,t=[]){return puzzleB(n,t,An)}
+var he = document.createElement("link");
+he.rel = "stylesheet";
+he.href = "/assets/attendance-sequential.css";
+document.head.append(he);
+var Tn = null;
+if (location.pathname === "/checkin") {
+  let n = new URLSearchParams(location.search), t = n.get("sessionId"), e = n.get("ticket");
+  if (t && e) {
+    let r = { sessionId: t, ticket: e };
+    sessionStorage.setItem("attendance.pending", JSON.stringify({ ...r, capturing: true })), Tn = fetch("/api/v1/attendance/scan", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(r) }).then(async (s) => {
+      let o = await s.json();
+      if (!s.ok || !o.ok) throw new Error(o.error?.message || "\u626B\u7801\u51ED\u8BC1\u672A\u80FD\u63A5\u6536\uFF0C\u8BF7\u91CD\u65B0\u626B\u7801");
+      let a = { sessionId: o.data.sessionId, scanProof: o.data.scanProof, expiresAt: o.data.expiresAt };
+      return sessionStorage.setItem("attendance.pending", JSON.stringify(a)), history.replaceState(history.state, "", location.pathname), a;
+    }).catch((s) => {
+      let o = { error: s.message };
+      return sessionStorage.setItem("attendance.pending", JSON.stringify(o)), o;
+    });
+  }
+}
+var Mn = () => crypto.randomUUID();
+function Ss({ request: n, user: t }) {
+  let [now, tick] = i.useState(Date.now());
+  i.useEffect(() => {
+    const timer = setInterval(() => tick(Date.now()), 1e3);
+    return () => clearInterval(timer);
+  }, []);
+  let e = () => {
+    try {
+      return JSON.parse(sessionStorage.getItem("attendance.pending") || "null");
+    } catch {
+      return null;
+    }
+  }, [r, s] = i.useState(e), [o, a] = i.useState(""), [l, u] = i.useState(false);
+  i.useEffect(() => {
+    let g = true;
+    const receive = (event) => {
+      a("");
+      s(event.detail);
+    };
+    window.addEventListener("attendance:captured", receive);
+    Tn?.then((m) => {
+      g && s(m);
+    });
+    return () => {
+      g = false;
+      window.removeEventListener("attendance:captured", receive);
+    };
+  }, []);
+  let d = () => {
+    sessionStorage.removeItem("attendance.pending"), s(null);
+  };
+  return r ? i.createElement("div", { className: "att-backdrop" }, i.createElement("section", { className: "att att-checkin" }, i.createElement("span", { className: "att-kicker" }, "CLASS CHECK-IN"), i.createElement("h2", null, "\u8BFE\u5802\u7B7E\u5230"), i.createElement("p", null, "\u5F53\u524D\u767B\u5F55\uFF1A", t.displayName), r.error ? i.createElement("p", { role: "alert" }, r.error) : t.role !== "student" ? i.createElement("p", null, "\u8BF7\u4F7F\u7528\u672C\u73ED\u5B66\u751F\u8D26\u53F7\u7B7E\u5230\u3002") : i.createElement(i.Fragment, null, i.createElement("p", null, r.capturing ? "\u6B63\u5728\u6821\u9A8C\u626B\u7801\u51ED\u8BC1\u2026" : "\u626B\u7801\u51ED\u8BC1\u5DF2\u63A5\u6536\uFF0C\u8BF7\u57283\u5206\u949F\u5185\u786E\u8BA4\u7B7E\u5230\u3002"), r.expiresAt && o !== "\u7B7E\u5230\u6210\u529F\uFF0C\u4F60\u7684\u62FC\u56FE\u5DF2\u5F52\u4F4D\u3002" && i.createElement("p", { role: "status" }, now >= r.expiresAt ? "\u786E\u8BA4\u65F6\u95F4\u5DF2\u8FC7\uFF0C\u8BF7\u91CD\u65B0\u626B\u7801\u3002" : "\u51ED\u8BC1\u5DF2\u63A5\u6536\uFF0C\u5269\u4F59\u786E\u8BA4\u65F6\u95F4\uFF1A" + Math.max(0, Math.ceil((r.expiresAt - now) / 1e3)) + "\u79D2"), i.createElement("button", { disabled: l || r.capturing || r.expiresAt && now >= r.expiresAt || o === "\u7B7E\u5230\u6210\u529F\uFF0C\u4F60\u7684\u62FC\u56FE\u5DF2\u5F52\u4F4D\u3002", className: "att-primary", onClick: async () => {
+    u(true);
+    try {
+      let g = r.scanProof ? { sessionId: r.sessionId, scanProof: r.scanProof } : { sessionId: r.sessionId, ticket: r.ticket };
+      await n("POST", "/core/attendance-checkin", { body: g }), a("\u7B7E\u5230\u6210\u529F\uFF0C\u4F60\u7684\u62FC\u56FE\u5DF2\u5F52\u4F4D\u3002"), sessionStorage.removeItem("attendance.pending");
+    } catch (g) {
+      a(g.message);
+    } finally {
+      u(false);
+    }
+  } }, l ? "\u6B63\u5728\u7B7E\u5230\u2026" : "\u786E\u8BA4\u7B7E\u5230")), o && i.createElement("p", { role: "status" }, o), i.createElement("button", { onClick: d }, "\u5173\u95ED"))) : null;
+}
+function Is({ request: n, classes: t = [], classId: e, mode: r = "attendance", role: s = "teacher", onClassChange: callback }) {
+  const rollSequence=i.useRef({skip:false,wake:null});
+  const [customCount,setCustomCount]=i.useState(false),[customValue,setCustomValue]=i.useState('10');
+  let [o, a] = i.useState(e || t[0]?.id || ""), [l, u] = i.useState([]), [d, g] = i.useState(""), [m, p] = i.useState(""), [y, S] = i.useState(null), [C, A] = i.useState([]), [x, P] = i.useState(""), [B, I] = i.useState(false), [w, M] = i.useState(null), [k, L] = i.useState([]), [st, Pn] = i.useState("all"), [Dt, kn] = i.useState(1), [pe, xn] = i.useState(false), [me, ye] = i.useState([]), [Ln, Ut] = i.useState([]), [Dn, _t] = i.useState(""), [ht, qt] = i.useState(""), pt = i.useRef(0), F = i.useRef(null), [Ft, mt] = i.useState(true);
+  i.useEffect(() => {
+    rollSequence.current.skip=true;rollSequence.current.wake?.();
+    pt.current++, F.current = null, Ut([]), _t(""), A([]), ye([]), M(null), mt(true), P("");
+  }, [o, r]);
+  let yt = i.useRef(false), W = i.useRef(0), $t = i.useRef({ id: "", signed: [] }), O = i.useRef(true), [wt, Ot] = i.useState(14);
+  i.useEffect(() => {
+    try {
+      let c = localStorage.getItem("attendance.blur." + o);
+      Ot(c === null ? 14 : Math.max(0, Math.min(32, Number(c) || 0)));
+    } catch {
+      Ot(14);
+    }
+  }, [o]);
+  let Un = (c) => {
+    Ot(c);
+    try {
+      localStorage.setItem("attendance.blur." + o, String(c));
+    } catch {
+    }
+  }, [zt, _n] = i.useState({});
+  i.useEffect(() => {
+    let c = true;
+    return s === "admin" && Promise.all(l.filter((h) => !zt[h.id]).map(async (h) => [h.id, (await n("GET", `/core/attendance-image-data/${h.id}`)).dataUrl])).then((h) => {
+      c && h.length && _n((T) => ({ ...T, ...Object.fromEntries(h) }));
+    }).catch((h) => {
+      c && P(h.message);
+    }), () => {
+      c = false;
+    };
+  }, [l, s]), i.useEffect(() => (O.current = true, () => {
+    O.current = false, W.current++;
+  }), []), i.useEffect(() => {
+    e && a(e);
+  }, [e]);
+  let Z = async (c) => {
+    if (!yt.current) {
+      yt.current = true, I(true), P(""), W.current++;
+      try {
+        await c();
+      } catch (h) {
+        O.current && P(h.message);
+      } finally {
+        yt.current = false, O.current && I(false);
+      }
+    }
+  };
+  async function X() {
+    let c = ++W.current;
+    if (s === "admin") {
+      let U = await n("GET", "/admin/attendance/images");
+      O.current && c === W.current && (u(U), mt(false));
+      return;
+    }
+    if (!o) return;
+    let [h, T, D, Jt] = await Promise.all([n("GET", `/core/classes/${o}/attendance`), n("GET", `/core/classes/${o}/members`), n("GET", "/core/attendance-images"), n("GET", `/core/classes/${o}/rollcall`)]), ot = h.sort((U, Kt) => Kt.createdAt.localeCompare(U.createdAt)), be = ot.find((U) => U.status === "open") || ot[0], Nt = be ? await n("GET", `/core/attendance/${be.id}`) : null;
+    if (!O.current || c !== W.current) return;
+    mt(false), A(T), u(D), ye(Jt), g((U) => D.some((Kt) => Kt.id === U) ? U : D[0]?.id || "");
+    let Ne = $t.current, Ee = Nt?.signed.map((U) => U.studentId) || [];
+    L(Ne.id === Nt?.id ? Ee.filter((U) => !Ne.signed.includes(U)) : []), $t.current = { id: Nt?.id || "", signed: Ee }, S(Nt);
+  }
+  i.useEffect(() => {
+    let c = true, h;
+    S(null), $t.current = { id: "", signed: [] };
+    let T = async () => {
+      try {
+        yt.current || await X();
+      } catch (D) {
+        c && (P(D.message), mt(false));
+      } finally {
+        c && (h = setTimeout(T, 1800));
+      }
+    };
+    return T(), () => {
+      c = false, W.current++, clearTimeout(h);
+    };
+  }, [o, s]);
+  let Ht = y?.imageId || d;
+  i.useEffect(() => {
+    let c = true;
+    return p(""), Ht && n("GET", `/core/attendance-image-data/${Ht}`).then((h) => {
+      c && p(h.dataUrl);
+    }).catch((h) => {
+      c && P(h.message);
+    }), () => {
+      c = false;
+    };
+  }, [Ht, s]);
+  let q = y?.roster || C, z = y?.signed.map((c) => c.studentId) || [], bt = !!y && z.length === q.length && q.length > 0;
+  const availablePool=st==='signed'?C.filter(v=>z.includes(v.studentId)):st==='absent'?C.filter(v=>!z.includes(v.studentId)):C;
+ const countLimit=Math.min(1000,availablePool.length),countValid=Number.isInteger(Dt)&&Dt>=1&&Dt<=countLimit;
+  async function qn() {
+ if(!countValid)return;
+    let c = pt.current;
+    await Z(async () => {
+      Ut([]);
+      let h = { classId: o, sessionId: y?.id, scope: st, count: Dt, repeat: pe }, T = JSON.stringify(h);
+      (!F.current || F.current.fingerprint !== T) && (F.current = { fingerprint: T, body: { ...h, clientRequestId: Mn() } });
+      let D = F.current.body;_t("requesting");let Jt = await n("POST", "/core/rollcall", { body: D });
+      if(!O.current||c!==pt.current)return;
+      F.current=null;const control=rollSequence.current;control.skip=false;
+      const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const pause=ms=>control.skip?Promise.resolve():new Promise(resolve=>{let done=false;const finish=()=>{if(done)return;done=true;clearTimeout(timer);if(control.wake===finish)control.wake=null;resolve()};const timer=setTimeout(finish,ms);control.wake=finish});
+      for(let index=0;index<Jt.students.length;index++){
+        if(!O.current||c!==pt.current)return;
+        if(control.skip){Ut(Jt.students);break}
+        _t('revealing');await pause(reduced?120:index===0?4800:3400);
+        if(!O.current||c!==pt.current)return;
+        if(control.skip){Ut(Jt.students);break}
+        Ut(Jt.students.slice(0,index+1));_t('landed');await pause(reduced?40:850);
+      }
+      if(!O.current||c!==pt.current)return;
+      _t('');try{await X()}catch{qt('抽取已完成，记录暂未刷新，请稍后再试。')}
+    });
+  }
+  let we = i.createElement("div", { className: "att-heading" }, i.createElement("div", null, i.createElement("span", { className: "att-kicker" }, s === "admin" ? "CLASSROOM / IMAGE LIBRARY" : r === "rollcall" ? "CLASSROOM / RANDOM CALL" : "CLASSROOM / ATTENDANCE"), i.createElement("h1", null, s === "admin" ? "\u7B7E\u5230\u56FE\u7247\u7BA1\u7406" : r === "rollcall" ? "\u968F\u673A\u70B9\u540D" : "\u62FC\u56FE\u7B7E\u5230")), s !== "admin" && i.createElement("select", { "aria-label": "\u9009\u62E9\u7B7E\u5230\u73ED\u7EA7", disabled: B, value: o, onChange: (c) => {
+    a(c.target.value);
+    callback?.(c.target.value);
+  } }, t.map((c) => i.createElement("option", { key: c.id, value: c.id }, c.name))));
+  return s === "admin" ? i.createElement("section", { className: "att" }, we, i.createElement("p", null, "\u56FE\u7247\u7531\u7BA1\u7406\u5458\u7EF4\u62A4\u3002\u505C\u7528\u56FE\u7247\u4E0D\u5F71\u54CD\u5DF2\u7ECF\u5F00\u59CB\u7684\u7B7E\u5230\u573A\u6B21\u3002"), x && i.createElement("div", { className: "att-error" }, x), i.createElement("div", { className: "att-upload" }, i.createElement("label", null, "\u56FE\u7247\u540D\u79F0", i.createElement("input", { id: "att-image-title", maxLength: 100, placeholder: "\u4F8B\u5982\uFF1A\u96EA\u5C71\u4E0E\u82B1\u6D77" })), i.createElement("label", null, "\u9009\u62E9\u56FE\u7247\uFF08JPG/PNG\uFF0C\u4E0D\u8D85\u8FC71MB\uFF09", i.createElement("input", { type: "file", accept: "image/jpeg,image/png", disabled: B, onChange: (c) => {
+    let h = c.target.files?.[0];
+    if (!h) return;
+    if (h.size > 1048576) {
+      P("\u56FE\u7247\u4E0D\u8D85\u8FC71MB");
+      return;
+    }
+    let T = document.getElementById("att-image-title")?.value.trim() || h.name, D = new FileReader();
+    D.onload = () => Z(async () => {
+      await n("POST", "/admin/attendance/images", { body: { title: T, mime: h.type, base64: String(D.result).split(",")[1] } }), qt("\u56FE\u7247\u5DF2\u6DFB\u52A0\uFF0C\u6559\u5E08\u521B\u5EFA\u65B0\u7B7E\u5230\u65F6\u53EF\u9009\u7528\u3002"), await X();
+    }), D.readAsDataURL(h);
+  } }))), ht && i.createElement("p", { role: "status" }, ht), i.createElement("div", { className: "att-image-list" }, l.map((c) => i.createElement("article", { key: c.id }, zt[c.id] && i.createElement("img", { src: zt[c.id], alt: c.title }), i.createElement("b", null, c.title), i.createElement("span", null, c.active ? "\u53EF\u7528\u4E8E\u65B0\u573A\u6B21" : "\u5DF2\u505C\u7528"), i.createElement("button", { disabled: B, onClick: () => Z(async () => {
+    await n("POST", `/admin/attendance/images/${c.id}/state`, { body: { active: !c.active } }), await X();
+  }) }, c.active ? "\u505C\u7528" : "\u542F\u7528"))))) : i.createElement("section", { className: "att" }, we, x && i.createElement("div", { className: "att-error", role: "alert" }, x), ht && i.createElement("p", { role: "status" }, ht), Ft && i.createElement("p", { role: "status" }, "\u6B63\u5728\u8BFB\u53D6\u73ED\u7EA7\u6570\u636E\u2026"), o ? r === "rollcall" ? i.createElement(i.Fragment, null, i.createElement("div", { className: "att-roll" }, i.createElement(Se, { members: C, pool: availablePool, countValid, chosen: Ln, busy: B, loading: Ft, rolling: Dn, error: x, scope: st, count: Dt, onDraw: qn, onSkip:()=>{rollSequence.current.skip=true;rollSequence.current.wake?.()} }), i.createElement("div", { className: "att-config" }, i.createElement("h3", null, "\u70B9\u540D\u8BBE\u7F6E"), i.createElement("label", null, "\u5019\u9009\u8303\u56F4", i.createElement("select", { "aria-label": "\u5019\u9009\u8303\u56F4", value: st, disabled: B, onChange: (c) => {
+    F.current = null, Pn(c.target.value);
+  } }, i.createElement("option", { value: "all" }, "\u5168\u73ED\u540C\u5B66"), i.createElement("option", { value: "signed" }, "\u672C\u573A\u5DF2\u7B7E\u5230"), i.createElement("option", { value: "absent" }, "\u672C\u573A\u672A\u7B7E\u5230"))), i.createElement("label",null,"一次抽取",i.createElement("select",{"aria-label":"一次抽取人数",value:customCount?'custom':String(Dt),disabled:B,onChange:c=>{F.current=null;setCustomCount(c.target.value==='custom');kn(c.target.value==='custom'?Number(customValue):Number(c.target.value))}},[1,3,5].map(v=>i.createElement("option",{key:v,value:String(v)},v+'位同学')),i.createElement("option",{value:'custom'},'自定义人数'))),customCount&&i.createElement('label',{className:'rl-custom-label'},'自定义抽取人数',i.createElement('input',{type:'number','aria-label':'自定义抽取人数',inputMode:'numeric',min:1,max:Math.max(1,countLimit),step:1,value:customValue,disabled:B,'aria-invalid':!countValid,'aria-describedby':'rl-count-help',onChange:c=>{F.current=null;setCustomValue(c.target.value);kn(c.target.value===''?0:Number(c.target.value))}}),i.createElement('span',{id:'rl-count-help',className:countValid?'rl-count-help':'rl-count-error'},countValid?`本次抽取 ${Dt} 人，当前范围共 ${availablePool.length} 人`:`请输入1～${Math.max(1,countLimit)}的整数；候选不足时请调整范围`)),i.createElement("label", { className: "att-check" }, i.createElement("input", { type: "checkbox", checked: pe, disabled: B, onChange: (c) => {
+    F.current = null, xn(c.target.checked);
+  } }), "\u5141\u8BB8\u672C\u8F6E\u91CD\u590D\u70B9\u540D"), i.createElement("p", null, "\u4E0D\u5141\u8BB8\u91CD\u590D\u65F6\uFF0C\u5019\u9009\u4E0D\u8DB3\u4F1A\u63D0\u793A\u5F00\u59CB\u65B0\u4E00\u8F6E\u3002"), i.createElement("button", { disabled: B, onClick: () => Z(async () => {
+    await n("POST", `/core/classes/${o}/rollcall/reset`, { body: {} }), F.current = null, qt("\u672C\u8F6E\u5019\u9009\u5DF2\u91CD\u7F6E\uFF0C\u5386\u53F2\u8BB0\u5F55\u4FDD\u7559\u3002");
+  }) }, "\u5F00\u59CB\u65B0\u4E00\u8F6E"))), i.createElement("h3", null, "\u70B9\u540D\u8BB0\u5F55"), me.length ? me.map((c) => i.createElement("div", { className: "att-history", key: c.id }, i.createElement("time", null, new Date(c.createdAt).toLocaleString()), i.createElement("strong", null, c.students.map((h) => h.studentName).join("\u3001")))) : i.createElement("p", null, "\u8FD8\u6CA1\u6709\u70B9\u540D\u8BB0\u5F55\u3002")) : i.createElement(i.Fragment, null, i.createElement("div", { className: "att-toolbar" }, i.createElement("span", null, y?.status === "open" ? "\u7B7E\u5230\u8FDB\u884C\u4E2D" : y ? "\u672C\u573A\u5DF2\u7ED3\u675F" : "\u5C1A\u672A\u5F00\u59CB\u7B7E\u5230"), i.createElement("span", null, q.length, "\u4EBA \xB7 \u6BCF\u4EBA\u5BF9\u5E94\u4E00\u5757"), (!y || y.status !== "open") && i.createElement(i.Fragment, null, i.createElement("select", { "aria-label": "\u9009\u62E9\u7B7E\u5230\u56FE\u7247", value: d, onChange: (c) => g(c.target.value) }, l.map((c) => i.createElement("option", { key: c.id, value: c.id }, c.title))), i.createElement("span", { className: "att-image-help" }, "\u56FE\u7247\u7531\u7BA1\u7406\u7AEF\u300C\u7B7E\u5230\u56FE\u7247\u300D\u4E0A\u4F20\uFF0C\u6B64\u5904\u9009\u62E9\u3002"), i.createElement("button", { className: "att-primary", disabled: B || Ft || !d, onClick: () => Z(async () => {
+    await n("POST", "/core/attendance", { body: { classId: o, imageId: d, title: "\u8BFE\u5802\u7B7E\u5230", clientRequestId: Mn() } }), await X();
+  }) }, "\u5F00\u59CB\u65B0\u573A\u7B7E\u5230")), y?.status === "open" && i.createElement("button", { disabled: B, onClick: () => {
+    confirm("\u7ED3\u675F\u672C\u573A\u7B7E\u5230\uFF1F\u7ED3\u675F\u540E\u5B66\u751F\u5C06\u4E0D\u80FD\u7EE7\u7EED\u7B7E\u5230\u3002") && Z(async () => {
+      await n("POST", `/core/attendance/${y.id}/close`, { body: {} }), await X();
+    });
+  } }, "\u7ED3\u675F\u7B7E\u5230")), i.createElement("div", { className: "att-stage" }, i.createElement($r, { session: y }), i.createElement("div", { className: "att-puzzle" }, i.createElement("div", { className: "att-blur-control" }, i.createElement("label", { htmlFor: "att-blur" }, "\u672A\u7B7E\u5230\u533A\u57DF\u6A21\u7CCA\u5EA6"), i.createElement("input", { id: "att-blur", type: "range", min: "0", max: "32", step: "1", value: wt, onChange: (c) => Un(Number(c.target.value)) }), i.createElement("output", { htmlFor: "att-blur" }, wt === 0 ? "\u6E05\u6670" : wt + " px")), i.createElement("div", { className: "att-board-heading" }, i.createElement("b", null, "\u73ED\u7EA7\u7B7E\u5230\u62FC\u56FE"), i.createElement("span", null, bt ? "UNLOCKED" : "\u7B49\u5F85\u6BCF\u4E00\u5757\u5F52\u4F4D")), i.createElement("div", { className: "board-shell " + (bt ? "complete" : ""), onClick: (c) => {
+    let h = c.target.closest("[data-id]");
+    if (!h) return;
+    let T = q.find((D) => D.studentId === h.getAttribute("data-id"));
+    T && !z.includes(T.studentId) && M(T);
+  }, onKeyDown: (c) => {
+    if (c.key === "Enter" || c.key === " ") {
+      let h = c.target.closest("[data-id]"), T = q.find((D) => D.studentId === h?.getAttribute("data-id"));
+      T && !z.includes(T.studentId) && (c.preventDefault(), M(T));
+    }
+  } }, q.length && m ? i.createElement("div", { dangerouslySetInnerHTML: { __html: Bn({ roster: q.map((c) => ({ id: c.studentId })), signed: z, photo: m, blur: wt }, k) } }) : i.createElement("div", { className: "att-placeholder" }, q.length ? "\u7B49\u5F85\u9009\u62E9\u7B7E\u5230\u56FE\u7247" : "\u73ED\u7EA7\u5C1A\u65E0\u5B66\u751F")), bt && i.createElement("div", { className: "att-confetti", "aria-hidden": "true" }, Array.from({ length: 30 }, (c, h) => i.createElement("i", { key: h, style: { "--x": h * 79 % 700 - 350 + "px", "--y": h * 113 % 450 - 260 + "px", "--r": h * 67 + "deg", animationDelay: h % 6 * 0.04 + "s" } }))), i.createElement("p", { className: "att-board-note" }, bt ? "\u2726 \u5168\u5458\u5DF2\u7B7E\u5230\uFF0C\u56FE\u7247\u5DF2\u89E3\u9501\u3002" : "\u672A\u7B7E\u5230\u533A\u57DF\u6A21\u7CCA\u663E\u793A \xB7 \u70B9\u51FB\u67E5\u770B\u672A\u7B7E\u5230\u540C\u5B66"), i.createElement("div", { className: "att-progress" }, i.createElement("strong", null, z.length, i.createElement("small", null, " / ", q.length)), i.createElement("span", null, "\u5DF2\u7B7E\u5230"), i.createElement("b", null, q.length ? Math.floor(z.length / q.length * 100) : 0, "%")))), y && i.createElement("p", { className: "att-small" }, "\u672C\u573A\u4F7F\u7528\u521B\u5EFA\u65F6\u7684", y.roster.length, "\u4EBA\u540D\u5355\u5FEB\u7167\uFF1B\u65B0\u589E\u6210\u5458\u4ECE\u4E0B\u4E00\u573A\u53C2\u4E0E\uFF0C\u5DF2\u79FB\u51FA\u7684\u5B66\u751F\u4E0D\u80FD\u7EE7\u7EED\u7B7E\u5230\u3002")) : i.createElement("p", null, "\u8BF7\u5148\u9009\u62E9\u6709\u6743\u9650\u7684\u73ED\u7EA7\u3002"), w && i.createElement("div", { className: "att-backdrop", onClick: () => M(null) }, i.createElement("section", { className: "att att-person", role: "dialog", "aria-modal": "true", "aria-label": "\u672A\u7B7E\u5230\u540C\u5B66", onClick: (c) => c.stopPropagation() }, i.createElement("span", { className: "att-kicker" }, "\u7B49\u5F85\u8FD9\u4E00\u5757\u5F52\u4F4D"), i.createElement("h2", null, w.studentName), i.createElement("p", null, w.studentNumber), i.createElement("p", null, "\u5C1A\u672A\u7B7E\u5230"), i.createElement("button", { className: "att-primary", autoFocus: true, onClick: () => M(null) }, "\u77E5\u9053\u4E86"))));
+}
+function $r({ session: n }) {
+  let [t, e] = i.useState(""), [r, s] = i.useState(Date.now()), o = i.useRef({ server: Date.now(), client: Date.now() });
+  i.useEffect(() => {
+    typeof n?.serverNow == "number" && (o.current = { server: n.serverNow, client: Date.now() });
+  }, [n?.serverNow]), i.useEffect(() => {
+    let d = setInterval(() => s(Date.now()), 100);
+    return () => clearInterval(d);
+  }, []);
+  let a = o.current.server + (r - o.current.client), l = n?.status === "open" ? n.qrTickets?.find((d) => d.from <= a && a < d.until) || (!n.qrTickets?.length && n.ticket ? { ticket: n.ticket, until: n.expiresAt } : null) : null;
+  i.useEffect(() => {
+    let d = true;
+    if (!l?.ticket) {
+      e("");
+      return;
+    }
+    let g = new URL("/checkin", location.origin);
+    return g.searchParams.set("sessionId", n.id), g.searchParams.set("ticket", l.ticket), vn.default.toString(g.href, { type: "svg", margin: 2, errorCorrectionLevel: "M", color: { dark: "#20213a", light: "#ffffff" } }).then((m) => {
+      d && e("data:image/svg+xml;base64," + btoa(m));
+    }).catch(() => {
+      d && e("");
+    }), () => {
+      d = false;
+    };
+  }, [l?.ticket, n?.id]);
+  let code = n?.status === "open" ? n.codeTickets?.find((c) => c.from <= a && a < c.until) : null;
+  let u = l ? Math.max(0, Math.ceil((l.until - a) / 1e3)) : 0;
+  return i.createElement("div", { className: "att-qr" }, i.createElement("span", { className: "att-kicker" }, "SCAN TO JOIN"), i.createElement("h2", null, "\u626B\u7801\u7B7E\u5230"), i.createElement("p", null, "\u5B66\u751F\u767B\u5F55\u540E\u786E\u8BA4\u7B7E\u5230"), i.createElement("div", { className: "att-qr-image" }, t ? i.createElement("img", { src: t, alt: "\u52A8\u6001\u7B7E\u5230\u4E8C\u7EF4\u7801" }) : i.createElement("span", null, n?.status === "open" ? "\u6B63\u5728\u540C\u6B65\u4E8C\u7EF4\u7801\u2026" : n ? "\u672C\u573A\u5DF2\u7ED3\u675F" : "\u5F00\u59CB\u7B7E\u5230\u540E\u751F\u6210\u4E8C\u7EF4\u7801")), n?.status === "open" && i.createElement("p", null, i.createElement("strong", null, u), " \u79D2\u540E\u81EA\u52A8\u66F4\u65B0\u4E8C\u7EF4\u7801"), n?.status === "open" && n.endAt && i.createElement("p", { className: "att-small" }, "\u672C\u6B21\u7B7E\u5230\u5269\u4F59 " + Math.max(0, Math.ceil((n.endAt - a) / 6e4)) + " \u5206\u949F\uFF0C\u6700\u591A\u6301\u7EED30\u5206\u949F\uFF0C\u5230\u65F6\u81EA\u52A8\u7ED3\u675F\u3002"), n?.status === "open" && i.createElement("section", { style: { margin: "16px 0", padding: 16, borderRadius: 12, background: "#f1f6f3" } }, i.createElement("p", null, "\u7535\u8111\u7B7E\u5230\u7801"), i.createElement("strong", { style: { fontSize: 36, letterSpacing: ".16em", fontFamily: "monospace" }, "aria-label": "\u5F53\u524D\u7535\u8111\u7B7E\u5230\u7801" }, code?.code || "\u540C\u6B65\u4E2D\u2026"), i.createElement("p", null, "\u4E0D\u533A\u5206\u5927\u5C0F\u5199 \xB7 \u6BCF10\u79D2\u66F4\u65B0 \xB7 \u6BCF\u4E2A\u7801\u6709\u654820\u79D2"), i.createElement("p", null, code ? Math.max(0, Math.ceil((code.until - a) / 1e3)) + "\u79D2\u540E\u66F4\u65B0" : "\u6B63\u5728\u540C\u6B65\u2026")), i.createElement("p", { className: "att-small" }, "\u6BCF2\u79D2\u6362\u7801\uFF0C\u6BCF\u7801\u6709\u654810\u79D2", i.createElement("br", null), "\u626B\u7801\u540E3\u5206\u949F\u5185\u767B\u5F55\u5E76\u786E\u8BA4", i.createElement("br", null), "\u4E8C\u7EF4\u7801\u4E0D\u80FD\u5355\u72EC\u8BC1\u660E\u672C\u4EBA\u5230\u573A"), location.hostname === "127.0.0.1" && i.createElement("p", { className: "att-small" }, "\u5F53\u524D\u4E3A\u672C\u673A\u96A7\u9053\u5165\u53E3\uFF0C\u624B\u673A\u516C\u7F51\u626B\u7801", i.createElement("br", null), "\u9700\u7B49\u5F85\u57DF\u540D\u5907\u6848\u4E0EHTTPS\u5F00\u901A\u3002"));
+}
+export {
+  Is as AttendancePanel,
+  Ss as StudentAttendanceGate
+};
