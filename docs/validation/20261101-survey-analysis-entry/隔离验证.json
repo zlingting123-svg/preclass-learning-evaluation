@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "productionAssets": false,
+  "mockApi": true,
+  "productionWrites": false,
+  "singleSurveyDirectNavigation": true,
+  "multipleSurveySelection": true,
+  "noSurveyExplanation": true,
+  "focusAndResponsive": true,
+  "errors": []
+}
