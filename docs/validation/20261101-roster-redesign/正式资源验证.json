@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "productionAssets": true,
+  "productionWrites": false,
+  "mockApi": true,
+  "students300": true,
+  "pagination": true,
+  "search": true,
+  "sorting": true,
+  "classSwitch": true,
+  "slowSwitchNoStaleData": true,
+  "responsive": [
+    320,
+    375,
+    414,
+    768
+  ],
+  "errors": []
+}
