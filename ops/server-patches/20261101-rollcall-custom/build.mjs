@@ -1,0 +1,6 @@
+import {createRequire}from'node:module';import{mkdirSync,readFileSync,writeFileSync}from'node:fs';
+const require=createRequire('C:/Users/96496/Documents/Codex/2026-10-28/outputs-md/work/deepseek-live-source/preclass-learning-evaluation-ddc55257eccf2aba137f4e38ce3f645393eb54a1/frontend/package.json');
+const root='work/rollcall-custom';mkdirSync(root+'/dist/assets',{recursive:true});
+await require('esbuild').build({entryPoints:[root+'/AttendancePanel.latest.js'],outfile:root+'/dist/assets/attendance-rollcall-custom.js',bundle:true,format:'esm',platform:'browser',external:['./react-DFdtPfhg.js'],jsxFactory:'React.createElement',jsxFragment:'React.Fragment',minify:true,nodePaths:['C:/Users/96496/Documents/Codex/2026-10-29/jie/work/attendance-preview/node_modules']});
+writeFileSync(root+'/dist/assets/attendance-rollcall-custom.css',readFileSync(root+'/attendance.css','utf8')+'\n'+readFileSync(root+'/rollcall-stage.css','utf8'));
+let main=readFileSync(root+'/main-password-autofill-20261101.js','utf8');if(main.split('./attendance-timed-panel.js').length!==2)throw Error('Main import changed');main=main.replace('./attendance-timed-panel.js','./attendance-rollcall-custom.js');writeFileSync(root+'/dist/assets/main-rollcall-custom.js',main);console.log('Built focused rollcall module; latest login autofill retained');

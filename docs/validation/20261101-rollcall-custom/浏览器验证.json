@@ -1,0 +1,27 @@
+{
+  "productionWrites": false,
+  "mockApi": true,
+  "checks": [
+    {
+      "name": "parallel_7_slowdown_hold",
+      "passed": true,
+      "fastInterval": 65,
+      "slowInterval": 307,
+      "totalMs": 7031
+    },
+    {
+      "name": "invalid_counts",
+      "passed": true
+    },
+    {
+      "name": "responsive",
+      "passed": true
+    },
+    {
+      "name": "presets_custom_25_300_reduced_motion",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "pageErrors": []
+}
