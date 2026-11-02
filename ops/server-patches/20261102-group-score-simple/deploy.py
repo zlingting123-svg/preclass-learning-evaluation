@@ -10,7 +10,7 @@ newbackend={}
 baseline=json.loads((r/'baseline.json').read_text())
 script='''from pathlib import Path
 import os,json,hashlib,base64,subprocess,urllib.request,time
-base=Path('/opt/preclass/current').resolve();assert base.name=='20261102-group-free-grade';target=Path('/opt/preclass/releases/20261102-group-score-simple');assert not target.exists()
+base=Path('/opt/preclass/current').resolve();assert base.parent==Path('/opt/preclass/releases');target=Path('/opt/preclass/releases/20261102-group-score-simple');assert not target.exists()
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 def manifest(p):return {str(f.relative_to(p)):('symlink:'+os.readlink(f) if f.is_symlink() else sha(f)) for f in p.rglob('*') if f.is_file() or f.is_symlink()}
 assert sha(base/'frontend/dist/index.html')==BASELINE['indexHash'];assert sha(base/'frontend/dist/assets'/BASELINE['mainName'])==BASELINE['mainHash']

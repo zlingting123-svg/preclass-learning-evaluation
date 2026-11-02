@@ -1,5 +1,5 @@
 import {StudentWorkspaceLinks} from "./history-tools.js";
-import {GroupsPanel} from "./group-free-grade-panel.js";
+import {GroupsPanel} from "./group-compact-panel-20261102.js";
 import {CitationList} from './citation-ui-20261102.js';
 import {StudentSurveys,LearningLabel} from './homework-interface.js';
 import {StudentHome} from './student-home.js';

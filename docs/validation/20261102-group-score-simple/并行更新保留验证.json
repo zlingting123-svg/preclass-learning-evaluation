@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "mainBaseline": "main-group-compact-20261102.js",
+  "onlyGroupImportChanged": true,
+  "citationAndBackupModulesPreserved": true,
+  "homeworkGradesPreserved": true,
+  "cloudBackendHashVerified": false
+}
