@@ -1,0 +1,1 @@
+{"deployed": true, "current": "/opt/preclass/releases/20261102-teacher-grade", "previous": "/opt/preclass/releases/20261102-student-home", "backendChanged": false, "databaseChanged": false, "servicesRestarted": false, "changedExistingFiles": 1, "newAssets": 5, "unchangedFiles": 4954, "httpHashesVerified": true, "health": true}
