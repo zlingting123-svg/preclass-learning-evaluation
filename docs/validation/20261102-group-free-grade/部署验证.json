@@ -1,0 +1,1 @@
+{"deployed": true, "current": "/opt/preclass/releases/20261102-group-free-grade", "previous": "/opt/preclass/releases/20261102-homework-grade", "backendChanged": false, "databaseChanged": false, "servicesRestarted": false, "changedExistingFiles": 1, "newAssets": 5, "unchangedFiles": 4969, "httpHashesVerified": true, "health": true}

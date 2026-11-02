@@ -1,0 +1,23 @@
+{
+  "passed": true,
+  "productionAssets": true,
+  "mockApi": true,
+  "productionWrites": false,
+  "visibleTeacherEntry": true,
+  "rowScoreEntry": true,
+  "openAndSaveRating": true,
+  "scoreRangeValidation": true,
+  "failedSavePreservesInput": true,
+  "allGroupEntriesVisible": true,
+  "emptyGroupEntryOpens": true,
+  "emptyGroupCannotSaveScore": true,
+  "arbitraryOrderAndRevisit": true,
+  "groupTableSearch": true,
+  "scoreCardSearch": true,
+  "modalSearch": true,
+  "nameTopicNumberAndMemberSearch": true,
+  "boardOrderPreserved": true,
+  "studentTeacherEntryHidden": true,
+  "responsive": true,
+  "errors": []
+}
