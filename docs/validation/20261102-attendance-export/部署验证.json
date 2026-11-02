@@ -1,0 +1,1 @@
+{"deployed": true, "current": "/opt/preclass/releases/20261102-attendance-export", "previous": "/opt/preclass/releases/20261102-teacher-grade", "backendChanged": true, "databaseChanged": false, "serviceRestarted": true, "changedExistingFiles": 6, "newFiles": 6, "httpHashesVerified": true, "health": true}

@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "results": {
+    "legacy-test.mjs": {
+      "passed": true,
+      "selectedSessionsOnly": true,
+      "countersCorrect": true,
+      "invalidAndCrossClassRejected": true,
+      "teacherScopedDelete": true,
+      "allOrNothing": true,
+      "cachePreserved": true
+    },
+    "backend-test.mjs": {
+      "passed": true,
+      "legacyInsertionOrder": true,
+      "explicitImportOrder": true,
+      "allSortModes": true,
+      "absencesListed": true,
+      "notOnRosterNotAbsent": true,
+      "openSessionNotAbsent": true,
+      "accessAndInvalidSort": true,
+      "snapshotPreserved": true
+    }
+  },
+  "xlsxStylesVerified": true,
+  "productionWrites": false
+}

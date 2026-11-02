@@ -1,0 +1,2 @@
+export function rosterOrder(store,classId){const explicit=store.get('class_roster_order',classId)?.studentIds??[];const members=store.db.prepare("SELECT payload FROM records WHERE kind='member' ORDER BY rowid").all().map(r=>JSON.parse(r.payload)).filter(m=>m.classId===classId).map(m=>m.studentId);return [...new Set([...explicit,...members])];}
+export function saveRosterOrder(store,classId,ids){store.put('class_roster_order',classId,{classId,studentIds:[...new Set([...ids,...rosterOrder(store,classId)])]});}

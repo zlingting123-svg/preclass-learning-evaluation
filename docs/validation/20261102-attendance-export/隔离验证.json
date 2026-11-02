@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "productionAssets": false,
+  "mockApi": true,
+  "productionWrites": false,
+  "defaultRosterOrder": true,
+  "singleAndClassSort": true,
+  "selectedSessionSort": true,
+  "downloadWorks": true,
+  "responsive": true,
+  "errors": []
+}
