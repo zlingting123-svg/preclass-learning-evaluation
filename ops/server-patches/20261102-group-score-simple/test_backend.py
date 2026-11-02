@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 import subprocess,base64,json,sys
 r=Path(__file__).resolve().parent
@@ -15,6 +16,7 @@ if local:
 else:
     a=Path('C:/Users/96496/Documents/Codex/2026-10-28/outputs-md/work/server-access')
     ssh=['ssh','-i',str(a/'preclass-deploy-ed25519'),'-o','UserKnownHostsFile='+str(a/'known_hosts'),'-o','StrictHostKeyChecking=yes','-o','BatchMode=yes','-o','ConnectTimeout=10','ubuntu@82.157.183.146']
+    if os.environ.get('PRECLASS_SSH_BIND'):ssh[1:1]=['-b',os.environ['PRECLASS_SSH_BIND']]
     files={n:base64.b64encode((r/n).read_bytes()).decode() for n in ['groups.after.js','group-board.after.js','group-transfer.after.js','backend-test.mjs']}
     script='''from pathlib import Path
 import tempfile,shutil,base64,subprocess

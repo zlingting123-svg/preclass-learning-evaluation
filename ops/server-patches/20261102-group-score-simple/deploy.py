@@ -1,9 +1,11 @@
+import os
 from pathlib import Path
 import subprocess,json,base64,hashlib
 r=Path(__file__).resolve().parent;out=Path('outputs/小组评分弹窗精简-2026-11-02')
 for name in ['隔离验证.json','后台隔离验证.json']:assert json.loads((out/name).read_text(encoding='utf-8'))['passed']
 a=Path('C:/Users/96496/Documents/Codex/2026-10-28/outputs-md/work/server-access')
 ssh=['ssh','-i',str(a/'preclass-deploy-ed25519'),'-o','UserKnownHostsFile='+str(a/'known_hosts'),'-o','StrictHostKeyChecking=yes','-o','BatchMode=yes','ubuntu@82.157.183.146']
+if os.environ.get('PRECLASS_SSH_BIND'):ssh[1:1]=['-b',os.environ['PRECLASS_SSH_BIND']]
 files={p.name:base64.b64encode(p.read_bytes()).decode() for p in (r/'dist/assets').iterdir()}
 backend={name:{'before':hashlib.sha256((r/name.replace('.js','.before.js')).read_bytes()).hexdigest(),'after':base64.b64encode((r/name.replace('.js','.after.js')).read_bytes()).decode()} for name in ['groups.js','group-board.js','group-transfer.js']}
 newbackend={}

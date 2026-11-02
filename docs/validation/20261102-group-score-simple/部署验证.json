@@ -1,0 +1,1 @@
+{"deployed": true, "current": "/opt/preclass/releases/20261102-group-score-simple", "previous": "/opt/preclass/releases/20261102-learning-balanced", "backendChanged": true, "databaseChanged": false, "serviceRestarted": true, "changedExistingFiles": 4, "newFiles": 5, "httpHashesVerified": true, "health": true}

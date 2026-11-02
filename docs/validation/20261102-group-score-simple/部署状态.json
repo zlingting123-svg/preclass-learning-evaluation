@@ -1,12 +1,10 @@
 {
-  "deployed": false,
-  "pendingRelease": "20261102-group-score-simple",
-  "reason": "New SSH connections time out during banner exchange; existing local web tunnel remains available.",
-  "localBrowserTestsPassed": true,
-  "localBackendTestsPassed": true,
-  "cloudBackendTestsPassed": false,
-  "productionAssetsVerified": false,
+  "deployed": true,
+  "release": "/opt/preclass/releases/20261102-group-score-simple",
+  "previous": "/opt/preclass/releases/20261102-learning-balanced",
+  "cloudBackendTestsPassed": true,
+  "productionAssetsVerified": true,
+  "parallelModulesPreserved": true,
   "productionWrites": false,
-  "lastVerifiedFrontend": "main-group-compact-20261102.js",
-  "parallelCitationAndBackupModulesPreserved": true
+  "sshWorkaround": "Optional PRECLASS_SSH_BIND uses current WLAN address for this process only; no global proxy changes."
 }

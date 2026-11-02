@@ -1,8 +1,9 @@
 {
   "passed": true,
-  "mainBaseline": "main-group-compact-20261102.js",
+  "mainBaseline": "main-learning-balanced-20261102.js",
   "onlyGroupImportChanged": true,
+  "retainedModuleCount": 20,
   "citationAndBackupModulesPreserved": true,
-  "homeworkGradesPreserved": true,
-  "cloudBackendHashVerified": false
+  "homeworkAndLearningNavigationPreserved": true,
+  "cloudBackendHashVerified": true
 }

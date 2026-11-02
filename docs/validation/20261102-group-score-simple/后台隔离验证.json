@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "editingAndJoiningWhileOpenBeforeRatings": true,
+  "topicVersionAndMembershipProtected": true,
+  "leaderConsentRequired": true,
+  "pendingTransferBlocksRatings": true,
+  "studentSelfRatingDenied": true,
+  "scoreRangeAndZero": true,
+  "weightedAverageAndPrivacy": true,
+  "firstRatingLocksMembership": true,
+  "newRoundRetainsHistoryAndUnlocks": true,
+  "classAndActivityScope": true,
+  "teacherFixedTopicProtected": true,
+  "environment": "cloud-backend-snapshot",
+  "productionWrites": false
+}
