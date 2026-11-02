@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "roleAndClass": true,
+  "duplicateMembers": true,
+  "studentSelfRatingDenied": true,
+  "weightedAverage": true,
+  "upsertOneVote": true,
+  "privacy": true,
+  "roundHistory": true,
+  "manualLinking": true,
+  "exports": true
+}

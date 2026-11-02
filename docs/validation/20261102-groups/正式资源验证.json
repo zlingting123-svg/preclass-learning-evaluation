@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "productionAssets": true,
+  "mockApi": true,
+  "productionWrites": false,
+  "checks": [
+    {
+      "role": "teacher",
+      "passed": true
+    },
+    {
+      "role": "student",
+      "passed": true
+    }
+  ],
+  "responsive": true,
+  "errors": []
+}
