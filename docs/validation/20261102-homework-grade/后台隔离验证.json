@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "teacherOnlyAndClassScope": true,
+  "scoreRangeAndZero": true,
+  "unsubmittedNotZero": true,
+  "versionConflicts": true,
+  "resubmissionNeedsReview": true,
+  "gradeHistoryPreserved": true,
+  "ownGradeVisible": true,
+  "excelGradesAndOrder": true,
+  "originalDeadlineRulePreserved": true
+}
