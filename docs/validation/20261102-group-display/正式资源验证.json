@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "productionAssets": true,
+  "mockApi": true,
+  "productionWrites": false,
+  "createAndSwitchActivities": true,
+  "legacyRetained": true,
+  "studentJoinsSeparateActivities": true,
+  "weightAlignment": true,
+  "independentWeightUpdates": true,
+  "responsive": true,
+  "errors": []
+}

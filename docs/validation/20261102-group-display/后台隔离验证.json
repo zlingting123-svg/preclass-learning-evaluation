@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "independentMemberships": true,
+  "independentTopicsAndScores": true,
+  "draftsHidden": true,
+  "crossActivityAndClassDenied": true,
+  "legacyPreserved": true,
+  "weightedScoresAndPrivacy": true,
+  "exportsScoped": true,
+  "routes": true,
+  "idempotentCreation": true
+}
