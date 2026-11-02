@@ -1,0 +1,1 @@
+{"deployed": true, "current": "/opt/preclass/releases/20261102-student-home", "previous": "/opt/preclass/releases/20261102-homework-interface", "backendChanged": false, "databaseChanged": false, "servicesRestarted": false, "changedExistingFiles": 1, "newAssets": 4, "unchangedFiles": 4950, "httpHashesVerified": true, "health": true}
