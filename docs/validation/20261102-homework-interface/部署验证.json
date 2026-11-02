@@ -1,0 +1,1 @@
+{"deployed": true, "current": "/opt/preclass/releases/20261102-homework-interface", "previous": "/opt/preclass/releases/20261102-group-reader", "backendChanged": false, "databaseChanged": false, "servicesRestarted": false, "changedExistingFiles": 1, "newAssets": 6, "unchangedFiles": 4944, "httpHashesVerified": true, "health": true}
