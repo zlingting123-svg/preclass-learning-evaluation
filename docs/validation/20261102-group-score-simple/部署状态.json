@@ -1,0 +1,11 @@
+{
+  "deployed": false,
+  "pendingRelease": "20261102-group-score-simple",
+  "lastVerifiedRelease": "20261102-group-free-grade",
+  "reason": "New SSH connections time out during banner exchange; existing local web tunnel remains available.",
+  "localBrowserTestsPassed": true,
+  "localBackendTestsPassed": true,
+  "cloudBackendTestsPassed": false,
+  "productionAssetsVerified": false,
+  "productionWrites": false
+}

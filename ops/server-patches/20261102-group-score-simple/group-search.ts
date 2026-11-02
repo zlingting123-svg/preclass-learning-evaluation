@@ -1,0 +1,2 @@
+export function matchesGroup(g,query,roster=[]){const q=query.normalize('NFKC').trim().toLocaleLowerCase();if(!q)return true;const fields=[g.name,g.topic,...g.members.flatMap(m=>{const r=roster.find(r=>r.studentId===m.userId);return[m.name,m.studentNumber,r?.studentNumber,r?.studentName]})];return q.split(/\s+/).every(term=>fields.some(v=>String(v??'').normalize('NFKC').toLocaleLowerCase().includes(term)))}
+export function orderedGroups(data){return data.board?data.board.groupIds.map(id=>data.groups.find(g=>g.id===id)).filter(Boolean):data.groups}

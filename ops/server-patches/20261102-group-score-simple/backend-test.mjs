@@ -1,0 +1,27 @@
+import assert from'node:assert/strict';
+import{randomUUID}from'node:crypto';
+import{SqliteStore}from'./store.js';
+import{Groups}from'./groups.js';
+import{savePlan,joinLeave,updateTopic}from'./group-board.js';
+import{transfer}from'./group-transfer.js';
+import{createActivity}from'./group-activities.js';
+const store=new SqliteStore(':memory:'),core={store,role:(u,r)=>assert.equal(u.role,r),classAccess:(u,c)=>assert(u.classes.includes(c)),checkVersion:(a,b)=>assert.equal(a,b)},teacher={id:'t',role:'teacher',classes:['c']},u=n=>({id:'u'+n,role:'student',classes:['c']});
+for(let i=1;i<=6;i++){store.put('user','u'+i,{displayName:'学生'+i});store.put('member','m'+i,{classId:'c',studentId:'u'+i});store.put('student_identity','i'+i,{userId:'u'+i,studentNumber:'N'+i})}
+const activity=createActivity(core,teacher,'c',{name:'活动甲',requestId:randomUUID()}),other=createActivity(core,teacher,'c',{name:'活动乙',requestId:randomUUID()}),s=new Groups(core,activity.id),s2=new Groups(core,other.id),plan=savePlan(s,teacher,'c',{totalGroups:3,maxMembers:3,published:true,topics:Array.from({length:3},()=>({topic:'',allowStudentTopic:true})),expectedVersion:0}),p2=savePlan(s2,teacher,'c',{totalGroups:1,maxMembers:3,published:true,topics:[{topic:'固定主题',allowStudentTopic:false}],expectedVersion:0}),[a,b,c]=plan.groupIds;
+const group=id=>store.get('study_group',id),join=(n,id)=>joinLeave(s,u(n),'c',id,{expectedPlanVersion:plan.version},true);
+join(1,a);join(3,b);s.configure(teacher,'c',{studentWeight:70,teacherWeight:30,open:true,expectedVersion:0});
+join(2,a);join(4,c);assert.equal(group(a).members.length,2);assert.equal(group(a).leaderId,'u1');
+assert.throws(()=>joinLeave(s,u(6),'c',b,{expectedPlanVersion:0},true));assert.throws(()=>join(1,b));
+updateTopic(s,u(2),'c',a,{topic:'学生填写主题',expectedVersion:group(a).version});assert.equal(group(a).topic,'学生填写主题');assert.throws(()=>updateTopic(s,u(3),'c',a,{topic:'越权',expectedVersion:group(a).version}));assert.throws(()=>updateTopic(s,u(1),'c',a,{topic:'旧版本',expectedVersion:0}));
+assert.throws(()=>transfer(s,u(2),'c',a,{toId:'u1',expectedVersion:group(a).version},'request'));
+transfer(s,u(1),'c',a,{toId:'u2',expectedVersion:group(a).version},'request');const pending=group(a).leaderTransfer;
+assert.equal(group(a).leaderId,'u1');assert.throws(()=>s.rate(teacher,'c',b,{score:90,expectedRound:1}));assert.throws(()=>s.rate(u(1),'c',b,{score:80,expectedRound:1}));assert.throws(()=>transfer(s,u(3),'c',a,{transferId:pending.id,expectedVersion:group(a).version,decision:'accept'},'respond'));
+transfer(s,u(2),'c',a,{transferId:pending.id,expectedVersion:group(a).version,decision:'accept'},'respond');assert.equal(group(a).leaderId,'u2');assert(!group(a).leaderTransfer);
+const edited=group(a);s.save(teacher,'c',a,{name:edited.name,leaderId:edited.leaderId,members:edited.members.map(m=>({userId:m.userId,name:m.name})),submitted:true,expectedVersion:edited.version});
+assert.throws(()=>s.rate(u(1),'c',a,{score:100,expectedRound:1}));assert.throws(()=>s.rate(u(6),'c',b,{score:100,expectedRound:1}));assert.throws(()=>s.rate(teacher,'c',b,{score:101,expectedRound:1}));assert.throws(()=>s.rate(teacher,'d',b,{score:90,expectedRound:1}));assert.throws(()=>s.rate(teacher,'c',p2.groupIds[0],{score:90,expectedRound:1}));
+s.rate(u(1),'c',b,{score:0,expectedRound:1});assert.equal(s.list(teacher,'c').groups.find(g=>g.id===b).studentAverage,0);s.rate(u(1),'c',b,{score:80,expectedRound:1});s.rate(teacher,'c',b,{score:90,expectedRound:1});assert.equal(s.list(teacher,'c').groups.find(g=>g.id===b).total,83);assert.equal(s.list(u(1),'c').groups.find(g=>g.id===b).myScore,80);assert.equal(s.list(u(1),'c').groups.find(g=>g.id===b).teacherAverage,null);assert.equal(s.list(u(1),'c').groups.find(g=>g.id===b).ratings,undefined);
+for(const fn of[()=>join(5,c),()=>joinLeave(s,u(4),'c',c,{expectedPlanVersion:plan.version},false),()=>updateTopic(s,u(2),'c',a,{topic:'已锁定',expectedVersion:group(a).version}),()=>transfer(s,u(2),'c',a,{toId:'u1',expectedVersion:group(a).version},'request')])assert.throws(fn);
+assert.equal(s2.ratings('c').length,0);assert.equal(s2.settings('c').round,1);assert.equal(group(p2.groupIds[0]).topic,'固定主题');assert.throws(()=>savePlan(s,teacher,'c',{totalGroups:3,maxMembers:3,published:true,topics:Array.from({length:3},()=>({topic:'',allowStudentTopic:true})),expectedVersion:plan.version}));
+const count=store.all('group_rating').length;s.configure(teacher,'c',{studentWeight:70,teacherWeight:30,open:false,newRound:true,expectedVersion:s.settings('c').version});assert.equal(s.ratings('c').length,0);assert.equal(store.all('group_rating').length,count);join(5,c);assert.throws(()=>s.rate(u(1),'c',b,{score:80,expectedRound:1}));
+joinLeave(s2,u(6),'c',p2.groupIds[0],{expectedPlanVersion:p2.version},true);assert.throws(()=>updateTopic(s2,u(6),'c',p2.groupIds[0],{topic:'修改指定主题',expectedVersion:group(p2.groupIds[0]).version}));
+store.close();console.log(JSON.stringify({passed:true,editingAndJoiningWhileOpenBeforeRatings:true,topicVersionAndMembershipProtected:true,leaderConsentRequired:true,pendingTransferBlocksRatings:true,studentSelfRatingDenied:true,scoreRangeAndZero:true,weightedAverageAndPrivacy:true,firstRatingLocksMembership:true,newRoundRetainsHistoryAndUnlocks:true,classAndActivityScope:true,teacherFixedTopicProtected:true}));
