@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "productionAssets": false,
+  "mockApi": true,
+  "productionWrites": false,
+  "transferAcceptAndDecline": true,
+  "noDirectStudentLeaderEdit": true,
+  "noHorizontalGroupScroll": true,
+  "continuousScroll": true,
+  "lazyPages": true,
+  "searchJumpAndHighlight": true,
+  "zoomAndPageJump": true,
+  "scanMessage": true,
+  "browseButtonAlignment": true,
+  "responsive": true,
+  "imageConcurrencyPeak": 2,
+  "errors": []
+}

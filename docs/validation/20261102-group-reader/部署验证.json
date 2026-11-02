@@ -1,0 +1,1 @@
+{"deployed": true, "current": "/opt/preclass/releases/20261102-group-reader", "previous": "/opt/preclass/releases/20261102-group-display", "backendChanged": true, "databaseChanged": false, "serviceRestarted": true, "changedExistingFiles": 4, "newFiles": 9, "httpHashesVerified": true, "health": true}

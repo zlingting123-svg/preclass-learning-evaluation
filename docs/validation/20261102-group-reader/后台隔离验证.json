@@ -1,0 +1,52 @@
+{
+  "passed": true,
+  "isolatedMemoryDatabase": true,
+  "productionWrites": false,
+  "results": {
+    "legacy-test.mjs": {
+      "passed": true,
+      "roleAndClass": true,
+      "duplicateMembers": true,
+      "studentSelfRatingDenied": true,
+      "weightedAverage": true,
+      "upsertOneVote": true,
+      "privacy": true,
+      "roundHistory": true,
+      "manualLinking": true,
+      "exports": true
+    },
+    "activity-test.mjs": {
+      "passed": true,
+      "independentMemberships": true,
+      "independentTopicsAndScores": true,
+      "draftsHidden": true,
+      "crossActivityAndClassDenied": true,
+      "legacyPreserved": true,
+      "weightedScoresAndPrivacy": true,
+      "exportsScoped": true,
+      "routes": true,
+      "idempotentCreation": true
+    },
+    "backend-transfer-test.mjs": {
+      "passed": true,
+      "consentRequired": true,
+      "noEditOrExitBypass": true,
+      "recipientOnly": true,
+      "acceptDeclineCancel": true,
+      "staleRequestDenied": true,
+      "leavingRecipientCancels": true,
+      "scoringLocks": true
+    },
+    "backend-reader-test.mjs": {
+      "passed": true,
+      "actualPdfTextSearch": true,
+      "caseAndWhitespace": true,
+      "chineseAndEntityText": true,
+      "pageDimensions": true,
+      "highlightCoordinates": true,
+      "scannedPdfHandled": true,
+      "protectedSearchAndImages": true,
+      "pngDimensionsAndWatermark": true
+    }
+  }
+}
