@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "productionAssets": false,
+  "mockApi": true,
+  "productionWrites": false,
+  "workspaceEightEntries": true,
+  "recentAndCustomExport": true,
+  "cancelAndSingleAndClear": true,
+  "responsive": true,
+  "errors": []
+}

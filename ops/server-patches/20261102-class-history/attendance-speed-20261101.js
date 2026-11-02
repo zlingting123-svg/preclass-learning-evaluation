@@ -1,0 +1,1151 @@
+var Le = (r) => String(r).replace(/[&<>"']/g, (i) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" })[i]);
+function $e(r, i = [], n) {
+  let t = r.roster.length;
+  if (!t) return '<div class="mosaic-empty">\u73ED\u7EA7\u6682\u65E0\u5B66\u751F</div>';
+  let { cols: e, rows: a, cells: l } = n(t), s = 960 / e, o = 720 / a, h = new Set(r.signed), f = r.roster.filter((F) => h.has(F.id)).length, y = f === t, d = Le(r.photo), k = new Set(i), g = "", S = "", $ = "";
+  for (let F = 0; F < t; F++) {
+    let { c: C, r: D, span: L } = l[F], T = C * s, E = D * o, B = L * s, M = r.roster[F].id, p = h.has(M), N = 1.05;
+    p ? (g += `<rect x="${T + N}" y="${E + N}" width="${B - 2 * N}" height="${o - 2 * N}" fill="white"/>`, S += `<rect class="mosaic-seam" x="${T + N}" y="${E + N}" width="${B - 2 * N}" height="${o - 2 * N}"/>`, k.has(M) && (S += `<rect class="mosaic-arrival" x="${T}" y="${E}" width="${B}" height="${o}"/>`)) : $ += `<rect class="mosaic-hit" data-id="${Le(M)}" x="${T}" y="${E}" width="${B}" height="${o}" role="button" tabindex="0" aria-label="\u67E5\u770B\u7B2C${F + 1}\u7247\u5BF9\u5E94\u7684\u672A\u7B7E\u5230\u540C\u5B66"><title>\u70B9\u51FB\u67E5\u770B\u672A\u7B7E\u5230\u540C\u5B66</title></rect>`;
+  }
+  let A = `<filter id="mosaic-frost" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="${Math.max(0, Math.min(32, Number(r.blur) || 0))}"/></filter><mask id="mosaic-clear" maskUnits="userSpaceOnUse" x="0" y="0" width="960" height="720">${g}</mask>`;
+  return `<svg class="puzzle-board mosaic-board ${y ? "mosaic-complete" : ""}" viewBox="0 0 960 720" role="group" aria-label="\u7B7E\u5230\u62FC\u56FE\uFF0C\u5171${t}\u7247\uFF0C${f}\u4EBA\u5DF2\u7B7E\u5230"><defs>${A}</defs>${y ? `<image class="mosaic-photo" href="${d}" width="960" height="720" preserveAspectRatio="xMidYMid slice"/>` : `<image href="${d}" width="960" height="720" preserveAspectRatio="xMidYMid slice" filter="url(#mosaic-frost)" opacity=".28"/><rect width="960" height="720" fill="var(--mosaic-veil)" opacity=".3"/><image href="${d}" width="960" height="720" preserveAspectRatio="xMidYMid slice" mask="url(#mosaic-clear)"/>${S}${$}`}</svg>`;
+}
+import { a as b } from "./react-DFdtPfhg.js";
+function Ue({ members: r = [], chosen: i = [], busy: n = false, loading: t = false, rolling: e = "", error: a = "", scope: l = "all", count: s = 1, countValid: o = true, onDraw: h, onSkip: f, speedScale = 1 }) {
+  let y = b.useRef(null), [d, k] = b.useState(false), g = t ? "loading" : n ? "drawing" : i.length ? "result" : a ? "error" : r.length ? "ready" : "empty", S = i.length > 0, $ = e === "dealing", A = e === "card-hold", F = e === "flipping", C = Math.max(1, Math.min(Number.isInteger(s) ? s : 1, r.length || 1, 1e3));
+  return b.useEffect(() => {
+    let D = () => k(document.fullscreenElement === y.current);
+    return document.addEventListener("fullscreenchange", D), () => document.removeEventListener("fullscreenchange", D);
+  }, []), b.createElement("div", { ref: y, style: {"--roll-speed": speedScale}, className: "rl-stage rl-cards rl-" + g + ($ ? " pc-dealing" : "") + (S ? " pc-revealed" : ""), "data-phase": g, "data-reveal-mode": "together", "data-card-motion": $ ? "dealing" : A ? "hold" : F ? "flipping" : S ? "complete" : "back", "aria-busy": n }, b.createElement("header", { className: "rl-stage-head" }, b.createElement("span", { className: "rl-eyebrow" }, b.createElement("i", null), "\u968F\u673A\u70B9\u540D"), b.createElement("div", null, b.createElement("span", { className: "rl-state", role: "status" }, t ? "\u8BFB\u53D6\u540D\u5355" : n ? e === "requesting" ? "\u6B63\u5728\u62BD\u53D6" : $ ? "\u51C6\u5907\u63ED\u6653" : A ? "\u5373\u5C06\u63ED\u6653" : "\u4E00\u8D77\u63ED\u6653" : S ? "\u62BD\u53D6\u5B8C\u6210" : a ? "\u672C\u6B21\u672A\u5B8C\u6210" : "\u51C6\u5907\u5C31\u7EEA"), b.createElement("button", { type: "button", className: "rl-full", "aria-label": d ? "\u9000\u51FA\u70B9\u540D\u5168\u5C4F" : "\u5168\u5C4F\u70B9\u540D", onClick: () => {
+    d ? document.exitFullscreen() : y.current?.requestFullscreen?.().catch(() => {
+    });
+  } }, b.createElement("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.6", "aria-hidden": "true" }, b.createElement("path", { d: "M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5" }))))), b.createElement("div", { className: "rl-meta" }, b.createElement("span", null, l === "signed" ? "\u672C\u573A\u5DF2\u7B7E\u5230" : l === "absent" ? "\u672C\u573A\u672A\u7B7E\u5230" : "\u5168\u73ED\u540C\u5B66"), b.createElement("span", null, "\u672C\u6B21 ", s, " \u4EBA"), b.createElement("span", null, "\u540C\u65F6\u62BD\u53D6")), b.createElement("div", { className: "pc-with-list" }, b.createElement("div", { className: "pc-table" }, b.createElement("div", { className: "pc-table-heading" }, b.createElement("span", null, S ? "\u672C\u6B21\u70B9\u540D\u540D\u5355" : t ? "\u6B63\u5728\u8BFB\u53D6\u540D\u5355" : "\u51C6\u5907\u4E00\u8D77\u63ED\u6653"), b.createElement("b", null, S ? i.length : 0, " / ", s)), b.createElement("div", { className: "pc-grid" + (C > 10 ? " pc-grid-dense" : ""), role: "list", "aria-label": S ? "\u672C\u6B21\u70B9\u540D\u59D3\u540D" : "\u5F85\u63ED\u6653\u59D3\u540D\u5361" }, Array.from({ length: C }, (D, L) => {
+    let T = i[L];
+    return b.createElement("article", { className: "pc-card", role: "listitem", key: L, style: { "--deal-order": Math.min(L, 7) }, "data-card-slot": L + 1, "aria-label": T ? `\u7B2C${L + 1}\u4F4D\uFF1A${T.studentName}` : `\u7B2C${L + 1}\u4F4D\uFF0C\u5F85\u63ED\u6653` }, b.createElement("div", { className: "pc-inner" }, b.createElement("div", { className: "pc-face pc-back", "aria-hidden": "true" }, b.createElement("span", { className: "pc-order" }, String(L + 1).padStart(2, "0")), b.createElement("span", { className: "pc-back-mark" }, "?"), b.createElement("span", { className: "pc-back-caption" }, "\u5F85\u63ED\u6653")), b.createElement("div", { className: "pc-face pc-front", "aria-hidden": !S }, b.createElement("span", { className: "pc-order" }, String(L + 1).padStart(2, "0")), b.createElement("div", { className: "pc-student" }, b.createElement("h2", null, T?.studentName || "")), b.createElement("span", { className: "pc-selected" }, "\u5DF2\u9009\u4E2D"))));
+  })), S && b.createElement("p", { className: "pc-result-summary", role: "status" }, "\u672C\u6B21 ", i.length, " \u4F4D\u540C\u5B66\u5DF2\u5168\u90E8\u63ED\u6653")), b.createElement("aside", { className: "rl-picked", "aria-label": "\u672C\u6B21\u5DF2\u62BD\u53D6\u540D\u5355" }, b.createElement("div", { className: "rl-picked-head" }, b.createElement("h3", null, "\u672C\u6B21\u5DF2\u62BD\u53D6"), b.createElement("span", { "data-picked-count": true }, i.length, " / ", s)), b.createElement("div", { className: "rl-picked-list", role: "log", "aria-live": "polite", "aria-relevant": "additions" }, i.length ? i.map((D, L) => b.createElement("article", { className: "rl-picked-item", "data-student-id": D.studentId, key: D.studentId }, b.createElement("span", null, String(L + 1).padStart(2, "0")), b.createElement("div", null, b.createElement("h4", null, D.studentName)), b.createElement("b", { "aria-hidden": "true" }, "\u2713"))) : b.createElement("div", { className: "rl-picked-empty" }, b.createElement("span", { "aria-hidden": "true" }, "\uFF0B"), b.createElement("p", null, "\u63ED\u6653\u540E\uFF0C\u59D3\u540D\u5C06\u4E00\u8D77\u663E\u793A\u5728\u8FD9\u91CC"))), b.createElement("p", { className: "rl-picked-note" }, S ? "\u672C\u6B21\u540D\u5355\u5DF2\u5168\u90E8\u63ED\u6653" : "\u4E0E\u59D3\u540D\u5361\u4E00\u8D77\u63ED\u6653"))), b.createElement("footer", { className: "rl-bottom" }, b.createElement("p", { className: "rl-caption" }, t ? "\u6B63\u5728\u8BFB\u53D6\u73ED\u7EA7\u6570\u636E\u2026" : n ? A ? "\u77ED\u6682\u505C\u987F\uFF0C\u5373\u5C06\u4E00\u8D77\u63ED\u6653\u2026" : $ ? "\u51C6\u5907\u63ED\u6653\u672C\u6B21\u540D\u5355\u2026" : F ? "\u672C\u6B21\u540D\u5355\u4E00\u8D77\u63ED\u6653\u2026" : "\u6B63\u5728\u83B7\u53D6\u62BD\u53D6\u7ED3\u679C\u2026" : S ? "\u672C\u6B21\u7ED3\u679C\u5DF2\u8BB0\u5F55\uFF0C\u53EF\u7EE7\u7EED\u4E0B\u4E00\u6B21\u70B9\u540D" : a ? "\u8BF7\u68C0\u67E5\u4E0A\u65B9\u63D0\u793A\u540E\u91CD\u8BD5" : "\u70B9\u51FB\u5F00\u59CB\uFF0C\u59D3\u540D\u5361\u5C06\u540C\u65F6\u7FFB\u5F00"), b.createElement("button", { className: "rl-draw", type: "button", disabled: n || t || !r.length || !o, onClick: h }, b.createElement("span", null, n ? b.createElement("i", { className: "rl-spinner" }) : null, t ? "\u8BFB\u53D6\u540D\u5355\u2026" : n ? "\u6B63\u5728\u63ED\u6653\u2026" : S ? "\u518D\u6B21\u968F\u673A\u70B9\u540D" : "\u5F00\u59CB\u968F\u673A\u70B9\u540D"), b.createElement("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.7", "aria-hidden": "true" }, b.createElement("path", { d: "M4 12h16m-6-6 6 6-6 6" }))), n && e !== "requesting" && !S && b.createElement("button", { type: "button", className: "rl-skip", onClick: f }, "\u76F4\u63A5\u63ED\u6653\u5168\u90E8\u540D\u5355")));
+}
+import { a as m } from "./react-DFdtPfhg.js";
+var Qe = () => m.createElement("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.7", "aria-hidden": "true" }, m.createElement("path", { d: "M4 12h16m-6-6 6 6-6 6" }));
+function Ze({ members: r = [], pool: i = [], chosen: n = [], busy: t = false, loading: e = false, rolling: a = "", error: l = "", scope: s = "all", count: o = 1, countValid: h = true, onDraw: f, onSkip: y, speedScale = 1 }) {
+  let [d, k] = m.useState({ tick: 0, elapsed: 0, interval: 70 }), [g, S] = m.useState(false), $ = m.useRef(null), A = m.useRef(null), F = m.useRef(matchMedia("(prefers-reduced-motion: reduce)").matches), C = e ? "loading" : t ? "drawing" : n.length ? "result" : l ? "error" : r.length ? "ready" : "empty", D = s === "signed" ? "\u672C\u573A\u5DF2\u7B7E\u5230" : s === "absent" ? "\u672C\u573A\u672A\u7B7E\u5230" : "\u5168\u73ED\u540C\u5B66", L = (o > 1 ? n.length ? 1900 : 3e3 : 4800) * speedScale, T = (o > 1 ? 350 : 700) * speedScale;
+  m.useEffect(() => {
+    if (!t || F.current || a === "landed") return;
+    let q = false, z, ne = performance.now(), R = 0, oe = () => {
+      if (q) return;
+      let W = performance.now() - ne, ue = a === "revealing", ce = Math.max(0, Math.min(1, (W - L * 0.28) / (L * 0.52))), K = ue ? Math.round((65 + (o > 1 ? 360 : 590) * Math.pow(ce, 2.3)) * speedScale) : Math.round(80 * speedScale), j = ue && W >= L - T;
+      k({ tick: j ? R : ++R, elapsed: W, interval: K }), z = setTimeout(oe, j ? 90 : Math.max(16, Math.min(K, ue ? L - T - W : K)));
+    };
+    return oe(), () => {
+      q = true, clearTimeout(z);
+    };
+  }, [t, a, n.length, L]), m.useEffect(() => {
+    let q = () => S(document.fullscreenElement === $.current);
+    return document.addEventListener("fullscreenchange", q), () => document.removeEventListener("fullscreenchange", q);
+  }, []), m.useEffect(() => {
+    A.current && (A.current.scrollTop = A.current.scrollHeight);
+  }, [n.length]);
+  let E = a === "landed" || C === "result", B = a === "revealing" && d.elapsed >= L - T, M = a === "revealing" && d.elapsed > L * 0.28, p = E ? "\u5DF2\u9009\u4E2D" : B ? "\u5373\u5C06\u63ED\u6653" : M ? "\u6B63\u5728\u51CF\u901F" : "\u540D\u5355\u6EDA\u52A8\u4E2D", N = new Set(n.map((q) => q.studentId)), v = i.filter((q) => !N.has(q.studentId)), w = d.tick, I = n.at(-1), x = v[w % Math.max(1, v.length)], V = v[(w + v.length - 1) % Math.max(1, v.length)], re = v[(w + 1) % Math.max(1, v.length)], G = Math.min(n.length + 1, o);
+  return m.createElement("div", { ref: $, className: "rl-stage rl-sequential rl-" + C, "data-phase": C, "data-spin-interval": d.interval, "data-motion": E ? "landed" : B ? "hold" : M ? "slow" : "fast", "aria-busy": t }, m.createElement("header", { className: "rl-stage-head" }, m.createElement("span", { className: "rl-eyebrow" }, m.createElement("i", null), "\u968F\u673A\u70B9\u540D"), m.createElement("div", null, m.createElement("span", { className: "rl-state", role: "status" }, C === "loading" ? "\u8BFB\u53D6\u540D\u5355" : C === "result" ? "\u62BD\u53D6\u5B8C\u6210" : C === "drawing" ? `${E ? n.length : G} / ${o} \xB7 ${p}` : C === "error" ? "\u672C\u6B21\u672A\u5B8C\u6210" : C === "empty" ? "\u6682\u65E0\u5B66\u751F" : "\u51C6\u5907\u5C31\u7EEA"), m.createElement("button", { type: "button", className: "rl-full", "aria-label": g ? "\u9000\u51FA\u70B9\u540D\u5168\u5C4F" : "\u5168\u5C4F\u70B9\u540D", onClick: () => {
+    g ? document.exitFullscreen() : $.current?.requestFullscreen?.().catch(() => {
+    });
+  } }, m.createElement("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.6", "aria-hidden": "true" }, m.createElement("path", { d: "M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5" }))))), m.createElement("div", { className: "rl-meta" }, m.createElement("span", null, D), m.createElement("span", null, "\u672C\u6B21 ", o, " \u4EBA"), m.createElement("span", null, "\u73ED\u7EA7 ", r.length, " \u4EBA")), m.createElement("div", { className: "rl-sequence-layout" }, m.createElement("div", { className: "rl-machine" }, m.createElement("div", { className: "rl-ambient", "aria-hidden": "true" }, m.createElement("i", null), m.createElement("i", null), m.createElement("i", null)), m.createElement("div", { className: "rl-machine-label" }, t ? E ? "\u672C\u6B21\u9009\u4E2D" : "\u6B63\u5728\u62BD\u53D6\u7B2C " + G + " \u4F4D" : n.length ? "\u62BD\u53D6\u5B8C\u6210" : "\u4E00\u6B21\u63ED\u6653\u4E00\u4F4D\u540C\u5B66"), C === "loading" ? m.createElement("div", { className: "rl-center" }, m.createElement("h2", null, "\u6B63\u5728\u8BFB\u53D6\u540D\u5355"), m.createElement("p", null, "\u8BF7\u7A0D\u5019\u2026")) : E && I ? m.createElement("div", { className: "rl-latest", key: I.studentId }, m.createElement("span", { className: "rl-latest-number" }, String(n.length).padStart(2, "0")), m.createElement("div", { className: "rl-latest-initial", "aria-hidden": "true" }, Array.from(I.studentName || "?")[0]), m.createElement("h2", null, I.studentName), m.createElement("span", { className: "rl-selected-mark" }, "\u5DF2\u52A0\u5165\u672C\u6B21\u540D\u5355 \u2713")) : t ? m.createElement("div", { className: "rl-reels" + (B ? " rl-holding" : ""), "aria-label": "\u6B63\u5728\u62BD\u53D6\u7B2C" + G + "\u4F4D\u540C\u5B66" }, m.createElement("div", { className: "rl-reel", "data-roll-slot": "1", "aria-hidden": "true" }, m.createElement("span", { className: "rl-reel-neighbor" }, F.current ? "" : V?.studentName || "\u8BFB\u53D6\u540D\u5355"), m.createElement("strong", { key: w }, F.current ? "\u6B63\u5728\u63ED\u6653" : x?.studentName || "\u7B49\u5F85\u7ED3\u679C"), m.createElement("span", { className: "rl-reel-neighbor" }, F.current ? "" : re?.studentName || "\u8BF7\u7A0D\u5019"), m.createElement("i", { className: "rl-scan-line" }))) : m.createElement("div", { className: "rl-center" }, m.createElement("div", { className: "rl-ready-symbol", "aria-hidden": "true" }, m.createElement("svg", { viewBox: "0 0 80 80", fill: "none" }, m.createElement("rect", { x: "15", y: "20", width: "35", height: "46", rx: "8", transform: "rotate(-18 15 20)" }), m.createElement("rect", { x: "33", y: "10", width: "35", height: "46", rx: "8", transform: "rotate(12 33 10)" }), m.createElement("path", { d: "m42 29 9 1m-10 8 15 2" }))), m.createElement("h2", null, r.length ? "\u51C6\u5907\u70B9\u540D" : "\u73ED\u7EA7\u5C1A\u65E0\u5B66\u751F"), m.createElement("p", null, r.length ? "\u70B9\u51FB\u5F00\u59CB\uFF0C\u9010\u4E2A\u63ED\u6653\u672C\u6B21\u540C\u5B66" : "\u6DFB\u52A0\u73ED\u7EA7\u6210\u5458\u540E\u5373\u53EF\u70B9\u540D"))), m.createElement("aside", { className: "rl-picked", "aria-label": "\u672C\u6B21\u5DF2\u62BD\u53D6\u540D\u5355" }, m.createElement("div", { className: "rl-picked-head" }, m.createElement("h3", null, "\u672C\u6B21\u5DF2\u62BD\u53D6"), m.createElement("span", { "data-picked-count": true }, n.length, " / ", o)), m.createElement("div", { className: "rl-picked-list", ref: A, role: "log", "aria-live": "polite", "aria-relevant": "additions" }, n.length ? n.map((q, z) => m.createElement("article", { className: "rl-picked-item", "data-student-id": q.studentId, key: q.studentId }, m.createElement("span", null, String(z + 1).padStart(2, "0")), m.createElement("div", null, m.createElement("h4", null, q.studentName)), m.createElement("b", { "aria-hidden": "true" }, "\u2713"))) : m.createElement("div", { className: "rl-picked-empty" }, m.createElement("span", { "aria-hidden": "true" }, "\uFF0B"), m.createElement("p", null, "\u62BD\u5230\u7684\u540C\u5B66", m.createElement("br", null), "\u5C06\u4F9D\u6B21\u52A0\u5165\u8FD9\u91CC"))), m.createElement("p", { className: "rl-picked-note" }, C === "result" ? "\u672C\u6B21\u5168\u90E8\u63ED\u6653\uFF0C\u7ED3\u679C\u5DF2\u8BB0\u5F55" : t ? "\u63ED\u6653\u4E00\u4F4D\uFF0C\u52A0\u5165\u4E00\u4F4D" : "\u6309\u63ED\u6653\u987A\u5E8F\u6392\u5217"))), m.createElement("footer", { className: "rl-bottom" }, m.createElement("p", { className: "rl-caption" }, e ? "\u6B63\u5728\u8BFB\u53D6\u73ED\u7EA7\u6570\u636E\u2026" : t ? a === "requesting" ? "\u6B63\u5728\u83B7\u53D6\u62BD\u53D6\u7ED3\u679C\u2026" : E ? n.length < o ? "\u5DF2\u9009\u4E2D\uFF0C\u51C6\u5907\u4E0B\u4E00\u4F4D\u2026" : "\u672C\u6B21\u540D\u5355\u5DF2\u5168\u90E8\u63ED\u6653" : B ? "\u77ED\u6682\u505C\u987F\uFF0C\u5373\u5C06\u63ED\u6653\u2026" : M ? "\u8282\u594F\u653E\u6162\uFF0C\u5373\u5C06\u63ED\u6653\u2026" : "\u540D\u5355\u6B63\u5728\u6EDA\u52A8\u2026" : n.length ? "\u672C\u6B21\u7ED3\u679C\u5DF2\u8BB0\u5F55\uFF0C\u53EF\u7EE7\u7EED\u4E0B\u4E00\u6B21\u70B9\u540D" : l ? "\u8BF7\u68C0\u67E5\u4E0A\u65B9\u63D0\u793A\u540E\u91CD\u8BD5" : "\u6309\u5F53\u524D\u70B9\u540D\u8BBE\u7F6E\u9010\u4E2A\u62BD\u53D6"), m.createElement("button", { className: "rl-draw", type: "button", disabled: t || e || !r.length || !h, onClick: f }, m.createElement("span", null, t ? m.createElement("i", { className: "rl-spinner" }) : null, e ? "\u8BFB\u53D6\u540D\u5355\u2026" : t ? "\u6B63\u5728\u9010\u4E2A\u62BD\u53D6\u2026" : n.length ? "\u518D\u6B21\u968F\u673A\u70B9\u540D" : "\u5F00\u59CB\u968F\u673A\u70B9\u540D"), m.createElement(Qe, null)), t && a !== "requesting" && n.length < o && m.createElement("button", { type: "button", className: "rl-skip", onClick: y }, "\u76F4\u63A5\u63ED\u6653\u5269\u4F59\u540D\u5355")));
+}
+function Oe(r) {
+  return r.revealMode === "together" && r.count > 1 ? m.createElement(Ue, { ...r }) : m.createElement(Ze, { ...r });
+}
+import { a as qt } from "./react-DFdtPfhg.js";
+import { a as u } from "./react-DFdtPfhg.js";
+var Xe = Object.create, ze = Object.defineProperty, Re = Object.getOwnPropertyDescriptor, et = Object.getOwnPropertyNames, tt = Object.getPrototypeOf, rt = Object.prototype.hasOwnProperty, U = (r, i) => () => {
+  try {
+    return i || r((i = { exports: {} }).exports, i), i.exports;
+  } catch (n) {
+    throw i = 0, n;
+  }
+}, at = (r, i, n, t) => {
+  if (i && typeof i == "object" || typeof i == "function") for (let e of et(i)) !rt.call(r, e) && e !== n && ze(r, e, { get: () => i[e], enumerable: !(t = Re(i, e)) || t.enumerable });
+  return r;
+}, nt = (r, i, n) => (n = r != null ? Xe(tt(r)) : {}, at(i || !r || !r.__esModule ? ze(n, "default", { value: r, enumerable: true }) : n, r)), ut = U((r, i) => {
+  i.exports = function() {
+    return typeof Promise == "function" && Promise.prototype && Promise.prototype.then;
+  };
+}), fe = U((r) => {
+  var i, n = [0, 26, 44, 70, 100, 134, 172, 196, 242, 292, 346, 404, 466, 532, 581, 655, 733, 815, 901, 991, 1085, 1156, 1258, 1364, 1474, 1588, 1706, 1828, 1921, 2051, 2185, 2323, 2465, 2611, 2761, 2876, 3034, 3196, 3362, 3532, 3706];
+  r.getSymbolSize = function(t) {
+    if (!t) throw new Error('"version" cannot be null or undefined');
+    if (t < 1 || t > 40) throw new Error('"version" should be in range from 1 to 40');
+    return t * 4 + 17;
+  }, r.getSymbolTotalCodewords = function(t) {
+    return n[t];
+  }, r.getBCHDigit = function(t) {
+    let e = 0;
+    for (; t !== 0; ) e++, t >>>= 1;
+    return e;
+  }, r.setToSJISFunction = function(t) {
+    if (typeof t != "function") throw new Error('"toSJISFunc" is not a valid function.');
+    i = t;
+  }, r.isKanjiModeEnabled = function() {
+    return typeof i < "u";
+  }, r.toSJIS = function(t) {
+    return i(t);
+  };
+}), xe = U((r) => {
+  r.L = { bit: 1 }, r.M = { bit: 0 }, r.Q = { bit: 3 }, r.H = { bit: 2 };
+  function i(n) {
+    if (typeof n != "string") throw new Error("Param is not a string");
+    switch (n.toLowerCase()) {
+      case "l":
+      case "low":
+        return r.L;
+      case "m":
+      case "medium":
+        return r.M;
+      case "q":
+      case "quartile":
+        return r.Q;
+      case "h":
+      case "high":
+        return r.H;
+      default:
+        throw new Error("Unknown EC Level: " + n);
+    }
+  }
+  r.isValid = function(n) {
+    return n && typeof n.bit < "u" && n.bit >= 0 && n.bit < 4;
+  }, r.from = function(n, t) {
+    if (r.isValid(n)) return n;
+    try {
+      return i(n);
+    } catch {
+      return t;
+    }
+  };
+}), lt = U((r, i) => {
+  function n() {
+    this.buffer = [], this.length = 0;
+  }
+  n.prototype = { get: function(t) {
+    let e = Math.floor(t / 8);
+    return (this.buffer[e] >>> 7 - t % 8 & 1) === 1;
+  }, put: function(t, e) {
+    for (let a = 0; a < e; a++) this.putBit((t >>> e - a - 1 & 1) === 1);
+  }, getLengthInBits: function() {
+    return this.length;
+  }, putBit: function(t) {
+    let e = Math.floor(this.length / 8);
+    this.buffer.length <= e && this.buffer.push(0), t && (this.buffer[e] |= 128 >>> this.length % 8), this.length++;
+  } }, i.exports = n;
+}), st = U((r, i) => {
+  function n(t) {
+    if (!t || t < 1) throw new Error("BitMatrix size must be defined and greater than 0");
+    this.size = t, this.data = new Uint8Array(t * t), this.reservedBit = new Uint8Array(t * t);
+  }
+  n.prototype.set = function(t, e, a, l) {
+    let s = t * this.size + e;
+    this.data[s] = a, l && (this.reservedBit[s] = true);
+  }, n.prototype.get = function(t, e) {
+    return this.data[t * this.size + e];
+  }, n.prototype.xor = function(t, e, a) {
+    this.data[t * this.size + e] ^= a;
+  }, n.prototype.isReserved = function(t, e) {
+    return this.reservedBit[t * this.size + e];
+  }, i.exports = n;
+}), it = U((r) => {
+  var i = fe().getSymbolSize;
+  r.getRowColCoords = function(n) {
+    if (n === 1) return [];
+    let t = Math.floor(n / 7) + 2, e = i(n), a = e === 145 ? 26 : Math.ceil((e - 13) / (2 * t - 2)) * 2, l = [e - 7];
+    for (let s = 1; s < t - 1; s++) l[s] = l[s - 1] - a;
+    return l.push(6), l.reverse();
+  }, r.getPositions = function(n) {
+    let t = [], e = r.getRowColCoords(n), a = e.length;
+    for (let l = 0; l < a; l++) for (let s = 0; s < a; s++) l === 0 && s === 0 || l === 0 && s === a - 1 || l === a - 1 && s === 0 || t.push([e[l], e[s]]);
+    return t;
+  };
+}), ot = U((r) => {
+  var i = fe().getSymbolSize, n = 7;
+  r.getPositions = function(t) {
+    let e = i(t);
+    return [[0, 0], [e - n, 0], [0, e - n]];
+  };
+}), ct = U((r) => {
+  r.Patterns = { PATTERN000: 0, PATTERN001: 1, PATTERN010: 2, PATTERN011: 3, PATTERN100: 4, PATTERN101: 5, PATTERN110: 6, PATTERN111: 7 };
+  var i = { N1: 3, N2: 3, N3: 40, N4: 10 };
+  r.isValid = function(t) {
+    return t != null && t !== "" && !isNaN(t) && t >= 0 && t <= 7;
+  }, r.from = function(t) {
+    return r.isValid(t) ? parseInt(t, 10) : void 0;
+  }, r.getPenaltyN1 = function(t) {
+    let e = t.size, a = 0, l = 0, s = 0, o = null, h = null;
+    for (let f = 0; f < e; f++) {
+      l = s = 0, o = h = null;
+      for (let y = 0; y < e; y++) {
+        let d = t.get(f, y);
+        d === o ? l++ : (l >= 5 && (a += i.N1 + (l - 5)), o = d, l = 1), d = t.get(y, f), d === h ? s++ : (s >= 5 && (a += i.N1 + (s - 5)), h = d, s = 1);
+      }
+      l >= 5 && (a += i.N1 + (l - 5)), s >= 5 && (a += i.N1 + (s - 5));
+    }
+    return a;
+  }, r.getPenaltyN2 = function(t) {
+    let e = t.size, a = 0;
+    for (let l = 0; l < e - 1; l++) for (let s = 0; s < e - 1; s++) {
+      let o = t.get(l, s) + t.get(l, s + 1) + t.get(l + 1, s) + t.get(l + 1, s + 1);
+      (o === 4 || o === 0) && a++;
+    }
+    return a * i.N2;
+  }, r.getPenaltyN3 = function(t) {
+    let e = t.size, a = 0, l = 0, s = 0;
+    for (let o = 0; o < e; o++) {
+      l = s = 0;
+      for (let h = 0; h < e; h++) l = l << 1 & 2047 | t.get(o, h), h >= 10 && (l === 1488 || l === 93) && a++, s = s << 1 & 2047 | t.get(h, o), h >= 10 && (s === 1488 || s === 93) && a++;
+    }
+    return a * i.N3;
+  }, r.getPenaltyN4 = function(t) {
+    let e = 0, a = t.data.length;
+    for (let l = 0; l < a; l++) e += t.data[l];
+    return Math.abs(Math.ceil(e * 100 / a / 5) - 10) * i.N4;
+  };
+  function n(t, e, a) {
+    switch (t) {
+      case r.Patterns.PATTERN000:
+        return (e + a) % 2 === 0;
+      case r.Patterns.PATTERN001:
+        return e % 2 === 0;
+      case r.Patterns.PATTERN010:
+        return a % 3 === 0;
+      case r.Patterns.PATTERN011:
+        return (e + a) % 3 === 0;
+      case r.Patterns.PATTERN100:
+        return (Math.floor(e / 2) + Math.floor(a / 3)) % 2 === 0;
+      case r.Patterns.PATTERN101:
+        return e * a % 2 + e * a % 3 === 0;
+      case r.Patterns.PATTERN110:
+        return (e * a % 2 + e * a % 3) % 2 === 0;
+      case r.Patterns.PATTERN111:
+        return (e * a % 3 + (e + a) % 2) % 2 === 0;
+      default:
+        throw new Error("bad maskPattern:" + t);
+    }
+  }
+  r.applyMask = function(t, e) {
+    let a = e.size;
+    for (let l = 0; l < a; l++) for (let s = 0; s < a; s++) e.isReserved(s, l) || e.xor(s, l, n(t, s, l));
+  }, r.getBestMask = function(t, e) {
+    let a = Object.keys(r.Patterns).length, l = 0, s = 1 / 0;
+    for (let o = 0; o < a; o++) {
+      e(o), r.applyMask(o, t);
+      let h = r.getPenaltyN1(t) + r.getPenaltyN2(t) + r.getPenaltyN3(t) + r.getPenaltyN4(t);
+      r.applyMask(o, t), h < s && (s = h, l = o);
+    }
+    return l;
+  };
+}), Je = U((r) => {
+  var i = xe(), n = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 2, 2, 4, 1, 2, 4, 4, 2, 4, 4, 4, 2, 4, 6, 5, 2, 4, 6, 6, 2, 5, 8, 8, 4, 5, 8, 8, 4, 5, 8, 11, 4, 8, 10, 11, 4, 9, 12, 16, 4, 9, 16, 16, 6, 10, 12, 18, 6, 10, 17, 16, 6, 11, 16, 19, 6, 13, 18, 21, 7, 14, 21, 25, 8, 16, 20, 25, 8, 17, 23, 25, 9, 17, 23, 34, 9, 18, 25, 30, 10, 20, 27, 32, 12, 21, 29, 35, 12, 23, 34, 37, 12, 25, 34, 40, 13, 26, 35, 42, 14, 28, 38, 45, 15, 29, 40, 48, 16, 31, 43, 51, 17, 33, 45, 54, 18, 35, 48, 57, 19, 37, 51, 60, 19, 38, 53, 63, 20, 40, 56, 66, 21, 43, 59, 70, 22, 45, 62, 74, 24, 47, 65, 77, 25, 49, 68, 81], t = [7, 10, 13, 17, 10, 16, 22, 28, 15, 26, 36, 44, 20, 36, 52, 64, 26, 48, 72, 88, 36, 64, 96, 112, 40, 72, 108, 130, 48, 88, 132, 156, 60, 110, 160, 192, 72, 130, 192, 224, 80, 150, 224, 264, 96, 176, 260, 308, 104, 198, 288, 352, 120, 216, 320, 384, 132, 240, 360, 432, 144, 280, 408, 480, 168, 308, 448, 532, 180, 338, 504, 588, 196, 364, 546, 650, 224, 416, 600, 700, 224, 442, 644, 750, 252, 476, 690, 816, 270, 504, 750, 900, 300, 560, 810, 960, 312, 588, 870, 1050, 336, 644, 952, 1110, 360, 700, 1020, 1200, 390, 728, 1050, 1260, 420, 784, 1140, 1350, 450, 812, 1200, 1440, 480, 868, 1290, 1530, 510, 924, 1350, 1620, 540, 980, 1440, 1710, 570, 1036, 1530, 1800, 570, 1064, 1590, 1890, 600, 1120, 1680, 1980, 630, 1204, 1770, 2100, 660, 1260, 1860, 2220, 720, 1316, 1950, 2310, 750, 1372, 2040, 2430];
+  r.getBlocksCount = function(e, a) {
+    switch (a) {
+      case i.L:
+        return n[(e - 1) * 4 + 0];
+      case i.M:
+        return n[(e - 1) * 4 + 1];
+      case i.Q:
+        return n[(e - 1) * 4 + 2];
+      case i.H:
+        return n[(e - 1) * 4 + 3];
+      default:
+        return;
+    }
+  }, r.getTotalCodewordsCount = function(e, a) {
+    switch (a) {
+      case i.L:
+        return t[(e - 1) * 4 + 0];
+      case i.M:
+        return t[(e - 1) * 4 + 1];
+      case i.Q:
+        return t[(e - 1) * 4 + 2];
+      case i.H:
+        return t[(e - 1) * 4 + 3];
+      default:
+        return;
+    }
+  };
+}), dt = U((r) => {
+  var i = new Uint8Array(512), n = new Uint8Array(256);
+  (function() {
+    let t = 1;
+    for (let e = 0; e < 255; e++) i[e] = t, n[t] = e, t <<= 1, t & 256 && (t ^= 285);
+    for (let e = 255; e < 512; e++) i[e] = i[e - 255];
+  })(), r.log = function(t) {
+    if (t < 1) throw new Error("log(" + t + ")");
+    return n[t];
+  }, r.exp = function(t) {
+    return i[t];
+  }, r.mul = function(t, e) {
+    return t === 0 || e === 0 ? 0 : i[n[t] + n[e]];
+  };
+}), mt = U((r) => {
+  var i = dt();
+  r.mul = function(n, t) {
+    let e = new Uint8Array(n.length + t.length - 1);
+    for (let a = 0; a < n.length; a++) for (let l = 0; l < t.length; l++) e[a + l] ^= i.mul(n[a], t[l]);
+    return e;
+  }, r.mod = function(n, t) {
+    let e = new Uint8Array(n);
+    for (; e.length - t.length >= 0; ) {
+      let a = e[0];
+      for (let s = 0; s < t.length; s++) e[s] ^= i.mul(t[s], a);
+      let l = 0;
+      for (; l < e.length && e[l] === 0; ) l++;
+      e = e.slice(l);
+    }
+    return e;
+  }, r.generateECPolynomial = function(n) {
+    let t = new Uint8Array([1]);
+    for (let e = 0; e < n; e++) t = r.mul(t, new Uint8Array([1, i.exp(e)]));
+    return t;
+  };
+}), ht = U((r, i) => {
+  var n = mt();
+  function t(e) {
+    this.genPoly = void 0, this.degree = e, this.degree && this.initialize(this.degree);
+  }
+  t.prototype.initialize = function(e) {
+    this.degree = e, this.genPoly = n.generateECPolynomial(this.degree);
+  }, t.prototype.encode = function(e) {
+    if (!this.genPoly) throw new Error("Encoder not initialized");
+    let a = new Uint8Array(e.length + this.degree);
+    a.set(e);
+    let l = n.mod(a, this.genPoly), s = this.degree - l.length;
+    if (s > 0) {
+      let o = new Uint8Array(this.degree);
+      return o.set(l, s), o;
+    }
+    return l;
+  }, i.exports = t;
+}), He = U((r) => {
+  r.isValid = function(i) {
+    return !isNaN(i) && i >= 1 && i <= 40;
+  };
+}), Ye = U((r) => {
+  var i = "[0-9]+", n = "[A-Z $%*+\\-./:]+", t = "(?:[u3000-u303F]|[u3040-u309F]|[u30A0-u30FF]|[uFF00-uFFEF]|[u4E00-u9FAF]|[u2605-u2606]|[u2190-u2195]|u203B|[u2010u2015u2018u2019u2025u2026u201Cu201Du2225u2260]|[u0391-u0451]|[u00A7u00A8u00B1u00B4u00D7u00F7])+";
+  t = t.replace(/u/g, "\\u");
+  var e = "(?:(?![A-Z0-9 $%*+\\-./:]|" + t + `)(?:.|[\r
+]))+`;
+  r.KANJI = new RegExp(t, "g"), r.BYTE_KANJI = new RegExp("[^A-Z0-9 $%*+\\-./:]+", "g"), r.BYTE = new RegExp(e, "g"), r.NUMERIC = new RegExp(i, "g"), r.ALPHANUMERIC = new RegExp(n, "g");
+  var a = new RegExp("^" + t + "$"), l = new RegExp("^" + i + "$"), s = new RegExp("^[A-Z0-9 $%*+\\-./:]+$");
+  r.testKanji = function(o) {
+    return a.test(o);
+  }, r.testNumeric = function(o) {
+    return l.test(o);
+  }, r.testAlphanumeric = function(o) {
+    return s.test(o);
+  };
+}), ge = U((r) => {
+  var i = He(), n = Ye();
+  r.NUMERIC = { id: "Numeric", bit: 1, ccBits: [10, 12, 14] }, r.ALPHANUMERIC = { id: "Alphanumeric", bit: 2, ccBits: [9, 11, 13] }, r.BYTE = { id: "Byte", bit: 4, ccBits: [8, 16, 16] }, r.KANJI = { id: "Kanji", bit: 8, ccBits: [8, 10, 12] }, r.MIXED = { bit: -1 }, r.getCharCountIndicator = function(e, a) {
+    if (!e.ccBits) throw new Error("Invalid mode: " + e);
+    if (!i.isValid(a)) throw new Error("Invalid version: " + a);
+    return a >= 1 && a < 10 ? e.ccBits[0] : a < 27 ? e.ccBits[1] : e.ccBits[2];
+  }, r.getBestModeForData = function(e) {
+    return n.testNumeric(e) ? r.NUMERIC : n.testAlphanumeric(e) ? r.ALPHANUMERIC : n.testKanji(e) ? r.KANJI : r.BYTE;
+  }, r.toString = function(e) {
+    if (e && e.id) return e.id;
+    throw new Error("Invalid mode");
+  }, r.isValid = function(e) {
+    return e && e.bit && e.ccBits;
+  };
+  function t(e) {
+    if (typeof e != "string") throw new Error("Param is not a string");
+    switch (e.toLowerCase()) {
+      case "numeric":
+        return r.NUMERIC;
+      case "alphanumeric":
+        return r.ALPHANUMERIC;
+      case "kanji":
+        return r.KANJI;
+      case "byte":
+        return r.BYTE;
+      default:
+        throw new Error("Unknown mode: " + e);
+    }
+  }
+  r.from = function(e, a) {
+    if (r.isValid(e)) return e;
+    try {
+      return t(e);
+    } catch {
+      return a;
+    }
+  };
+}), ft = U((r) => {
+  var i = fe(), n = Je(), t = xe(), e = ge(), a = He(), l = 7973, s = i.getBCHDigit(l);
+  function o(d, k, g) {
+    for (let S = 1; S <= 40; S++) if (k <= r.getCapacity(S, g, d)) return S;
+  }
+  function h(d, k) {
+    return e.getCharCountIndicator(d, k) + 4;
+  }
+  function f(d, k) {
+    let g = 0;
+    return d.forEach(function(S) {
+      let $ = h(S.mode, k);
+      g += $ + S.getBitsLength();
+    }), g;
+  }
+  function y(d, k) {
+    for (let g = 1; g <= 40; g++) if (f(d, g) <= r.getCapacity(g, k, e.MIXED)) return g;
+  }
+  r.from = function(d, k) {
+    return a.isValid(d) ? parseInt(d, 10) : k;
+  }, r.getCapacity = function(d, k, g) {
+    if (!a.isValid(d)) throw new Error("Invalid QR Code version");
+    typeof g > "u" && (g = e.BYTE);
+    let S = i.getSymbolTotalCodewords(d), $ = n.getTotalCodewordsCount(d, k), A = (S - $) * 8;
+    if (g === e.MIXED) return A;
+    let F = A - h(g, d);
+    switch (g) {
+      case e.NUMERIC:
+        return Math.floor(F / 10 * 3);
+      case e.ALPHANUMERIC:
+        return Math.floor(F / 11 * 2);
+      case e.KANJI:
+        return Math.floor(F / 13);
+      case e.BYTE:
+      default:
+        return Math.floor(F / 8);
+    }
+  }, r.getBestVersionForData = function(d, k) {
+    let g, S = t.from(k, t.M);
+    if (Array.isArray(d)) {
+      if (d.length > 1) return y(d, S);
+      if (d.length === 0) return 1;
+      g = d[0];
+    } else g = d;
+    return o(g.mode, g.getLength(), S);
+  }, r.getEncodedBits = function(d) {
+    if (!a.isValid(d) || d < 7) throw new Error("Invalid QR Code version");
+    let k = d << 12;
+    for (; i.getBCHDigit(k) - s >= 0; ) k ^= l << i.getBCHDigit(k) - s;
+    return d << 12 | k;
+  };
+}), gt = U((r) => {
+  var i = fe(), n = 1335, t = 21522, e = i.getBCHDigit(n);
+  r.getEncodedBits = function(a, l) {
+    let s = a.bit << 3 | l, o = s << 10;
+    for (; i.getBCHDigit(o) - e >= 0; ) o ^= n << i.getBCHDigit(o) - e;
+    return (s << 10 | o) ^ t;
+  };
+}), pt = U((r, i) => {
+  var n = ge();
+  function t(e) {
+    this.mode = n.NUMERIC, this.data = e.toString();
+  }
+  t.getBitsLength = function(e) {
+    return 10 * Math.floor(e / 3) + (e % 3 ? e % 3 * 3 + 1 : 0);
+  }, t.prototype.getLength = function() {
+    return this.data.length;
+  }, t.prototype.getBitsLength = function() {
+    return t.getBitsLength(this.data.length);
+  }, t.prototype.write = function(e) {
+    let a, l, s;
+    for (a = 0; a + 3 <= this.data.length; a += 3) l = this.data.substr(a, 3), s = parseInt(l, 10), e.put(s, 10);
+    let o = this.data.length - a;
+    o > 0 && (l = this.data.substr(a), s = parseInt(l, 10), e.put(s, o * 3 + 1));
+  }, i.exports = t;
+}), Et = U((r, i) => {
+  var n = ge(), t = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", " ", "$", "%", "*", "+", "-", ".", "/", ":"];
+  function e(a) {
+    this.mode = n.ALPHANUMERIC, this.data = a;
+  }
+  e.getBitsLength = function(a) {
+    return 11 * Math.floor(a / 2) + 6 * (a % 2);
+  }, e.prototype.getLength = function() {
+    return this.data.length;
+  }, e.prototype.getBitsLength = function() {
+    return e.getBitsLength(this.data.length);
+  }, e.prototype.write = function(a) {
+    let l;
+    for (l = 0; l + 2 <= this.data.length; l += 2) {
+      let s = t.indexOf(this.data[l]) * 45;
+      s += t.indexOf(this.data[l + 1]), a.put(s, 11);
+    }
+    this.data.length % 2 && a.put(t.indexOf(this.data[l]), 6);
+  }, i.exports = e;
+}), vt = U((r, i) => {
+  var n = ge();
+  function t(e) {
+    this.mode = n.BYTE, typeof e == "string" ? this.data = new TextEncoder().encode(e) : this.data = new Uint8Array(e);
+  }
+  t.getBitsLength = function(e) {
+    return e * 8;
+  }, t.prototype.getLength = function() {
+    return this.data.length;
+  }, t.prototype.getBitsLength = function() {
+    return t.getBitsLength(this.data.length);
+  }, t.prototype.write = function(e) {
+    for (let a = 0, l = this.data.length; a < l; a++) e.put(this.data[a], 8);
+  }, i.exports = t;
+}), Ft = U((r, i) => {
+  var n = ge(), t = fe();
+  function e(a) {
+    this.mode = n.KANJI, this.data = a;
+  }
+  e.getBitsLength = function(a) {
+    return a * 13;
+  }, e.prototype.getLength = function() {
+    return this.data.length;
+  }, e.prototype.getBitsLength = function() {
+    return e.getBitsLength(this.data.length);
+  }, e.prototype.write = function(a) {
+    let l;
+    for (l = 0; l < this.data.length; l++) {
+      let s = t.toSJIS(this.data[l]);
+      if (s >= 33088 && s <= 40956) s -= 33088;
+      else if (s >= 57408 && s <= 60351) s -= 49472;
+      else throw new Error("Invalid SJIS character: " + this.data[l] + `
+Make sure your charset is UTF-8`);
+      s = (s >>> 8 & 255) * 192 + (s & 255), a.put(s, 13);
+    }
+  }, i.exports = e;
+}), Bt = U((r, i) => {
+  "use strict";
+  var n = { single_source_shortest_paths: function(t, e, a) {
+    var l = {}, s = {};
+    s[e] = 0;
+    var o = n.PriorityQueue.make();
+    o.push(e, 0);
+    for (var h, f, y, d, k, g, S, $, A; !o.empty(); ) {
+      h = o.pop(), f = h.value, d = h.cost, k = t[f] || {};
+      for (y in k) k.hasOwnProperty(y) && (g = k[y], S = d + g, $ = s[y], A = typeof s[y] > "u", (A || $ > S) && (s[y] = S, o.push(y, S), l[y] = f));
+    }
+    if (typeof a < "u" && typeof s[a] > "u") {
+      var F = ["Could not find a path from ", e, " to ", a, "."].join("");
+      throw new Error(F);
+    }
+    return l;
+  }, extract_shortest_path_from_predecessor_list: function(t, e) {
+    for (var a = [], l = e, s; l; ) a.push(l), s = t[l], l = t[l];
+    return a.reverse(), a;
+  }, find_path: function(t, e, a) {
+    var l = n.single_source_shortest_paths(t, e, a);
+    return n.extract_shortest_path_from_predecessor_list(l, a);
+  }, PriorityQueue: { make: function(t) {
+    var e = n.PriorityQueue, a = {}, l;
+    t = t || {};
+    for (l in e) e.hasOwnProperty(l) && (a[l] = e[l]);
+    return a.queue = [], a.sorter = t.sorter || e.default_sorter, a;
+  }, default_sorter: function(t, e) {
+    return t.cost - e.cost;
+  }, push: function(t, e) {
+    var a = { value: t, cost: e };
+    this.queue.push(a), this.queue.sort(this.sorter);
+  }, pop: function() {
+    return this.queue.shift();
+  }, empty: function() {
+    return this.queue.length === 0;
+  } } };
+  typeof i < "u" && (i.exports = n);
+}), wt = U((r) => {
+  var i = ge(), n = pt(), t = Et(), e = vt(), a = Ft(), l = Ye(), s = fe(), o = Bt();
+  function h(A) {
+    return unescape(encodeURIComponent(A)).length;
+  }
+  function f(A, F, C) {
+    let D = [], L;
+    for (; (L = A.exec(C)) !== null; ) D.push({ data: L[0], index: L.index, mode: F, length: L[0].length });
+    return D;
+  }
+  function y(A) {
+    let F = f(l.NUMERIC, i.NUMERIC, A), C = f(l.ALPHANUMERIC, i.ALPHANUMERIC, A), D, L;
+    return s.isKanjiModeEnabled() ? (D = f(l.BYTE, i.BYTE, A), L = f(l.KANJI, i.KANJI, A)) : (D = f(l.BYTE_KANJI, i.BYTE, A), L = []), F.concat(C, D, L).sort(function(T, E) {
+      return T.index - E.index;
+    }).map(function(T) {
+      return { data: T.data, mode: T.mode, length: T.length };
+    });
+  }
+  function d(A, F) {
+    switch (F) {
+      case i.NUMERIC:
+        return n.getBitsLength(A);
+      case i.ALPHANUMERIC:
+        return t.getBitsLength(A);
+      case i.KANJI:
+        return a.getBitsLength(A);
+      case i.BYTE:
+        return e.getBitsLength(A);
+    }
+  }
+  function k(A) {
+    return A.reduce(function(F, C) {
+      let D = F.length - 1 >= 0 ? F[F.length - 1] : null;
+      return D && D.mode === C.mode ? (F[F.length - 1].data += C.data, F) : (F.push(C), F);
+    }, []);
+  }
+  function g(A) {
+    let F = [];
+    for (let C = 0; C < A.length; C++) {
+      let D = A[C];
+      switch (D.mode) {
+        case i.NUMERIC:
+          F.push([D, { data: D.data, mode: i.ALPHANUMERIC, length: D.length }, { data: D.data, mode: i.BYTE, length: D.length }]);
+          break;
+        case i.ALPHANUMERIC:
+          F.push([D, { data: D.data, mode: i.BYTE, length: D.length }]);
+          break;
+        case i.KANJI:
+          F.push([D, { data: D.data, mode: i.BYTE, length: h(D.data) }]);
+          break;
+        case i.BYTE:
+          F.push([{ data: D.data, mode: i.BYTE, length: h(D.data) }]);
+      }
+    }
+    return F;
+  }
+  function S(A, F) {
+    let C = {}, D = { start: {} }, L = ["start"];
+    for (let T = 0; T < A.length; T++) {
+      let E = A[T], B = [];
+      for (let M = 0; M < E.length; M++) {
+        let p = E[M], N = "" + T + M;
+        B.push(N), C[N] = { node: p, lastCount: 0 }, D[N] = {};
+        for (let v = 0; v < L.length; v++) {
+          let w = L[v];
+          C[w] && C[w].node.mode === p.mode ? (D[w][N] = d(C[w].lastCount + p.length, p.mode) - d(C[w].lastCount, p.mode), C[w].lastCount += p.length) : (C[w] && (C[w].lastCount = p.length), D[w][N] = d(p.length, p.mode) + 4 + i.getCharCountIndicator(p.mode, F));
+        }
+      }
+      L = B;
+    }
+    for (let T = 0; T < L.length; T++) D[L[T]].end = 0;
+    return { map: D, table: C };
+  }
+  function $(A, F) {
+    let C, D = i.getBestModeForData(A);
+    if (C = i.from(F, D), C !== i.BYTE && C.bit < D.bit) throw new Error('"' + A + '" cannot be encoded with mode ' + i.toString(C) + `.
+ Suggested mode is: ` + i.toString(D));
+    switch (C === i.KANJI && !s.isKanjiModeEnabled() && (C = i.BYTE), C) {
+      case i.NUMERIC:
+        return new n(A);
+      case i.ALPHANUMERIC:
+        return new t(A);
+      case i.KANJI:
+        return new a(A);
+      case i.BYTE:
+        return new e(A);
+    }
+  }
+  r.fromArray = function(A) {
+    return A.reduce(function(F, C) {
+      return typeof C == "string" ? F.push($(C, null)) : C.data && F.push($(C.data, C.mode)), F;
+    }, []);
+  }, r.fromString = function(A, F) {
+    let C = y(A, s.isKanjiModeEnabled()), D = g(C), L = S(D, F), T = o.find_path(L.map, "start", "end"), E = [];
+    for (let B = 1; B < T.length - 1; B++) E.push(L.table[T[B]].node);
+    return r.fromArray(k(E));
+  }, r.rawSplit = function(A) {
+    return r.fromArray(y(A, s.isKanjiModeEnabled()));
+  };
+}), yt = U((r) => {
+  var i = fe(), n = xe(), t = lt(), e = st(), a = it(), l = ot(), s = ct(), o = Je(), h = ht(), f = ft(), y = gt(), d = ge(), k = wt();
+  function g(E, B) {
+    let M = E.size, p = l.getPositions(B);
+    for (let N = 0; N < p.length; N++) {
+      let v = p[N][0], w = p[N][1];
+      for (let I = -1; I <= 7; I++) if (!(v + I <= -1 || M <= v + I)) for (let x = -1; x <= 7; x++) w + x <= -1 || M <= w + x || (I >= 0 && I <= 6 && (x === 0 || x === 6) || x >= 0 && x <= 6 && (I === 0 || I === 6) || I >= 2 && I <= 4 && x >= 2 && x <= 4 ? E.set(v + I, w + x, true, true) : E.set(v + I, w + x, false, true));
+    }
+  }
+  function S(E) {
+    let B = E.size;
+    for (let M = 8; M < B - 8; M++) {
+      let p = M % 2 === 0;
+      E.set(M, 6, p, true), E.set(6, M, p, true);
+    }
+  }
+  function $(E, B) {
+    let M = a.getPositions(B);
+    for (let p = 0; p < M.length; p++) {
+      let N = M[p][0], v = M[p][1];
+      for (let w = -2; w <= 2; w++) for (let I = -2; I <= 2; I++) w === -2 || w === 2 || I === -2 || I === 2 || w === 0 && I === 0 ? E.set(N + w, v + I, true, true) : E.set(N + w, v + I, false, true);
+    }
+  }
+  function A(E, B) {
+    let M = E.size, p = f.getEncodedBits(B), N, v, w;
+    for (let I = 0; I < 18; I++) N = Math.floor(I / 3), v = I % 3 + M - 8 - 3, w = (p >> I & 1) === 1, E.set(N, v, w, true), E.set(v, N, w, true);
+  }
+  function F(E, B, M) {
+    let p = E.size, N = y.getEncodedBits(B, M), v, w;
+    for (v = 0; v < 15; v++) w = (N >> v & 1) === 1, v < 6 ? E.set(v, 8, w, true) : v < 8 ? E.set(v + 1, 8, w, true) : E.set(p - 15 + v, 8, w, true), v < 8 ? E.set(8, p - v - 1, w, true) : v < 9 ? E.set(8, 15 - v - 1 + 1, w, true) : E.set(8, 15 - v - 1, w, true);
+    E.set(p - 8, 8, 1, true);
+  }
+  function C(E, B) {
+    let M = E.size, p = -1, N = M - 1, v = 7, w = 0;
+    for (let I = M - 1; I > 0; I -= 2) for (I === 6 && I--; ; ) {
+      for (let x = 0; x < 2; x++) if (!E.isReserved(N, I - x)) {
+        let V = false;
+        w < B.length && (V = (B[w] >>> v & 1) === 1), E.set(N, I - x, V), v--, v === -1 && (w++, v = 7);
+      }
+      if (N += p, N < 0 || M <= N) {
+        N -= p, p = -p;
+        break;
+      }
+    }
+  }
+  function D(E, B, M) {
+    let p = new t();
+    M.forEach(function(x) {
+      p.put(x.mode.bit, 4), p.put(x.getLength(), d.getCharCountIndicator(x.mode, E)), x.write(p);
+    });
+    let N = i.getSymbolTotalCodewords(E), v = o.getTotalCodewordsCount(E, B), w = (N - v) * 8;
+    for (p.getLengthInBits() + 4 <= w && p.put(0, 4); p.getLengthInBits() % 8 !== 0; ) p.putBit(0);
+    let I = (w - p.getLengthInBits()) / 8;
+    for (let x = 0; x < I; x++) p.put(x % 2 ? 17 : 236, 8);
+    return L(p, E, B);
+  }
+  function L(E, B, M) {
+    let p = i.getSymbolTotalCodewords(B), N = o.getTotalCodewordsCount(B, M), v = p - N, w = o.getBlocksCount(B, M), I = p % w, x = w - I, V = Math.floor(p / w), re = Math.floor(v / w), G = re + 1, q = V - re, z = new h(q), ne = 0, R = new Array(w), oe = new Array(w), W = 0, ue = new Uint8Array(E.buffer);
+    for (let Q = 0; Q < w; Q++) {
+      let de = Q < x ? re : G;
+      R[Q] = ue.slice(ne, ne + de), oe[Q] = z.encode(R[Q]), ne += de, W = Math.max(W, de);
+    }
+    let ce = new Uint8Array(p), K = 0, j, J;
+    for (j = 0; j < W; j++) for (J = 0; J < w; J++) j < R[J].length && (ce[K++] = R[J][j]);
+    for (j = 0; j < q; j++) for (J = 0; J < w; J++) ce[K++] = oe[J][j];
+    return ce;
+  }
+  function T(E, B, M, p) {
+    let N;
+    if (Array.isArray(E)) N = k.fromArray(E);
+    else if (typeof E == "string") {
+      let V = B;
+      if (!V) {
+        let re = k.rawSplit(E);
+        V = f.getBestVersionForData(re, M);
+      }
+      N = k.fromString(E, V || 40);
+    } else throw new Error("Invalid data");
+    let v = f.getBestVersionForData(N, M);
+    if (!v) throw new Error("The amount of data is too big to be stored in a QR Code");
+    if (!B) B = v;
+    else if (B < v) throw new Error(`
+The chosen QR Code version cannot contain this amount of data.
+Minimum version required to store current data is: ` + v + `.
+`);
+    let w = D(B, M, N), I = i.getSymbolSize(B), x = new e(I);
+    return g(x, B), S(x), $(x, B), F(x, M, 0), B >= 7 && A(x, B), C(x, w), isNaN(p) && (p = s.getBestMask(x, F.bind(null, x, M))), s.applyMask(p, x), F(x, M, p), { modules: x, version: B, errorCorrectionLevel: M, maskPattern: p, segments: N };
+  }
+  r.create = function(E, B) {
+    if (typeof E > "u" || E === "") throw new Error("No input text");
+    let M = n.M, p, N;
+    return typeof B < "u" && (M = n.from(B.errorCorrectionLevel, n.M), p = f.from(B.version), N = s.from(B.maskPattern), B.toSJISFunc && i.setToSJISFunction(B.toSJISFunc)), T(E, p, M, N);
+  };
+}), Ke = U((r) => {
+  function i(n) {
+    if (typeof n == "number" && (n = n.toString()), typeof n != "string") throw new Error("Color should be defined as hex string");
+    let t = n.slice().replace("#", "").split("");
+    if (t.length < 3 || t.length === 5 || t.length > 8) throw new Error("Invalid hex color: " + n);
+    (t.length === 3 || t.length === 4) && (t = Array.prototype.concat.apply([], t.map(function(a) {
+      return [a, a];
+    }))), t.length === 6 && t.push("F", "F");
+    let e = parseInt(t.join(""), 16);
+    return { r: e >> 24 & 255, g: e >> 16 & 255, b: e >> 8 & 255, a: e & 255, hex: "#" + t.slice(0, 6).join("") };
+  }
+  r.getOptions = function(n) {
+    n || (n = {}), n.color || (n.color = {});
+    let t = typeof n.margin > "u" || n.margin === null || n.margin < 0 ? 4 : n.margin, e = n.width && n.width >= 21 ? n.width : void 0, a = n.scale || 4;
+    return { width: e, scale: e ? 4 : a, margin: t, color: { dark: i(n.color.dark || "#000000ff"), light: i(n.color.light || "#ffffffff") }, type: n.type, rendererOpts: n.rendererOpts || {} };
+  }, r.getScale = function(n, t) {
+    return t.width && t.width >= n + t.margin * 2 ? t.width / (n + t.margin * 2) : t.scale;
+  }, r.getImageWidth = function(n, t) {
+    let e = r.getScale(n, t);
+    return Math.floor((n + t.margin * 2) * e);
+  }, r.qrToImageData = function(n, t, e) {
+    let a = t.modules.size, l = t.modules.data, s = r.getScale(a, e), o = Math.floor((a + e.margin * 2) * s), h = e.margin * s, f = [e.color.light, e.color.dark];
+    for (let y = 0; y < o; y++) for (let d = 0; d < o; d++) {
+      let k = (y * o + d) * 4, g = e.color.light;
+      if (y >= h && d >= h && y < o - h && d < o - h) {
+        let S = Math.floor((y - h) / s), $ = Math.floor((d - h) / s);
+        g = f[l[S * a + $] ? 1 : 0];
+      }
+      n[k++] = g.r, n[k++] = g.g, n[k++] = g.b, n[k] = g.a;
+    }
+  };
+}), Ct = U((r) => {
+  var i = Ke();
+  function n(e, a, l) {
+    e.clearRect(0, 0, a.width, a.height), a.style || (a.style = {}), a.height = l, a.width = l, a.style.height = l + "px", a.style.width = l + "px";
+  }
+  function t() {
+    try {
+      return document.createElement("canvas");
+    } catch {
+      throw new Error("You need to specify a canvas element");
+    }
+  }
+  r.render = function(e, a, l) {
+    let s = l, o = a;
+    typeof s > "u" && (!a || !a.getContext) && (s = a, a = void 0), a || (o = t()), s = i.getOptions(s);
+    let h = i.getImageWidth(e.modules.size, s), f = o.getContext("2d"), y = f.createImageData(h, h);
+    return i.qrToImageData(y.data, e, s), n(f, o, h), f.putImageData(y, 0, 0), o;
+  }, r.renderToDataURL = function(e, a, l) {
+    let s = l;
+    typeof s > "u" && (!a || !a.getContext) && (s = a, a = void 0), s || (s = {});
+    let o = r.render(e, a, s), h = s.type || "image/png", f = s.rendererOpts || {};
+    return o.toDataURL(h, f.quality);
+  };
+}), Nt = U((r) => {
+  var i = Ke();
+  function n(a, l) {
+    let s = a.a / 255, o = l + '="' + a.hex + '"';
+    return s < 1 ? o + " " + l + '-opacity="' + s.toFixed(2).slice(1) + '"' : o;
+  }
+  function t(a, l, s) {
+    let o = a + l;
+    return typeof s < "u" && (o += " " + s), o;
+  }
+  function e(a, l, s) {
+    let o = "", h = 0, f = false, y = 0;
+    for (let d = 0; d < a.length; d++) {
+      let k = Math.floor(d % l), g = Math.floor(d / l);
+      !k && !f && (f = true), a[d] ? (y++, d > 0 && k > 0 && a[d - 1] || (o += f ? t("M", k + s, 0.5 + g + s) : t("m", h, 0), h = 0, f = false), k + 1 < l && a[d + 1] || (o += t("h", y), y = 0)) : h++;
+    }
+    return o;
+  }
+  r.render = function(a, l, s) {
+    let o = i.getOptions(l), h = a.modules.size, f = a.modules.data, y = h + o.margin * 2, d = o.color.light.a ? "<path " + n(o.color.light, "fill") + ' d="M0 0h' + y + "v" + y + 'H0z"/>' : "", k = "<path " + n(o.color.dark, "stroke") + ' d="' + e(f, h, o.margin) + '"/>', g = 'viewBox="0 0 ' + y + " " + y + '"', S = '<svg xmlns="http://www.w3.org/2000/svg" ' + (o.width ? 'width="' + o.width + '" height="' + o.width + '" ' : "") + g + ' shape-rendering="crispEdges">' + d + k + `</svg>
+`;
+    return typeof s == "function" && s(null, S), S;
+  };
+}), At = U((r) => {
+  var i = ut(), n = yt(), t = Ct(), e = Nt();
+  function a(l, s, o, h, f) {
+    let y = [].slice.call(arguments, 1), d = y.length, k = typeof y[d - 1] == "function";
+    if (!k && !i()) throw new Error("Callback required as last argument");
+    if (k) {
+      if (d < 2) throw new Error("Too few arguments provided");
+      d === 2 ? (f = o, o = s, s = h = void 0) : d === 3 && (s.getContext && typeof f > "u" ? (f = h, h = void 0) : (f = h, h = o, o = s, s = void 0));
+    } else {
+      if (d < 1) throw new Error("Too few arguments provided");
+      return d === 1 ? (o = s, s = h = void 0) : d === 2 && !s.getContext && (h = o, o = s, s = void 0), new Promise(function(g, S) {
+        try {
+          let $ = n.create(o, h);
+          g(l($, s, h));
+        } catch ($) {
+          S($);
+        }
+      });
+    }
+    try {
+      let g = n.create(o, h);
+      f(null, l(g, s, h));
+    } catch (g) {
+      f(g);
+    }
+  }
+  r.create = n.create, r.toCanvas = a.bind(null, t.render), r.toDataURL = a.bind(null, t.renderToDataURL), r.toString = a.bind(null, function(l, s, o) {
+    return e.render(l, o);
+  });
+});
+var bt = nt(At());
+function kt(r) {
+  let i = 1, n = 1 / 0;
+  for (let l = 1; l <= Math.min(r, Math.ceil(Math.sqrt(r) * 2)); l++) {
+    let s = Math.ceil(r / l), o = Math.abs(Math.log(l / s / (4 / 3))) + (l * s - r) / r * 3;
+    o < n && (i = l, n = o);
+  }
+  let t = Math.ceil(r / i), e = [], a = i * t - r;
+  for (let l = 0; l < t; l++) {
+    let s = Math.min(Math.floor(i / 2), Math.ceil(a / (t - l)));
+    a -= s;
+    let o = [...Array(s).fill(2), ...Array(i - s * 2).fill(1)];
+    if (o.length) {
+      let f = l % o.length;
+      o.push(...o.splice(0, f));
+    }
+    let h = 0;
+    for (let f of o) e.push({ c: h, r: l, span: f }), h += f;
+  }
+  return { cols: i, rows: t, cells: e };
+}
+function Dt(r, i = []) {
+  return $e(r, i, kt);
+}
+var Te = document.createElement("link");
+Te.rel = "stylesheet";
+Te.href = "/assets/attendance-speed-20261101.css";
+document.head.append(Te);
+var je = null;
+if (location.pathname === "/checkin") {
+  let r = new URLSearchParams(location.search), i = r.get("sessionId"), n = r.get("ticket");
+  if (i && n) {
+    let t = { sessionId: i, ticket: n };
+    sessionStorage.setItem("attendance.pending", JSON.stringify({ ...t, capturing: true })), je = fetch("/api/v1/attendance/scan", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(t) }).then(async (e) => {
+      let a = await e.json();
+      if (!e.ok || !a.ok) throw new Error(a.error?.message || "\u626B\u7801\u51ED\u8BC1\u672A\u80FD\u63A5\u6536\uFF0C\u8BF7\u91CD\u65B0\u626B\u7801");
+      let l = { sessionId: a.data.sessionId, scanProof: a.data.scanProof, expiresAt: a.data.expiresAt };
+      return sessionStorage.setItem("attendance.pending", JSON.stringify(l)), history.replaceState(history.state, "", location.pathname), l;
+    }).catch((e) => {
+      let a = { error: e.message };
+      return sessionStorage.setItem("attendance.pending", JSON.stringify(a)), a;
+    });
+  }
+}
+var qe = () => crypto.randomUUID();
+function Jt({ request: r, user: i }) {
+  let [n, t] = u.useState(Date.now());
+  u.useEffect(() => {
+    let d = setInterval(() => t(Date.now()), 1e3);
+    return () => clearInterval(d);
+  }, []);
+  let e = () => {
+    try {
+      return JSON.parse(sessionStorage.getItem("attendance.pending") || "null");
+    } catch {
+      return null;
+    }
+  }, [a, l] = u.useState(e), [s, o] = u.useState(""), [h, f] = u.useState(false);
+  u.useEffect(() => {
+    let d = true, k = (g) => {
+      o(""), l(g.detail);
+    };
+    return window.addEventListener("attendance:captured", k), je?.then((g) => {
+      d && l(g);
+    }), () => {
+      d = false, window.removeEventListener("attendance:captured", k);
+    };
+  }, []);
+  let y = () => {
+    sessionStorage.removeItem("attendance.pending"), l(null);
+  };
+  return a ? u.createElement("div", { className: "att-backdrop" }, u.createElement("section", { className: "att att-checkin" }, u.createElement("span", { className: "att-kicker" }, "CLASS CHECK-IN"), u.createElement("h2", null, "\u8BFE\u5802\u7B7E\u5230"), u.createElement("p", null, "\u5F53\u524D\u767B\u5F55\uFF1A", i.displayName), a.error ? u.createElement("p", { role: "alert" }, a.error) : i.role !== "student" ? u.createElement("p", null, "\u8BF7\u4F7F\u7528\u672C\u73ED\u5B66\u751F\u8D26\u53F7\u7B7E\u5230\u3002") : u.createElement(u.Fragment, null, u.createElement("p", null, a.capturing ? "\u6B63\u5728\u6821\u9A8C\u626B\u7801\u51ED\u8BC1\u2026" : "\u626B\u7801\u51ED\u8BC1\u5DF2\u63A5\u6536\uFF0C\u8BF7\u57283\u5206\u949F\u5185\u786E\u8BA4\u7B7E\u5230\u3002"), a.expiresAt && s !== "\u7B7E\u5230\u6210\u529F\uFF0C\u4F60\u7684\u62FC\u56FE\u5DF2\u5F52\u4F4D\u3002" && u.createElement("p", { role: "status" }, n >= a.expiresAt ? "\u786E\u8BA4\u65F6\u95F4\u5DF2\u8FC7\uFF0C\u8BF7\u91CD\u65B0\u626B\u7801\u3002" : "\u51ED\u8BC1\u5DF2\u63A5\u6536\uFF0C\u5269\u4F59\u786E\u8BA4\u65F6\u95F4\uFF1A" + Math.max(0, Math.ceil((a.expiresAt - n) / 1e3)) + "\u79D2"), u.createElement("button", { disabled: h || a.capturing || a.expiresAt && n >= a.expiresAt || s === "\u7B7E\u5230\u6210\u529F\uFF0C\u4F60\u7684\u62FC\u56FE\u5DF2\u5F52\u4F4D\u3002", className: "att-primary", onClick: async () => {
+    f(true);
+    try {
+      let d = a.scanProof ? { sessionId: a.sessionId, scanProof: a.scanProof } : { sessionId: a.sessionId, ticket: a.ticket };
+      await r("POST", "/core/attendance-checkin", { body: d }), o("\u7B7E\u5230\u6210\u529F\uFF0C\u4F60\u7684\u62FC\u56FE\u5DF2\u5F52\u4F4D\u3002"), sessionStorage.removeItem("attendance.pending");
+    } catch (d) {
+      o(d.message);
+    } finally {
+      f(false);
+    }
+  } }, h ? "\u6B63\u5728\u7B7E\u5230\u2026" : "\u786E\u8BA4\u7B7E\u5230")), s && u.createElement("p", { role: "status" }, s), u.createElement("button", { onClick: y }, "\u5173\u95ED"))) : null;
+}
+function Ht({ request: r, classes: i = [], classId: n, mode: t = "attendance", role: e = "teacher", onClassChange: a }) {
+  let l = u.useRef({ skip: false, wake: null }), [s, o] = u.useState(() => {
+    try {
+      return localStorage.getItem("rollcall.revealMode") === "together" ? "together" : "sequential";
+    } catch {
+      return "sequential";
+    }
+  }), [speed, setSpeed] = u.useState(() => { try { const saved = localStorage.getItem("rollcall.speed"); return ["slow", "medium", "fast"].includes(saved) ? saved : "medium"; } catch { return "medium"; } }), speedScale = speed === "slow" ? 1.5 : speed === "fast" ? 0.6 : 1, h = (c) => {
+    o(c), K([]);
+    try {
+      localStorage.setItem("rollcall.revealMode", c);
+    } catch {
+    }
+  }, [f, y] = u.useState(false), [d, k] = u.useState("10"), [g, S] = u.useState(n || i[0]?.id || ""), [$, A] = u.useState([]), [F, C] = u.useState(""), [D, L] = u.useState(""), [T, E] = u.useState(null), [B, M] = u.useState([]), [p, N] = u.useState(""), [v, w] = u.useState(false), [I, x] = u.useState(null), [V, re] = u.useState([]), [G, q] = u.useState("all"), [z, ne] = u.useState(1), [R, oe] = u.useState(false), [W, ue] = u.useState([]), [ce, K] = u.useState([]), [j, J] = u.useState(""), [Q, de] = u.useState(""), le = u.useRef(0), Z = u.useRef(null), [Ae, Be] = u.useState(true);
+  u.useEffect(() => {
+    l.current.skip = true, l.current.wake?.(), le.current++, Z.current = null, K([]), J(""), M([]), ue([]), x(null), Be(true), N("");
+  }, [g, t]);
+  let we = u.useRef(false), pe = u.useRef(0), be = u.useRef({ id: "", signed: [] }), _ = u.useRef(true), [ye, ke] = u.useState(14);
+  u.useEffect(() => {
+    try {
+      let c = localStorage.getItem("attendance.blur." + g);
+      ke(c === null ? 14 : Math.max(0, Math.min(32, Number(c) || 0)));
+    } catch {
+      ke(14);
+    }
+  }, [g]);
+  let Ve = (c) => {
+    ke(c);
+    try {
+      localStorage.setItem("attendance.blur." + g, String(c));
+    } catch {
+    }
+  }, [De, _e] = u.useState({});
+  u.useEffect(() => {
+    let c = true;
+    return e === "admin" && Promise.all($.filter((P) => !De[P.id]).map(async (P) => [P.id, (await r("GET", `/core/attendance-image-data/${P.id}`)).dataUrl])).then((P) => {
+      c && P.length && _e((O) => ({ ...O, ...Object.fromEntries(P) }));
+    }).catch((P) => {
+      c && N(P.message);
+    }), () => {
+      c = false;
+    };
+  }, [$, e]), u.useEffect(() => (_.current = true, () => {
+    _.current = false, pe.current++;
+  }), []), u.useEffect(() => {
+    n && S(n);
+  }, [n]);
+  let Ee = async (c) => {
+    if (!we.current) {
+      we.current = true, w(true), N(""), pe.current++;
+      try {
+        await c();
+      } catch (P) {
+        _.current && N(P.message);
+      } finally {
+        we.current = false, _.current && w(false);
+      }
+    }
+  };
+  async function ve() {
+    let c = ++pe.current;
+    if (e === "admin") {
+      let Y = await r("GET", "/admin/attendance/images");
+      _.current && c === pe.current && (A(Y), Be(false));
+      return;
+    }
+    if (!g) return;
+    let [P, O, H, me] = await Promise.all([r("GET", `/core/classes/${g}/attendance`), r("GET", `/core/classes/${g}/members`), r("GET", "/core/attendance-images"), r("GET", `/core/classes/${g}/rollcall`)]), ee = P.sort((Y, he) => he.createdAt.localeCompare(Y.createdAt)), ie = ee.find((Y) => Y.status === "open") || ee[0], te = ie ? await r("GET", `/core/attendance/${ie.id}`) : null;
+    if (!_.current || c !== pe.current) return;
+    Be(false), M(O), A(H), ue(me), C((Y) => H.some((he) => he.id === Y) ? Y : H[0]?.id || "");
+    let ae = be.current, Ne = te?.signed.map((Y) => Y.studentId) || [];
+    re(ae.id === te?.id ? Ne.filter((Y) => !ae.signed.includes(Y)) : []), be.current = { id: te?.id || "", signed: Ne }, E(te);
+  }
+  u.useEffect(() => {
+    let c = true, P;
+    E(null), be.current = { id: "", signed: [] };
+    let O = async () => {
+      try {
+        we.current || await ve();
+      } catch (H) {
+        c && (N(H.message), Be(false));
+      } finally {
+        c && (P = setTimeout(O, 1800));
+      }
+    };
+    return O(), () => {
+      c = false, pe.current++, clearTimeout(P);
+    };
+  }, [g, e]);
+  let Me = T?.imageId || F;
+  u.useEffect(() => {
+    let c = true;
+    return L(""), Me && r("GET", `/core/attendance-image-data/${Me}`).then((P) => {
+      c && L(P.dataUrl);
+    }).catch((P) => {
+      c && N(P.message);
+    }), () => {
+      c = false;
+    };
+  }, [Me, e]);
+  let X = T?.roster || B, se = T?.signed.map((c) => c.studentId) || [], Ce = !!T && se.length === X.length && X.length > 0, Se = G === "signed" ? B.filter((c) => se.includes(c.studentId)) : G === "absent" ? B.filter((c) => !se.includes(c.studentId)) : B, Ie = Math.min(1e3, Se.length), Fe = Number.isInteger(z) && z >= 1 && z <= Ie;
+  async function Ge() {
+    if (!Fe) return;
+    let c = le.current;
+    await Ee(async () => {
+      K([]);
+      let P = { classId: g, sessionId: T?.id, scope: G, count: z, repeat: R }, O = JSON.stringify(P);
+      (!Z.current || Z.current.fingerprint !== O) && (Z.current = { fingerprint: O, body: { ...P, clientRequestId: qe() } });
+      let H = Z.current.body;
+      J("requesting");
+      let me = await r("POST", "/core/rollcall", { body: H });
+      if (!_.current || c !== le.current) return;
+      Z.current = null;
+      let ee = l.current;
+      ee.skip = false;
+      let ie = matchMedia("(prefers-reduced-motion: reduce)").matches, te = (ae) => ee.skip ? Promise.resolve() : new Promise((Ne) => {
+        let Y = false, he = () => {
+          Y || (Y = true, clearTimeout(We), ee.wake === he && (ee.wake = null), Ne());
+        }, We = setTimeout(he, ae);
+        ee.wake = he;
+      });
+      if (s === "together" && z > 1) {
+        if (J("dealing"), await te(ie ? 80 : 1050 * speedScale), !_.current || c !== le.current || (J("card-hold"), await te(ie ? 80 : 450 * speedScale), !_.current || c !== le.current)) return;
+        K(me.students), J("flipping"), await te(ie ? 80 : 850 * speedScale);
+      } else for (let ae = 0; ae < me.students.length; ae++) {
+        if (!_.current || c !== le.current) return;
+        if (ee.skip) {
+          K(me.students);
+          break;
+        }
+        if (J("revealing"), await te(ie ? 120 : (z > 1 ? ae === 0 ? 3e3 : 1900 : 4800) * speedScale), !_.current || c !== le.current) return;
+        if (ee.skip) {
+          K(me.students);
+          break;
+        }
+        K(me.students.slice(0, ae + 1)), J("landed"), await te(ie ? 40 : (z > 1 ? 400 : 850) * speedScale);
+      }
+      if (!(!_.current || c !== le.current)) {
+        J("");
+        try {
+          await ve();
+        } catch {
+          de("\u62BD\u53D6\u5DF2\u5B8C\u6210\uFF0C\u8BB0\u5F55\u6682\u672A\u5237\u65B0\uFF0C\u8BF7\u7A0D\u540E\u518D\u8BD5\u3002");
+        }
+      }
+    });
+  }
+  let Pe = u.createElement("div", { className: "att-heading" }, u.createElement("div", null, u.createElement("span", { className: "att-kicker" }, e === "admin" ? "CLASSROOM / IMAGE LIBRARY" : t === "rollcall" ? "CLASSROOM / RANDOM CALL" : "CLASSROOM / ATTENDANCE"), u.createElement("h1", null, e === "admin" ? "\u7B7E\u5230\u56FE\u7247\u7BA1\u7406" : t === "rollcall" ? "\u968F\u673A\u70B9\u540D" : "\u62FC\u56FE\u7B7E\u5230")), e !== "admin" && u.createElement("select", { "aria-label": "\u9009\u62E9\u7B7E\u5230\u73ED\u7EA7", disabled: v, value: g, onChange: (c) => {
+    S(c.target.value), a?.(c.target.value);
+  } }, i.map((c) => u.createElement("option", { key: c.id, value: c.id }, c.name))));
+  return e === "admin" ? u.createElement("section", { className: "att" }, Pe, u.createElement("p", null, "\u56FE\u7247\u7531\u7BA1\u7406\u5458\u7EF4\u62A4\u3002\u505C\u7528\u56FE\u7247\u4E0D\u5F71\u54CD\u5DF2\u7ECF\u5F00\u59CB\u7684\u7B7E\u5230\u573A\u6B21\u3002"), p && u.createElement("div", { className: "att-error" }, p), u.createElement("div", { className: "att-upload" }, u.createElement("label", null, "\u56FE\u7247\u540D\u79F0", u.createElement("input", { id: "att-image-title", maxLength: 100, placeholder: "\u4F8B\u5982\uFF1A\u96EA\u5C71\u4E0E\u82B1\u6D77" })), u.createElement("label", null, "\u9009\u62E9\u56FE\u7247\uFF08JPG/PNG\uFF0C\u4E0D\u8D85\u8FC71MB\uFF09", u.createElement("input", { type: "file", accept: "image/jpeg,image/png", disabled: v, onChange: (c) => {
+    let P = c.target.files?.[0];
+    if (!P) return;
+    if (P.size > 1048576) {
+      N("\u56FE\u7247\u4E0D\u8D85\u8FC71MB");
+      return;
+    }
+    let O = document.getElementById("att-image-title")?.value.trim() || P.name, H = new FileReader();
+    H.onload = () => Ee(async () => {
+      await r("POST", "/admin/attendance/images", { body: { title: O, mime: P.type, base64: String(H.result).split(",")[1] } }), de("\u56FE\u7247\u5DF2\u6DFB\u52A0\uFF0C\u6559\u5E08\u521B\u5EFA\u65B0\u7B7E\u5230\u65F6\u53EF\u9009\u7528\u3002"), await ve();
+    }), H.readAsDataURL(P);
+  } }))), Q && u.createElement("p", { role: "status" }, Q), u.createElement("div", { className: "att-image-list" }, $.map((c) => u.createElement("article", { key: c.id }, De[c.id] && u.createElement("img", { src: De[c.id], alt: c.title }), u.createElement("b", null, c.title), u.createElement("span", null, c.active ? "\u53EF\u7528\u4E8E\u65B0\u573A\u6B21" : "\u5DF2\u505C\u7528"), u.createElement("button", { disabled: v, onClick: () => Ee(async () => {
+    await r("POST", `/admin/attendance/images/${c.id}/state`, { body: { active: !c.active } }), await ve();
+  }) }, c.active ? "\u505C\u7528" : "\u542F\u7528"))))) : u.createElement("section", { className: "att" }, Pe, p && u.createElement("div", { className: "att-error", role: "alert" }, p), Q && u.createElement("p", { role: "status" }, Q), Ae && u.createElement("p", { role: "status" }, "\u6B63\u5728\u8BFB\u53D6\u73ED\u7EA7\u6570\u636E\u2026"), g ? t === "rollcall" ? u.createElement(u.Fragment, null, u.createElement("div", { className: "att-roll" }, u.createElement(Oe, { members: B, pool: Se, countValid: Fe, chosen: ce, busy: v, loading: Ae, rolling: j, error: p, scope: G, count: z, revealMode: s, speedScale, onDraw: Ge, onSkip: () => {
+    l.current.skip = true, l.current.wake?.();
+  } }), u.createElement("div", { className: "att-config" }, u.createElement("h3", null, "\u70B9\u540D\u8BBE\u7F6E"), u.createElement("label", null, "\u5019\u9009\u8303\u56F4", u.createElement("select", { "aria-label": "\u5019\u9009\u8303\u56F4", value: G, disabled: v, onChange: (c) => {
+    Z.current = null, q(c.target.value);
+  } }, u.createElement("option", { value: "all" }, "\u5168\u73ED\u540C\u5B66"), u.createElement("option", { value: "signed" }, "\u672C\u573A\u5DF2\u7B7E\u5230"), u.createElement("option", { value: "absent" }, "\u672C\u573A\u672A\u7B7E\u5230"))), u.createElement("label", null, "\u4E00\u6B21\u62BD\u53D6", u.createElement("select", { "aria-label": "\u4E00\u6B21\u62BD\u53D6\u4EBA\u6570", value: f ? "custom" : String(z), disabled: v, onChange: (c) => {
+    Z.current = null, y(c.target.value === "custom"), ne(c.target.value === "custom" ? Number(d) : Number(c.target.value));
+  } }, [1, 3, 5].map((c) => u.createElement("option", { key: c, value: String(c) }, c + "\u4F4D\u540C\u5B66")), u.createElement("option", { value: "custom" }, "\u81EA\u5B9A\u4E49\u4EBA\u6570"))), u.createElement("label", null, "抽取速度", u.createElement("select", {"aria-label": "抽取速度", value: speed, disabled: v, onChange: (c) => { setSpeed(c.target.value); try { localStorage.setItem("rollcall.speed", c.target.value); } catch {} }}, u.createElement("option", {value: "slow"}, "慢"), u.createElement("option", {value: "medium"}, "中（当前速度）"), u.createElement("option", {value: "fast"}, "快"))), u.createElement("fieldset", { className: "rl-mode-picker", disabled: v }, u.createElement("legend", null, "\u591A\u4EBA\u62BD\u53D6\u65B9\u5F0F"), u.createElement("div", { className: "rl-mode-options" }, [["sequential", "\u9010\u4E2A\u62BD\u53D6"], ["together", "\u540C\u65F6\u62BD\u53D6"]].map(([c, P]) => u.createElement("label", { key: c }, u.createElement("input", { type: "radio", name: "rollcall-reveal-mode", value: c, checked: s === c, onChange: () => h(c) }), u.createElement("span", null, P)))), u.createElement("p", null, z === 1 ? "\u5355\u4EBA\u4FDD\u6301\u9010\u4E2A\u62BD\u53D6\u8282\u594F" : s === "together" ? "\u59D3\u540D\u5361\u4E00\u8D77\u7FFB\u5F00\uFF0C\u663E\u793A\u672C\u6B21\u540D\u5355" : "\u4E00\u4E2A\u62BD\u53D6\u5668\uFF0C\u540D\u5355\u9010\u4E2A\u52A0\u5165\u53F3\u4FA7")), f && u.createElement("label", { className: "rl-custom-label" }, "\u81EA\u5B9A\u4E49\u62BD\u53D6\u4EBA\u6570", u.createElement("input", { type: "number", "aria-label": "\u81EA\u5B9A\u4E49\u62BD\u53D6\u4EBA\u6570", inputMode: "numeric", min: 1, max: Math.max(1, Ie), step: 1, value: d, disabled: v, "aria-invalid": !Fe, "aria-describedby": "rl-count-help", onChange: (c) => {
+    Z.current = null, k(c.target.value), ne(c.target.value === "" ? 0 : Number(c.target.value));
+  } }), u.createElement("span", { id: "rl-count-help", className: Fe ? "rl-count-help" : "rl-count-error" }, Fe ? `\u672C\u6B21\u62BD\u53D6 ${z} \u4EBA\uFF0C\u5F53\u524D\u8303\u56F4\u5171 ${Se.length} \u4EBA` : `\u8BF7\u8F93\u51651\uFF5E${Math.max(1, Ie)}\u7684\u6574\u6570\uFF1B\u5019\u9009\u4E0D\u8DB3\u65F6\u8BF7\u8C03\u6574\u8303\u56F4`)), u.createElement("label", { className: "att-check" }, u.createElement("input", { type: "checkbox", checked: R, disabled: v, onChange: (c) => {
+    Z.current = null, oe(c.target.checked);
+  } }), "\u5141\u8BB8\u672C\u8F6E\u91CD\u590D\u70B9\u540D"), u.createElement("p", null, "\u4E0D\u5141\u8BB8\u91CD\u590D\u65F6\uFF0C\u5019\u9009\u4E0D\u8DB3\u4F1A\u63D0\u793A\u5F00\u59CB\u65B0\u4E00\u8F6E\u3002"), u.createElement("button", { disabled: v, onClick: () => Ee(async () => {
+    await r("POST", `/core/classes/${g}/rollcall/reset`, { body: {} }), Z.current = null, de("\u672C\u8F6E\u5019\u9009\u5DF2\u91CD\u7F6E\uFF0C\u5386\u53F2\u8BB0\u5F55\u4FDD\u7559\u3002");
+  }) }, "\u5F00\u59CB\u65B0\u4E00\u8F6E"))), u.createElement("h3", null, "\u70B9\u540D\u8BB0\u5F55"), W.length ? W.map((c) => u.createElement("div", { className: "att-history", key: c.id }, u.createElement("time", null, new Date(c.createdAt).toLocaleString()), u.createElement("strong", null, c.students.map((P) => P.studentName).join("\u3001")))) : u.createElement("p", null, "\u8FD8\u6CA1\u6709\u70B9\u540D\u8BB0\u5F55\u3002")) : u.createElement(u.Fragment, null, u.createElement("div", { className: "att-toolbar" }, u.createElement("span", null, T?.status === "open" ? "\u7B7E\u5230\u8FDB\u884C\u4E2D" : T ? "\u672C\u573A\u5DF2\u7ED3\u675F" : "\u5C1A\u672A\u5F00\u59CB\u7B7E\u5230"), u.createElement("span", null, X.length, "\u4EBA \xB7 \u6BCF\u4EBA\u5BF9\u5E94\u4E00\u5757"), (!T || T.status !== "open") && u.createElement(u.Fragment, null, u.createElement("select", { "aria-label": "\u9009\u62E9\u7B7E\u5230\u56FE\u7247", value: F, onChange: (c) => C(c.target.value) }, $.map((c) => u.createElement("option", { key: c.id, value: c.id }, c.title))), u.createElement("span", { className: "att-image-help" }, "\u56FE\u7247\u7531\u7BA1\u7406\u7AEF\u300C\u7B7E\u5230\u56FE\u7247\u300D\u4E0A\u4F20\uFF0C\u6B64\u5904\u9009\u62E9\u3002"), u.createElement("button", { className: "att-primary", disabled: v || Ae || !F, onClick: () => Ee(async () => {
+    await r("POST", "/core/attendance", { body: { classId: g, imageId: F, title: "\u8BFE\u5802\u7B7E\u5230", clientRequestId: qe() } }), await ve();
+  }) }, "\u5F00\u59CB\u65B0\u573A\u7B7E\u5230")), T?.status === "open" && u.createElement("button", { disabled: v, onClick: () => {
+    confirm("\u7ED3\u675F\u672C\u573A\u7B7E\u5230\uFF1F\u7ED3\u675F\u540E\u5B66\u751F\u5C06\u4E0D\u80FD\u7EE7\u7EED\u7B7E\u5230\u3002") && Ee(async () => {
+      await r("POST", `/core/attendance/${T.id}/close`, { body: {} }), await ve();
+    });
+  } }, "\u7ED3\u675F\u7B7E\u5230")), u.createElement("div", { className: "att-stage" }, u.createElement(Mt, { session: T }), u.createElement("div", { className: "att-puzzle" }, u.createElement("div", { className: "att-blur-control" }, u.createElement("label", { htmlFor: "att-blur" }, "\u672A\u7B7E\u5230\u533A\u57DF\u6A21\u7CCA\u5EA6"), u.createElement("input", { id: "att-blur", type: "range", min: "0", max: "32", step: "1", value: ye, onChange: (c) => Ve(Number(c.target.value)) }), u.createElement("output", { htmlFor: "att-blur" }, ye === 0 ? "\u6E05\u6670" : ye + " px")), u.createElement("div", { className: "att-board-heading" }, u.createElement("b", null, "\u73ED\u7EA7\u7B7E\u5230\u62FC\u56FE"), u.createElement("span", null, Ce ? "UNLOCKED" : "\u7B49\u5F85\u6BCF\u4E00\u5757\u5F52\u4F4D")), u.createElement("div", { className: "board-shell " + (Ce ? "complete" : ""), onClick: (c) => {
+    let P = c.target.closest("[data-id]");
+    if (!P) return;
+    let O = X.find((H) => H.studentId === P.getAttribute("data-id"));
+    O && !se.includes(O.studentId) && x(O);
+  }, onKeyDown: (c) => {
+    if (c.key === "Enter" || c.key === " ") {
+      let P = c.target.closest("[data-id]"), O = X.find((H) => H.studentId === P?.getAttribute("data-id"));
+      O && !se.includes(O.studentId) && (c.preventDefault(), x(O));
+    }
+  } }, X.length && D ? u.createElement("div", { dangerouslySetInnerHTML: { __html: Dt({ roster: X.map((c) => ({ id: c.studentId })), signed: se, photo: D, blur: ye }, V) } }) : u.createElement("div", { className: "att-placeholder" }, X.length ? "\u7B49\u5F85\u9009\u62E9\u7B7E\u5230\u56FE\u7247" : "\u73ED\u7EA7\u5C1A\u65E0\u5B66\u751F")), Ce && u.createElement("div", { className: "att-confetti", "aria-hidden": "true" }, Array.from({ length: 30 }, (c, P) => u.createElement("i", { key: P, style: { "--x": P * 79 % 700 - 350 + "px", "--y": P * 113 % 450 - 260 + "px", "--r": P * 67 + "deg", animationDelay: P % 6 * 0.04 + "s" } }))), u.createElement("p", { className: "att-board-note" }, Ce ? "\u2726 \u5168\u5458\u5DF2\u7B7E\u5230\uFF0C\u56FE\u7247\u5DF2\u89E3\u9501\u3002" : "\u672A\u7B7E\u5230\u533A\u57DF\u6A21\u7CCA\u663E\u793A \xB7 \u70B9\u51FB\u67E5\u770B\u672A\u7B7E\u5230\u540C\u5B66"), u.createElement("div", { className: "att-progress" }, u.createElement("strong", null, se.length, u.createElement("small", null, " / ", X.length)), u.createElement("span", null, "\u5DF2\u7B7E\u5230"), u.createElement("b", null, X.length ? Math.floor(se.length / X.length * 100) : 0, "%")))), T && u.createElement("p", { className: "att-small" }, "\u672C\u573A\u4F7F\u7528\u521B\u5EFA\u65F6\u7684", T.roster.length, "\u4EBA\u540D\u5355\u5FEB\u7167\uFF1B\u65B0\u589E\u6210\u5458\u4ECE\u4E0B\u4E00\u573A\u53C2\u4E0E\uFF0C\u5DF2\u79FB\u51FA\u7684\u5B66\u751F\u4E0D\u80FD\u7EE7\u7EED\u7B7E\u5230\u3002")) : u.createElement("p", null, "\u8BF7\u5148\u9009\u62E9\u6709\u6743\u9650\u7684\u73ED\u7EA7\u3002"), I && u.createElement("div", { className: "att-backdrop", onClick: () => x(null) }, u.createElement("section", { className: "att att-person", role: "dialog", "aria-modal": "true", "aria-label": "\u672A\u7B7E\u5230\u540C\u5B66", onClick: (c) => c.stopPropagation() }, u.createElement("span", { className: "att-kicker" }, "\u7B49\u5F85\u8FD9\u4E00\u5757\u5F52\u4F4D"), u.createElement("h2", null, I.studentName), u.createElement("p", null, I.studentNumber), u.createElement("p", null, "\u5C1A\u672A\u7B7E\u5230"), u.createElement("button", { className: "att-primary", autoFocus: true, onClick: () => x(null) }, "\u77E5\u9053\u4E86"))));
+}
+function Mt({ session: r }) {
+  let [i, n] = u.useState(""), [t, e] = u.useState(Date.now()), a = u.useRef({ server: Date.now(), client: Date.now() });
+  u.useEffect(() => {
+    typeof r?.serverNow == "number" && (a.current = { server: r.serverNow, client: Date.now() });
+  }, [r?.serverNow]), u.useEffect(() => {
+    let f = setInterval(() => e(Date.now()), 100);
+    return () => clearInterval(f);
+  }, []);
+  let l = a.current.server + (t - a.current.client), s = r?.status === "open" ? r.qrTickets?.find((f) => f.from <= l && l < f.until) || (!r.qrTickets?.length && r.ticket ? { ticket: r.ticket, until: r.expiresAt } : null) : null;
+  u.useEffect(() => {
+    let f = true;
+    if (!s?.ticket) {
+      n("");
+      return;
+    }
+    let y = new URL("/checkin", location.origin);
+    return y.searchParams.set("sessionId", r.id), y.searchParams.set("ticket", s.ticket), bt.default.toString(y.href, { type: "svg", margin: 2, errorCorrectionLevel: "M", color: { dark: "#20213a", light: "#ffffff" } }).then((d) => {
+      f && n("data:image/svg+xml;base64," + btoa(d));
+    }).catch(() => {
+      f && n("");
+    }), () => {
+      f = false;
+    };
+  }, [s?.ticket, r?.id]);
+  let o = r?.status === "open" ? r.codeTickets?.find((f) => f.from <= l && l < f.until) : null, h = s ? Math.max(0, Math.ceil((s.until - l) / 1e3)) : 0;
+  return u.createElement("div", { className: "att-qr" }, u.createElement("span", { className: "att-kicker" }, "SCAN TO JOIN"), u.createElement("h2", null, "\u626B\u7801\u7B7E\u5230"), u.createElement("p", null, "\u5B66\u751F\u767B\u5F55\u540E\u786E\u8BA4\u7B7E\u5230"), u.createElement("div", { className: "att-qr-image" }, i ? u.createElement("img", { src: i, alt: "\u52A8\u6001\u7B7E\u5230\u4E8C\u7EF4\u7801" }) : u.createElement("span", null, r?.status === "open" ? "\u6B63\u5728\u540C\u6B65\u4E8C\u7EF4\u7801\u2026" : r ? "\u672C\u573A\u5DF2\u7ED3\u675F" : "\u5F00\u59CB\u7B7E\u5230\u540E\u751F\u6210\u4E8C\u7EF4\u7801")), r?.status === "open" && u.createElement("p", null, u.createElement("strong", null, h), " \u79D2\u540E\u81EA\u52A8\u66F4\u65B0\u4E8C\u7EF4\u7801"), r?.status === "open" && r.endAt && u.createElement("p", { className: "att-small" }, "\u672C\u6B21\u7B7E\u5230\u5269\u4F59 " + Math.max(0, Math.ceil((r.endAt - l) / 6e4)) + " \u5206\u949F\uFF0C\u6700\u591A\u6301\u7EED30\u5206\u949F\uFF0C\u5230\u65F6\u81EA\u52A8\u7ED3\u675F\u3002"), r?.status === "open" && u.createElement("section", { style: { margin: "16px 0", padding: 16, borderRadius: 12, background: "#f1f6f3" } }, u.createElement("p", null, "\u7535\u8111\u7B7E\u5230\u7801"), u.createElement("strong", { style: { fontSize: 36, letterSpacing: ".16em", fontFamily: "monospace" }, "aria-label": "\u5F53\u524D\u7535\u8111\u7B7E\u5230\u7801" }, o?.code || "\u540C\u6B65\u4E2D\u2026"), u.createElement("p", null, "\u4E0D\u533A\u5206\u5927\u5C0F\u5199 \xB7 \u6BCF10\u79D2\u66F4\u65B0 \xB7 \u6BCF\u4E2A\u7801\u6709\u654820\u79D2"), u.createElement("p", null, o ? Math.max(0, Math.ceil((o.until - l) / 1e3)) + "\u79D2\u540E\u66F4\u65B0" : "\u6B63\u5728\u540C\u6B65\u2026")), u.createElement("p", { className: "att-small" }, "\u6BCF2\u79D2\u6362\u7801\uFF0C\u6BCF\u7801\u6709\u654810\u79D2", u.createElement("br", null), "\u626B\u7801\u540E3\u5206\u949F\u5185\u767B\u5F55\u5E76\u786E\u8BA4", u.createElement("br", null), "\u4E8C\u7EF4\u7801\u4E0D\u80FD\u5355\u72EC\u8BC1\u660E\u672C\u4EBA\u5230\u573A"), location.hostname === "127.0.0.1" && u.createElement("p", { className: "att-small" }, "\u5F53\u524D\u4E3A\u672C\u673A\u96A7\u9053\u5165\u53E3\uFF0C\u624B\u673A\u516C\u7F51\u626B\u7801", u.createElement("br", null), "\u9700\u7B49\u5F85\u57DF\u540D\u5907\u6848\u4E0EHTTPS\u5F00\u901A\u3002"));
+}
+export {
+  Ht as AttendancePanel,
+  Jt as StudentAttendanceGate
+};

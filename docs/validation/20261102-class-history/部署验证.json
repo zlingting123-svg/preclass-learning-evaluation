@@ -1,0 +1,1 @@
+{"deployed": true, "current": "/opt/preclass/releases/20261102-class-history", "previous": "/opt/preclass/releases/20261102-groups", "backendChanged": true, "databaseChanged": false, "serviceRestarted": true, "changedExistingFiles": 3, "newAssets": 7, "httpHashesVerified": true, "health": true}

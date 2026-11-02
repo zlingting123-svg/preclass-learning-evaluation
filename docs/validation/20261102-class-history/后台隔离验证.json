@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "selectedSessionsOnly": true,
+  "countersCorrect": true,
+  "invalidAndCrossClassRejected": true,
+  "teacherScopedDelete": true,
+  "allOrNothing": true,
+  "cachePreserved": true
+}
