@@ -6,5 +6,7 @@
   "productionAssetsVerified": true,
   "parallelModulesPreserved": true,
   "productionWrites": false,
-  "sshWorkaround": "Optional PRECLASS_SSH_BIND uses current WLAN address for this process only; no global proxy changes."
+  "sshWorkaround": "Optional PRECLASS_SSH_BIND uses current WLAN address for this process only; no global proxy changes.",
+  "lastObservedRelease": "/opt/preclass/releases/20261102-checkin-repeat",
+  "patchInheritedByLaterRelease": true
 }
