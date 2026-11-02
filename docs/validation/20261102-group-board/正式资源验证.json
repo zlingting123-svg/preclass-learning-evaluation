@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "productionAssets": true,
+  "mockApi": true,
+  "productionWrites": false,
+  "teacherCreatesAndPublishes": true,
+  "studentJoinsEditsAndLeaves": true,
+  "pollingSharedView": true,
+  "responsive": true,
+  "errors": []
+}

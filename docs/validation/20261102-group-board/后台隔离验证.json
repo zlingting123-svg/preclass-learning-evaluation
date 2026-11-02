@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "publishVisibility": true,
+  "roleAndClass": true,
+  "capacityAndDuplicateJoin": true,
+  "concurrentLastSlot": true,
+  "leaderTransfer": true,
+  "topicPermissionsAndVersion": true,
+  "noDestructiveResize": true,
+  "scoringLock": true,
+  "weightedScoringPreserved": true,
+  "exportTopics": true
+}
