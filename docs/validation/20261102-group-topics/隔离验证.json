@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "productionAssets": false,
+  "mockApi": true,
+  "productionWrites": false,
+  "batchPaste": true,
+  "txtCsvExcelImport": true,
+  "commonTopic": true,
+  "invalidImportPreservesTable": true,
+  "teacherCreatesAndPublishes": true,
+  "studentJoinsEditsAndLeaves": true,
+  "pollingSharedView": true,
+  "responsive": true,
+  "errors": []
+}
