@@ -25,7 +25,7 @@ export interface Entry {
   deploymentId: string | null;
   accountId: string | null;
   model: string | null;
-  purpose: "student_qa" | "teacher_qa";
+  purpose: "student_qa" | "teacher_qa" | "teacher_analytics";
   currency: string;
   pricingVersion: string;
   errorCode: string | null;
@@ -41,7 +41,7 @@ export interface BillingStore {
       fingerprint: string;
       subjectId: string;
       courseId: string;
-      purpose?: "student_qa" | "teacher_qa";
+      purpose?: "student_qa" | "teacher_qa" | "teacher_analytics";
     },
     policy: Policy,
   ): Awaitable<void>;
@@ -140,7 +140,7 @@ export class Ledger {
       fingerprint: string;
       subjectId: string;
       courseId: string;
-      purpose?: "student_qa" | "teacher_qa";
+      purpose?: "student_qa" | "teacher_qa" | "teacher_analytics";
     },
     p: Policy,
   ) {

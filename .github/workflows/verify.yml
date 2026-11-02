@@ -77,6 +77,9 @@ jobs:
       - name: Verify survey analytics with isolated HTTP data
         working-directory: frontend
         run: node ../integration/test/survey-analytics-browser.mjs
+      - name: Verify teacher survey insights with isolated mock provider
+        working-directory: frontend
+        run: node ../integration/test/survey-insights-browser.mjs
       - name: Verify independent admin console with isolated HTTP data
         working-directory: frontend
         run: node ../integration/test/admin-browser.mjs

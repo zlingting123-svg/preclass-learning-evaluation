@@ -1,3 +1,4 @@
+import {SurveyInsightPanel} from '../components/SurveyInsightPanel';
 import { ClassPicker } from '../components/ClassPicker';
 import {newId} from '../lib/newId';
 import { useEffect, useRef, useState } from "react";
@@ -621,8 +622,7 @@ export function SurveyResults() {
   const { id = "" } = useParams();
   const [stats, setStats] = useState<SurveyStats | null>(null),
     [error, setError] = useState(""),
-    [busy, setBusy] = useState(false),
-    [insights, setInsights] = useState("");
+    [busy, setBusy] = useState(false);
   const load = () =>
     request<SurveyStats>("GET", `/core/surveys/${id}/stats`).then(setStats);
   useEffect(() => {
@@ -636,20 +636,6 @@ export function SurveyResults() {
         body: { expectedVersion: stats.survey.version },
       });
       await load();
-    } catch (e) {
-      setError(message(e));
-    } finally {
-      setBusy(false);
-    }
-  }
-  async function ai() {
-    if (!stats) return;
-    setBusy(true);
-    try {
-      const r = await request<{ text: string }>("POST", "/core/ai/insights", {
-        body: { classId: stats.survey.classId, surveyId: id },
-      });
-      setInsights(r.text);
     } catch (e) {
       setError(message(e));
     } finally {
@@ -718,11 +704,7 @@ export function SurveyResults() {
               </tbody>
             </table>
           </div>
-          <h2>AI 评价与图表建议</h2>
-          <p>{insights || "尚无 AI 评价。未接入前不生成模拟结论。"}</p>
-          <button disabled={busy} onClick={ai}>
-            请求 AI 评价（接口预留）
-          </button>
+          <SurveyInsightPanel key={id} surveyId={id} classId={stats.survey.classId} revision={stats} />
         </>
       )}
     </section>

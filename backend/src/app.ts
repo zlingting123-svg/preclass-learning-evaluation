@@ -1,3 +1,4 @@
+import {surveyInsightRoutes} from './survey-insights.js';
 import {personalProfileRoutes} from './personal-profile.js';
 import { referenceFileRoutes } from './reference-files.js';
 import { staticSite } from './static-site.js';
@@ -78,6 +79,7 @@ export function createApp(service: Service, auth: AuthProvider, ai?: CourseAi, d
   webKnowledgeRoutes(app,service);
   conversationRoutes(app,service,ai);
   aiRoutes(app,service,ai);
+  surveyInsightRoutes(app,service,ai);
   questionnaireRoutes(app,service,ok);
   adminRoutes(app,service,ok);
   app.post('/api/v1/auth/logout', (_req, res) => { auth.logout(res.locals.token); ok(res, { success: true }); });
