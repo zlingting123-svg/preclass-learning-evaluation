@@ -1,0 +1,42 @@
+{
+  "task": "正式域名接入",
+  "date": "2026-11-19",
+  "domain": "preclass-test.cn",
+  "server": "82.157.183.146",
+  "dns": "preclass-test.cn -> 82.157.183.146",
+  "tls": {
+    "issuer": "Let's Encrypt (acme-v02)",
+    "challenge": "http-01",
+    "validUntil": "2027-02-17",
+    "autoRenew": true
+  },
+  "externalChecks": {
+    "root": 200,
+    "title": "环境评价与管理",
+    "apiHealth": 200,
+    "contractVersion": "0.5.0",
+    "knowledgeMap": 200,
+    "loginDomainOrigin": 401,
+    "loginEvilOrigin": 403,
+    "realTeacherLogin": "原记录称真实教师登录返回 200；本次未登录、未获取令牌。"
+  },
+  "changes": [
+    "用户已在腾讯云轻量控制台放行入站 TCP 443（原只有 22/80/Ping）",
+    "/etc/preclass/Caddyfile-test: preclass-test.cn 的 503 占位替换为真实站点块（静态 dist + /api/* -> 3001 + /knowledge-map/* -> 3216）",
+    "/etc/preclass/Caddyfile-test: 对 Origin=https://preclass-test.cn 的 /api 请求做 header_up Origin=http://127.0.0.1:5173（development 模式桥接）"
+  ],
+  "notChanged": [
+    "NODE_ENV 保持 development（尝试切 production 因 AI RETRIEVAL_UNCALIBRATED 已回滚）",
+    "未改 backend/shared 代码"
+  ],
+  "backups": "/var/backups/preclass-domain-20261119/",
+  "remaining": [
+    "production 模式：需 AI retrieval 校准（AI_RETRIEVAL_CALIBRATED=true）或 AI_MODE=disabled 后再切 NODE_ENV=production",
+    "真实手机/多设备验证",
+    "300 人集中提交压测",
+    "异机备份恢复验证",
+    "证书/域名到期与续期监控"
+  ],
+  "evidenceType": "historical_handoff_record",
+  "notice": "原交接时的验证记录，非本次复测结果；当前状态见 current-verification.json 与结项报告中的差异。"
+}
