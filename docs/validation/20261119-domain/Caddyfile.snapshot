@@ -1,0 +1,45 @@
+{
+  admin off
+}
+http://127.0.0.1:5173 {
+  bind 127.0.0.1
+  redir /knowledge-map /knowledge-map/ 308
+  handle_path /knowledge-map/* {
+    reverse_proxy 127.0.0.1:3216
+  }
+  handle /api/* {
+    reverse_proxy 127.0.0.1:3001
+  }
+  handle {
+    root * /opt/preclass/current/frontend/dist
+    @nocache not path /assets/*
+    header @nocache Cache-Control "no-cache, must-revalidate"
+    try_files {path} /index.html
+    file_server
+  }
+}
+preclass-test.cn {
+  redir /knowledge-map /knowledge-map/ 308
+  handle_path /knowledge-map/* {
+    reverse_proxy 127.0.0.1:3216
+  }
+  @apiDomain {
+    path /api/*
+    header Origin https://preclass-test.cn
+  }
+  handle @apiDomain {
+    reverse_proxy 127.0.0.1:3001 {
+      header_up Origin http://127.0.0.1:5173
+    }
+  }
+  handle /api/* {
+    reverse_proxy 127.0.0.1:3001
+  }
+  handle {
+    root * /opt/preclass/current/frontend/dist
+    @nocache not path /assets/*
+    header @nocache Cache-Control "no-cache, must-revalidate"
+    try_files {path} /index.html
+    file_server
+  }
+}

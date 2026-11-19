@@ -1,0 +1,50 @@
+{
+  "checkedAt": "2026-11-19T16:42:53.363162+08:00",
+  "domain": "https://preclass-test.cn",
+  "checks": {
+    "root": {
+      "status": 200,
+      "cacheControl": "no-cache, must-revalidate",
+      "contentType": "text/html; charset=utf-8",
+      "icp": true,
+      "police": false,
+      "policeLink": false,
+      "sha256": "769cbfbea56e000bd99f3bd3b984b6fc70f74bd412eba3d878e405bdd73aeb99"
+    },
+    "health": {
+      "status": 200,
+      "cacheControl": "no-store",
+      "contentType": "application/json; charset=utf-8",
+      "ok": true,
+      "contractVersion": null
+    },
+    "knowledgeMap": {
+      "status": 200,
+      "cacheControl": "no-store",
+      "contentType": "text/html; charset=utf-8"
+    }
+  },
+  "ssh": {
+    "ok": true,
+    "release": "/opt/preclass/releases/20261119-class-admin-actions",
+    "indexSha256": "769cbfbea56e000bd99f3bd3b984b6fc70f74bd412eba3d878e405bdd73aeb99",
+    "caddySha256": "7f35c4ac12a1e5306e84fb35ba7419442158e53edd92de6613468cb2a5b51562",
+    "nodeEnv": "development",
+    "backupFiles": [
+      "Caddyfile-test",
+      "Caddyfile-test.before-cache",
+      "Caddyfile-test.before-formal",
+      "Caddyfile-test.before-origin-fix",
+      "index.html.before-ga",
+      "index.html.before-icp",
+      "preclass-test.env.before-formal"
+    ],
+    "policeAssetMatches": [],
+    "services": {
+      "preclass-test.service": "active",
+      "preclass-test-web.service": "active"
+    }
+  },
+  "evidenceType": "read_only_reverification_before_user_fix",
+  "notice": "16:42 的历史复核；用户随后通知已修复，见 current-verification.json。"
+}

@@ -1,0 +1,61 @@
+{
+  "checkedAt": "2026-11-19T16:45:40.913804+08:00",
+  "domain": "https://preclass-test.cn",
+  "checks": {
+    "root": {
+      "status": 200,
+      "cacheControl": "no-cache, must-revalidate",
+      "contentType": "text/html; charset=utf-8",
+      "icp": true,
+      "police": true,
+      "policeLink": true,
+      "sha256": "417aed61d27cd3819398656a47d35539e984a372ba36b969c407327540cb3145",
+      "policeIconElement": true,
+      "icpLink": true
+    },
+    "health": {
+      "status": 200,
+      "cacheControl": "no-store",
+      "contentType": "application/json; charset=utf-8",
+      "ok": true,
+      "contractVersion": null
+    },
+    "knowledgeMap": {
+      "status": 200,
+      "cacheControl": "no-store",
+      "contentType": "text/html; charset=utf-8"
+    }
+  },
+  "ssh": {
+    "ok": true,
+    "release": "/opt/preclass/releases/20261119-class-admin-actions",
+    "indexSha256": "417aed61d27cd3819398656a47d35539e984a372ba36b969c407327540cb3145",
+    "caddySha256": "7f35c4ac12a1e5306e84fb35ba7419442158e53edd92de6613468cb2a5b51562",
+    "nodeEnv": "development",
+    "backupFiles": [
+      "Caddyfile-test",
+      "Caddyfile-test.before-cache",
+      "Caddyfile-test.before-formal",
+      "Caddyfile-test.before-origin-fix",
+      "index.html.before-ga",
+      "index.html.before-ga2",
+      "index.html.before-icp",
+      "preclass-test.env.before-formal"
+    ],
+    "policeAssetMatches": [
+      "/opt/preclass/releases/20261119-class-admin-actions/frontend/dist/index.html"
+    ],
+    "services": {
+      "preclass-test.service": "active",
+      "preclass-test-web.service": "active"
+    }
+  },
+  "evidenceType": "read_only_reverification_after_user_fix",
+  "scope": "只读 SSH 与匿名 HTTPS 复核；未修改服务器、未登录、未运行模型、未进行业务写入。",
+  "limitations": [
+    "公安备案审批状态与签字报告仅据原交接材料，未登录备案平台核验。",
+    "本次未重复真机、真实账号登录、300 人业务压测、证书续期演练或异机恢复。",
+    "health 接口没有返回顶层 contractVersion；0.5.0 为原交接版本记录。",
+    "不包含线上应用的完整源码或可恢复发行包；服务器已有更新不得被旧分支覆盖。"
+  ]
+}
